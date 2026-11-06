@@ -13,10 +13,10 @@ export default function BentoGrid({ onOpenResume }) {
             <span>ARQUITETURA & EXPERIÊNCIA</span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-            Visão Geral em Formato Bento Grid
+            Visão Geral & Competências
           </h2>
           <p className="mt-2 text-sm sm:text-base text-slate-400">
-            Estrutura modular inspirada nos melhores componentes modernos do Vue-Bits e Netlify.
+            Destaques da minha trajetória profissional, formação acadêmica e foco em resultados operacionais.
           </p>
         </div>
 

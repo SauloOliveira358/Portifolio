@@ -28,14 +28,14 @@ export default function HeroSection({ onOpenResume }) {
               </span>
             </div>
 
-            {/* Hero Title with Cyber Scramble Reveal */}
+            {/* Hero Title */}
             <div className="space-y-2">
               <span className="block text-slate-400 text-sm sm:text-lg font-mono font-medium">
                 Olá, seja muito bem-vindo! Eu sou
               </span>
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-white leading-tight">
                 <span className="text-gradient-emerald">
-                  <DecryptedText text="Saulo Oliveira Moreira" speed={30} />
+                  Saulo Oliveira Moreira
                 </span>
               </h1>
               <p className="text-base sm:text-xl text-slate-300 font-normal leading-relaxed pt-2">

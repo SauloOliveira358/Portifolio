@@ -10,7 +10,7 @@ export default function Footer() {
     <footer className="border-t border-slate-800 bg-[#060a12] py-12 px-4 sm:px-6 relative z-10">
       <div className="mx-auto max-w-7xl flex flex-col md:flex-row items-center justify-between gap-6">
         
-        {/* Brand & Netlify status */}
+        {/* Brand & Status */}
         <div className="flex flex-col items-center md:items-start gap-2 text-center md:text-left">
           <div className="flex items-center gap-2">
             <span className="font-mono font-bold text-white text-base">Saulo Oliveira Moreira</span>
@@ -22,10 +22,10 @@ export default function Footer() {
             Analista de Sistemas na FIND SOLUÇÕES. Transformando processos de negócio em software de alto impacto.
           </p>
 
-          {/* Netlify Deploy Status Pill */}
-          <div className="mt-1 flex items-center gap-2 rounded-lg border border-teal-500/20 bg-teal-500/5 px-2.5 py-1 text-[11px] text-teal-300 font-mono">
-            <span className="h-1.5 w-1.5 rounded-full bg-teal-400 animate-pulse" />
-            <span>Ready for Netlify Continuous Deployment</span>
+          {/* Status Pill */}
+          <div className="mt-1 flex items-center gap-2 rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-2.5 py-1 text-[11px] text-emerald-300 font-mono">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span>Disponível para novos projetos e oportunidades</span>
           </div>
         </div>
 
@@ -84,7 +84,7 @@ export default function Footer() {
 
       <div className="mt-8 pt-6 border-t border-slate-900 text-center text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between mx-auto max-w-7xl">
         <span>© {new Date().getFullYear()} Saulo Oliveira Moreira. Todos os direitos reservados.</span>
-        <span className="mt-2 sm:mt-0">Desenvolvido com React, Tailwind CSS & inspiração Vue-Bits.</span>
+        <span className="mt-2 sm:mt-0">Construído com React, Tailwind CSS e alta performance.</span>
       </div>
     </footer>
   );
