@@ -42,13 +42,10 @@ export default function Navbar({ onOpenResume }) {
               </span>
             </div>
             <div className="flex flex-col">
-              <span className="font-bold text-white text-sm tracking-tight flex items-center gap-1.5">
-                Saulo Oliveira
-                <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                  FIND Soluções
-                </span>
+              <span className="font-bold text-white text-sm tracking-tight">
+                Saulo Oliveira Moreira
               </span>
-              <span className="text-[11px] text-slate-400 font-mono">Analista de Sistemas & Dev</span>
+              <span className="text-[11px] text-emerald-400 font-mono">Analista de Sistemas & Desenvolvedor</span>
             </div>
           </a>
 

@@ -17,7 +17,7 @@ export default function ProjectsSection() {
   const projects = [
     {
       id: 1,
-      title: 'Bela Busca (ElaServices)',
+      title: 'Bela Busca (Projeto Ela)',
       category: 'fullstack',
       tag: 'Plataforma Web',
       badge: 'Destaque Principal',
@@ -25,7 +25,7 @@ export default function ProjectsSection() {
       description:
         'Plataforma moderna de intermediação e busca de serviços profissionais especializados. Desenvolvida para conectar prestadores e clientes com facilidade de agendamento e transparência.',
       tech: ['React', 'JavaScript', 'Node.js / API', 'Tailwind CSS', 'Arquitetura Web'],
-      github: 'https://github.com/SauloOliveira358/ElaServices',
+      github: 'https://github.com/SauloOliveira358/projeto-ela',
       spotlight: 'rgba(236, 72, 153, 0.25)',
       highlights: [
         'Busca e filtragem dinâmica de serviços',

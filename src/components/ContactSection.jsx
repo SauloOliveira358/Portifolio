@@ -1,19 +1,11 @@
 import React, { useState } from 'react';
 import SpotlightCard from './SpotlightCard';
-import { Mail, MessageCircle, Phone, Linkedin, Github, Send, Copy, Check, MapPin, Sparkles, ArrowRight } from 'lucide-react';
+import { Mail, MessageCircle, Phone, Linkedin, Github, Copy, Check, MapPin, Sparkles, ArrowRight, ExternalLink } from 'lucide-react';
 import { fireEpicConfetti } from '../utils/confetti';
 
 export default function ContactSection() {
   const [copiedEmail, setCopiedEmail] = useState(false);
   const [copiedPhone, setCopiedPhone] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: '',
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
 
   const email = 'saulooliveiram358@gmail.com';
   const phone = '37999165471';
@@ -31,270 +23,209 @@ export default function ContactSection() {
     }
   };
 
-  const handleFormSubmit = (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
-    // Trigger epic celebration
-    fireEpicConfetti();
-
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setSubmitted(true);
-      
-      // Auto open WhatsApp with the customized form message if user wishes
-      const msg = encodeURIComponent(
-        `Olá Saulo! Meu nome é ${formData.name} (${formData.email}).\nAssunto: ${formData.subject}\nMensagem: ${formData.message}`
-      );
-      window.open(`https://wa.me/5537999165471?text=${msg}`, '_blank');
-    }, 800);
-  };
-
   return (
     <section id="contato" className="py-20 px-4 sm:px-6 relative">
-      <div className="mx-auto max-w-7xl">
+      <div className="mx-auto max-w-5xl">
         {/* Section Header */}
-        <div className="text-center max-w-2xl mx-auto mb-16">
+        <div className="text-center max-w-2xl mx-auto mb-14">
           <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-mono text-emerald-400 border border-emerald-500/20 mb-3">
             <MessageCircle className="h-3.5 w-3.5" />
             <span>VAMOS CONVERSAR?</span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-            Entre em Contato Direto
+            Canais de Contato Direto
           </h2>
           <p className="mt-2 text-sm sm:text-base text-slate-400">
-            Estou sempre aberto a propostas desafiadoras, networking e novos projetos de tecnologia.
+            Fale diretamente comigo pelo WhatsApp, e-mail ou redes profissionais. Respondo com rapidez!
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Left Column: Direct Fast Channels (5 cols) */}
-          <div className="lg:col-span-5 space-y-4">
-            
-            {/* WhatsApp Card */}
-            <SpotlightCard
-              className="p-6 border-emerald-500/30 group"
-              spotlightColor="rgba(16, 185, 129, 0.25)"
-            >
-              <div className="flex items-center justify-between">
+        {/* Contact Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          
+          {/* WhatsApp Direct Card (Destaque Principal) */}
+          <SpotlightCard
+            className="p-6 sm:p-8 border-emerald-500/30 group flex flex-col justify-between"
+            spotlightColor="rgba(16, 185, 129, 0.28)"
+          >
+            <div>
+              <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 group-hover:scale-110 transition-transform">
                     <MessageCircle className="h-6 w-6 fill-current" />
                   </div>
                   <div>
-                    <h3 className="text-base font-bold text-white">WhatsApp Direto</h3>
-                    <p className="text-xs text-slate-400">Resposta ágil em minutos</p>
+                    <h3 className="text-lg font-bold text-white">WhatsApp Direto</h3>
+                    <p className="text-xs text-emerald-400 font-mono">Resposta ágil em minutos</p>
                   </div>
                 </div>
                 <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-ping" />
               </div>
 
-              <p className="mt-3 text-xs sm:text-sm text-slate-300">
-                Número:{' '}
-                <span className="font-mono text-white font-semibold">{formattedPhone}</span>
+              <p className="text-sm text-slate-300 leading-relaxed">
+                Ideal para contato imediato sobre vagas, oportunidades de projetos, consultoria ou networking.
               </p>
 
-              <div className="mt-4 flex gap-2">
-                <a
-                  href={whatsappUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-1 text-center rounded-xl bg-emerald-500 hover:bg-emerald-400 px-4 py-2.5 text-xs font-bold text-slate-950 transition-colors shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-1.5"
-                >
-                  <MessageCircle className="h-4 w-4 fill-current" />
-                  <span>Chamar no WhatsApp</span>
-                </a>
-                <button
-                  onClick={() => copyToClipboard(phone, 'phone')}
-                  className="rounded-xl border border-slate-700 bg-slate-800 p-2.5 text-slate-300 hover:text-white hover:bg-slate-700 transition-colors"
-                  title="Copiar número de telefone"
-                >
-                  {copiedPhone ? <Check className="h-4 w-4 text-emerald-400" /> : <Copy className="h-4 w-4" />}
-                </button>
+              <div className="mt-3 text-sm text-slate-300 font-mono">
+                Número: <span className="text-white font-bold">{formattedPhone}</span>
               </div>
-            </SpotlightCard>
+            </div>
 
-            {/* Email Card */}
-            <SpotlightCard
-              className="p-6 group"
-              spotlightColor="rgba(56, 189, 248, 0.25)"
-            >
-              <div className="flex items-center gap-3">
+            <div className="mt-6 flex gap-2 pt-4 border-t border-slate-800/80">
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => fireEpicConfetti()}
+                className="flex-1 text-center rounded-xl bg-emerald-500 hover:bg-emerald-400 px-4 py-3 text-xs font-bold text-slate-950 transition-all hover:scale-[1.02] shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2"
+              >
+                <MessageCircle className="h-4 w-4 fill-current" />
+                <span>Conversar no WhatsApp</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </a>
+
+              <button
+                onClick={() => copyToClipboard(phone, 'phone')}
+                className="rounded-xl border border-slate-700 bg-slate-800 px-3.5 py-3 text-slate-300 hover:text-white hover:bg-slate-700 transition-colors flex items-center justify-center"
+                title="Copiar número de telefone"
+              >
+                {copiedPhone ? <Check className="h-4 w-4 text-emerald-400" /> : <Copy className="h-4 w-4" />}
+              </button>
+            </div>
+          </SpotlightCard>
+
+          {/* Email Card */}
+          <SpotlightCard
+            className="p-6 sm:p-8 group flex flex-col justify-between"
+            spotlightColor="rgba(56, 189, 248, 0.25)"
+          >
+            <div>
+              <div className="flex items-center gap-3 mb-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-sky-500/10 text-sky-400 border border-sky-500/20 group-hover:scale-110 transition-transform">
                   <Mail className="h-6 w-6" />
                 </div>
-                <div className="overflow-hidden">
-                  <h3 className="text-base font-bold text-white">E-mail Profissional</h3>
-                  <p className="text-xs text-slate-400 truncate">{email}</p>
-                </div>
-              </div>
-
-              <div className="mt-4 flex gap-2">
-                <a
-                  href={`mailto:${email}`}
-                  className="flex-1 text-center rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 px-4 py-2.5 text-xs font-medium text-white transition-colors flex items-center justify-center gap-1.5"
-                >
-                  <Mail className="h-3.5 w-3.5 text-sky-400" />
-                  <span>Enviar E-mail</span>
-                </a>
-                <button
-                  onClick={() => copyToClipboard(email, 'email')}
-                  className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2.5 text-xs font-medium text-slate-300 hover:text-white transition-colors flex items-center gap-1.5"
-                  title="Copiar endereço de e-mail"
-                >
-                  {copiedEmail ? (
-                    <>
-                      <Check className="h-3.5 w-3.5 text-emerald-400" />
-                      <span className="text-emerald-400 text-xs">Copiado!</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="h-3.5 w-3.5" />
-                      <span>Copiar</span>
-                    </>
-                  )}
-                </button>
-              </div>
-            </SpotlightCard>
-
-            {/* LinkedIn & GitHub Horizontal Split */}
-            <div className="grid grid-cols-2 gap-3">
-              <a
-                href="https://www.linkedin.com/in/saulo-oliveira-348a30356"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="rounded-2xl border border-slate-800 bg-slate-900/60 p-4 hover:border-sky-500/40 hover:bg-slate-800/60 transition-all flex flex-col items-center justify-center text-center group"
-              >
-                <Linkedin className="h-6 w-6 text-[#38bdf8] group-hover:scale-110 transition-transform mb-2" />
-                <span className="text-xs font-bold text-white">LinkedIn</span>
-                <span className="text-[10px] text-slate-400">Conectar perfil</span>
-              </a>
-
-              <a
-                href="https://github.com/SauloOliveira358"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="rounded-2xl border border-slate-800 bg-slate-900/60 p-4 hover:border-slate-600 hover:bg-slate-800/60 transition-all flex flex-col items-center justify-center text-center group"
-              >
-                <Github className="h-6 w-6 text-slate-300 group-hover:scale-110 transition-transform mb-2" />
-                <span className="text-xs font-bold text-white">GitHub</span>
-                <span className="text-[10px] text-slate-400">Ver códigos</span>
-              </a>
-            </div>
-
-            {/* Location Pill */}
-            <div className="flex items-center gap-2 rounded-xl border border-slate-800/80 bg-slate-900/40 px-4 py-3 text-xs text-slate-400 font-mono">
-              <MapPin className="h-4 w-4 text-emerald-400 shrink-0" />
-              <span>Divinópolis - Minas Gerais, Brasil • Disponível Remoto / Híbrido</span>
-            </div>
-
-          </div>
-
-          {/* Right Column: Interactive Direct Message Form (7 cols) */}
-          <div className="lg:col-span-7">
-            <SpotlightCard
-              className="p-6 sm:p-8"
-              spotlightColor="rgba(16, 185, 129, 0.18)"
-            >
-              <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h3 className="text-xl font-bold text-white">Envie uma Mensagem</h3>
-                  <p className="text-xs text-slate-400">Preencha os campos para iniciar o contato diretamente comigo.</p>
+                  <h3 className="text-lg font-bold text-white">E-mail Profissional</h3>
+                  <p className="text-xs text-sky-400 font-mono truncate max-w-[220px] sm:max-w-none">{email}</p>
                 </div>
-                <Sparkles className="h-5 w-5 text-emerald-400" />
               </div>
 
-              {submitted ? (
-                <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-6 text-center space-y-3 animate-fade-in">
-                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400">
-                    <Check className="h-6 w-6" />
-                  </div>
-                  <h4 className="text-lg font-bold text-white">Mensagem Preparada com Sucesso!</h4>
-                  <p className="text-xs sm:text-sm text-slate-300">
-                    O WhatsApp foi inicializado com os dados preenchidos para envio imediato. Obrigado pelo contato, responderei o mais breve possível!
-                  </p>
-                  <button
-                    onClick={() => {
-                      setSubmitted(false);
-                      setFormData({ name: '', email: '', subject: '', message: '' });
-                    }}
-                    className="mt-2 text-xs font-semibold text-emerald-400 hover:underline"
-                  >
-                    Enviar outra mensagem
-                  </button>
-                </div>
-              ) : (
-                <form onSubmit={handleFormSubmit} className="space-y-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-mono text-slate-300">Seu Nome *</label>
-                      <input
-                        type="text"
-                        required
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        placeholder="Ex: João da Silva"
-                        className="w-full rounded-xl border border-slate-700 bg-slate-800/80 px-4 py-2.5 text-xs sm:text-sm text-white placeholder-slate-500 outline-none focus:border-emerald-500 transition-colors"
-                      />
-                    </div>
+              <p className="text-sm text-slate-300 leading-relaxed">
+                Envie propostas formais, documentações técnicas ou convites para processos seletivos.
+              </p>
+            </div>
 
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-mono text-slate-300">Seu E-mail *</label>
-                      <input
-                        type="email"
-                        required
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        placeholder="Ex: joao@empresa.com"
-                        className="w-full rounded-xl border border-slate-700 bg-slate-800/80 px-4 py-2.5 text-xs sm:text-sm text-white placeholder-slate-500 outline-none focus:border-emerald-500 transition-colors"
-                      />
-                    </div>
-                  </div>
+            <div className="mt-6 flex gap-2 pt-4 border-t border-slate-800/80">
+              <a
+                href={`mailto:${email}`}
+                className="flex-1 text-center rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 px-4 py-3 text-xs font-semibold text-white transition-colors flex items-center justify-center gap-2"
+              >
+                <Mail className="h-4 w-4 text-sky-400" />
+                <span>Enviar E-mail Agora</span>
+              </a>
 
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-mono text-slate-300">Assunto</label>
-                    <input
-                      type="text"
-                      value={formData.subject}
-                      onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                      placeholder="Ex: Oportunidade para Analista de Sistemas / Projeto"
-                      className="w-full rounded-xl border border-slate-700 bg-slate-800/80 px-4 py-2.5 text-xs sm:text-sm text-white placeholder-slate-500 outline-none focus:border-emerald-500 transition-colors"
-                    />
-                  </div>
+              <button
+                onClick={() => copyToClipboard(email, 'email')}
+                className="rounded-xl border border-slate-700 bg-slate-800 px-3.5 py-3 text-xs font-medium text-slate-300 hover:text-white transition-colors flex items-center gap-1.5"
+                title="Copiar endereço de e-mail"
+              >
+                {copiedEmail ? (
+                  <>
+                    <Check className="h-4 w-4 text-emerald-400" />
+                    <span className="text-emerald-400 text-xs">Copiado!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="h-4 w-4" />
+                    <span>Copiar</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </SpotlightCard>
 
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-mono text-slate-300">Mensagem *</label>
-                    <textarea
-                      required
-                      rows={4}
-                      value={formData.message}
-                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      placeholder="Descreva detalhes sobre sua proposta, projeto ou dúvida..."
-                      className="w-full rounded-xl border border-slate-700 bg-slate-800/80 px-4 py-2.5 text-xs sm:text-sm text-white placeholder-slate-500 outline-none focus:border-emerald-500 transition-colors resize-none"
-                    />
-                  </div>
+          {/* LinkedIn Card */}
+          <SpotlightCard
+            className="p-6 group flex flex-col justify-between"
+            spotlightColor="rgba(56, 189, 248, 0.2)"
+          >
+            <div className="flex items-center gap-3 mb-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#0077b5]/20 text-[#38bdf8] border border-[#0077b5]/30 group-hover:scale-110 transition-transform">
+                <Linkedin className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-white">LinkedIn Oficial</h3>
+                <p className="text-xs text-slate-400">Rede profissional & conexões</p>
+              </div>
+            </div>
 
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full rounded-xl bg-emerald-500 hover:bg-emerald-400 py-3.5 text-xs sm:text-sm font-bold text-slate-950 transition-all hover:scale-[1.01] shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2"
-                  >
-                    {isSubmitting ? (
-                      <span>Enviando dados...</span>
-                    ) : (
-                      <>
-                        <Send className="h-4 w-4" />
-                        <span>Enviar Mensagem & Abrir WhatsApp</span>
-                        <ArrowRight className="h-4 w-4" />
-                      </>
-                    )}
-                  </button>
-                </form>
-              )}
-            </SpotlightCard>
-          </div>
+            <p className="text-xs sm:text-sm text-slate-300">
+              Acesse o histórico completo de recomendações, formação acadêmica e conexões no ecossistema de TI.
+            </p>
+
+            <a
+              href="https://www.linkedin.com/in/saulo-oliveira-348a30356"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-5 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-700 p-2.5 text-xs font-semibold text-white transition-colors flex items-center justify-center gap-1.5"
+            >
+              <Linkedin className="h-4 w-4 text-[#38bdf8]" />
+              <span>Conectar no LinkedIn</span>
+              <ExternalLink className="h-3 w-3 text-slate-400" />
+            </a>
+          </SpotlightCard>
+
+          {/* GitHub Card */}
+          <SpotlightCard
+            className="p-6 group flex flex-col justify-between"
+            spotlightColor="rgba(168, 85, 247, 0.2)"
+          >
+            <div className="flex items-center gap-3 mb-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20 group-hover:scale-110 transition-transform">
+                <Github className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-white">GitHub Repositórios</h3>
+                <p className="text-xs text-slate-400 font-mono">@SauloOliveira358</p>
+              </div>
+            </div>
+
+            <p className="text-xs sm:text-sm text-slate-300">
+              Explore os códigos-fonte reais dos projetos MedFlow, Bela Busca, Dashboard Comercial, Salpay e jogos 2D.
+            </p>
+
+            <a
+              href="https://github.com/SauloOliveira358?tab=repositories"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-5 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-700 p-2.5 text-xs font-semibold text-white transition-colors flex items-center justify-center gap-1.5"
+            >
+              <Github className="h-4 w-4 text-purple-400" />
+              <span>Ver Todos os Repositórios</span>
+              <ExternalLink className="h-3 w-3 text-slate-400" />
+            </a>
+          </SpotlightCard>
 
         </div>
+
+        {/* Location & Availability Banner */}
+        <div className="mt-8 rounded-2xl border border-slate-800 bg-slate-900/60 p-5 backdrop-blur-md flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shrink-0">
+              <MapPin className="h-5 w-5" />
+            </div>
+            <div>
+              <div className="text-sm font-bold text-white">Divinópolis — Minas Gerais, Brasil</div>
+              <div className="text-xs text-slate-400">Disponível para atuação Remota, Híbrida ou Presencial</div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
+            <span className="text-xs font-mono text-emerald-400 font-medium">Pronto para novos desafios</span>
+          </div>
+        </div>
+
       </div>
     </section>
   );

@@ -114,7 +114,7 @@ Foco: Análise de Requisitos, Eficiência Operacional, Integração de Dados & C
           type: 'output',
           text: `GitHub: https://github.com/SauloOliveira358
 Repositórios oficiais:
-  1. Bela Busca (ElaServices) - Plataforma de serviços profissionais
+  1. Bela Busca (projeto-ela) - Plataforma de serviços profissionais
   2. MedFlow - Sistema médico com controle estrito de concorrência
   3. Dashboard Comercial Aurora - Flask, Python, Postgres & Chart.js
   4. Projeto Vendas - PLpgSQL avançado, triggers e modelagem

@@ -8,12 +8,13 @@ export default function FloatingWhatsApp({ onOpenResume }) {
     {
       id: 1,
       sender: 'bot',
-      text: 'Olá! Sou o assistente virtual do Saulo. Como posso te ajudar a conhecer o trabalho dele hoje?',
+      text: 'Olá! Sou o assistente virtual do Saulo. Como posso te ajudar a conhecer o perfil dele hoje?',
       time: 'Agora',
     },
   ]);
   const [inputVal, setInputVal] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [interactionCount, setInteractionCount] = useState(0);
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
@@ -21,12 +22,26 @@ export default function FloatingWhatsApp({ onOpenResume }) {
   }, [messages, isTyping]);
 
   const quickQuestions = [
-    { label: '💼 O que faz na FIND Soluções?', query: 'find' },
-    { label: '🎓 Período e Faculdade?', query: 'estudo' },
-    { label: '⚡ Principais tecnologias?', query: 'stack' },
-    { label: '📂 Projetos em destaque?', query: 'projetos' },
-    { label: '📱 WhatsApp direto?', query: 'whatsapp' },
+    { label: '💼 Atuação na FIND Soluções', query: 'find' },
+    { label: '🎓 Período na Faculdade', query: 'faculdade' },
+    { label: '⚡ Stack & Tecnologias', query: 'stack' },
+    { label: '📂 Projetos Reais no GitHub', query: 'projetos' },
+    { label: '📱 WhatsApp Direto', query: 'whatsapp' },
   ];
+
+  // Dynamic variations for WhatsApp invitations so it never repeats the exact same sentence
+  const whatsappInvites = [
+    'O Saulo responde prontamente no WhatsApp pelo (37) 99916-5471. Que tal dar um alô por lá?',
+    'Se quiser alinhar detalhes mais a fundo, uma mensagem direta no WhatsApp dele ((37) 99916-5471) é o caminho mais rápido!',
+    'Para trocar uma ideia sobre propostas ou projetos, você pode chamar o Saulo no WhatsApp clicando no botão abaixo.',
+    'O Saulo adora bater um papo sobre tecnologia e novos desafios. Mande um "oi" para ele no WhatsApp!',
+    'Caso queira agendar uma entrevista ou tirar dúvidas técnicas, o canal mais direto é o WhatsApp dele: (37) 99916-5471.',
+    'Muito bacana! O Saulo está 100% aberto a novas oportunidades profissionais. Você pode chamá-lo no WhatsApp a qualquer momento.',
+  ];
+
+  const getInvite = (index) => {
+    return whatsappInvites[index % whatsappInvites.length];
+  };
 
   const handleSendMessage = (textToSend) => {
     const query = (textToSend || inputVal).trim();
@@ -44,27 +59,37 @@ export default function FloatingWhatsApp({ onOpenResume }) {
     setInputVal('');
     setIsTyping(true);
 
-    // Generate intelligent instant reply
+    const currentCount = interactionCount;
+    setInteractionCount((prev) => prev + 1);
+
     setTimeout(() => {
-      let botResponse = '';
+      let mainText = '';
       const lower = query.toLowerCase();
+      const invite = getInvite(currentCount);
 
       if (lower.includes('find') || lower.includes('trabalho') || lower.includes('experiência') || lower.includes('cargo') || lower.includes('atuação')) {
-        botResponse = 'Na FIND SOLUÇÕES (desde Agosto/2025), o Saulo atua como Analista de Sistemas! Ele é responsável pelo levantamento detalhado de requisitos, mapeamento e alinhamento com regras de negócio, treinamentos operacionais e suporte de missão crítica.';
-      } else if (lower.includes('estudo') || lower.includes('faculdade') || lower.includes('periodo') || lower.includes('período') || lower.includes('formação')) {
-        botResponse = 'O Saulo está no 8º período de Sistemas de Informação na Faculdade Anhanguera de Divinópolis - MG, com previsão de formatura para Dezembro de 2026.';
-      } else if (lower.includes('stack') || lower.includes('tecnologia') || lower.includes('linguagem') || lower.includes('habilidade')) {
-        botResponse = 'A stack técnica principal do Saulo engloba: Python (Flask, Automação), Java (Spring Boot, POO, JDBC), Bancos de Dados MySQL e PostgreSQL (com PLpgSQL e modelagem avançada), Redes de Computadores / Infraestrutura e Frontend moderno com React e Tailwind!';
-      } else if (lower.includes('projeto') || lower.includes('github') || lower.includes('bela') || lower.includes('medflow') || lower.includes('salpay')) {
-        botResponse = 'Entre os projetos reais no GitHub do Saulo (@SauloOliveira358) destacam-se: Bela Busca (ElaServices), MedFlow (sistema hospitalar com proteção contra Race Conditions), Dashboard Comercial Aurora (Python/Postgres), Salpay (controle de gastos em Java) e o jogo Indiana Jones 2D!';
+        mainText = `Atualmente, o Saulo atua como Analista de Sistemas na FIND SOLUÇÕES (desde Agosto/2025). O trabalho dele envolve levantamento minucioso de requisitos de negócio, alinhamento estratégico com os times técnicos, treinamentos operacionais e suporte N3 aos usuários. ${invite}`;
+      } else if (lower.includes('estudo') || lower.includes('faculdade') || lower.includes('periodo') || lower.includes('período') || lower.includes('formação') || lower.includes('anhanguera')) {
+        mainText = `O Saulo está no 8º período de Sistemas de Informação na Faculdade Anhanguera de Divinópolis - MG, com previsão de conclusão em Dezembro de 2026. Ele combina forte base acadêmica em engenharia de software com experiência prática de mercado. ${invite}`;
+      } else if (lower.includes('stack') || lower.includes('tecnologia') || lower.includes('linguagem') || lower.includes('python') || lower.includes('java') || lower.includes('sql') || lower.includes('mysql')) {
+        mainText = `A stack técnica principal do Saulo engloba Python (Flask, Automação), Java (Spring Boot, POO, JDBC), Bancos de Dados MySQL e PostgreSQL (com PLpgSQL e modelagem avançada), Infraestrutura de Redes (TCP/IP) e Frontend moderno com React e Tailwind. ${invite}`;
+      } else if (lower.includes('projeto') || lower.includes('github') || lower.includes('bela') || lower.includes('medflow') || lower.includes('salpay') || lower.includes('ela')) {
+        mainText = `No GitHub oficial (@SauloOliveira358), os maiores destaques são: Bela Busca (projeto-ela), MedFlow (sistema hospitalar com proteção contra concorrência e race condition), Dashboard Comercial Aurora (Python/Postgres), Salpay (controle financeiro em Java) e o jogo Indiana Jones 2D! ${invite}`;
+      } else if (lower.includes('salario') || lower.includes('pretensao') || lower.includes('vaga') || lower.includes('contratar') || lower.includes('proposta') || lower.includes('oportunidade')) {
+        mainText = `O Saulo está totalmente aberto a propostas presenciais, híbridas ou remotas para posições de Analista de Sistemas, Desenvolvedor Backend ou Fullstack. Para valores e detalhes da vaga, fale diretamente com ele no WhatsApp: (37) 99916-5471.`;
       } else if (lower.includes('cv') || lower.includes('curriculo') || lower.includes('currículo') || lower.includes('pdf')) {
-        botResponse = 'Você pode visualizar e imprimir o currículo completo de 1 página clicando no botão "Currículo Profissional" no topo do site!';
+        mainText = `O currículo completo com foto e diagramação calibrada para 1 página A4 está disponível! Você pode clicar no botão "Currículo Profissional" no topo do site para imprimir ou salvar em PDF. ${invite}`;
       } else if (lower.includes('whatsapp') || lower.includes('telefone') || lower.includes('contato') || lower.includes('numero') || lower.includes('número')) {
-        botResponse = 'O WhatsApp direto do Saulo é (37) 99916-5471. Você pode clicar no botão verde abaixo para abrir a conversa instantaneamente!';
-      } else if (lower.includes('olá') || lower.includes('oi') || lower.includes('boa') || lower.includes('opa')) {
-        botResponse = 'Olá! Que bom ter você aqui! Fique à vontade para perguntar sobre as experiências, projetos, formação ou mandar uma mensagem no WhatsApp do Saulo!';
+        mainText = `O número direto de WhatsApp do Saulo é (37) 99916-5471. Basta clicar no botão verde no rodapé deste chat para abrir a conversa instantaneamente com ele!`;
+      } else if (lower.includes('olá') || lower.includes('oi') || lower.includes('boa') || lower.includes('opa') || lower.includes('tudo bem')) {
+        mainText = `Tudo ótimo por aqui! Prazer em falar com você. O que gostaria de saber sobre o Saulo? Você pode perguntar sobre a formação no 8º período, a atuação como Analista de Sistemas ou projetos do GitHub. ${invite}`;
       } else {
-        botResponse = `Legal! Para conversar diretamente sobre "${query}", que tal falarmos diretamente no WhatsApp do Saulo pelo número (37) 99916-5471? Ele responde com rapidez!`;
+        const fallbacks = [
+          `Entendido perfeitamente! Para falar mais sobre "${query}" ou explorar uma cooperação, recomendo trocar uma mensagem rápida no WhatsApp do Saulo pelo (37) 99916-5471.`,
+          `Boa consideração! O Saulo tem facilidade para explicar e debater esse assunto. Você pode mandar essa mensagem diretamente para o WhatsApp dele no (37) 99916-5471!`,
+          `Legal você ter perguntado isso! O Saulo acompanha os contatos do portfólio no WhatsApp com muita rapidez. Dê um toque nele pelo (37) 99916-5471!`,
+        ];
+        mainText = fallbacks[currentCount % fallbacks.length];
       }
 
       setMessages((prev) => [
@@ -72,12 +97,12 @@ export default function FloatingWhatsApp({ onOpenResume }) {
         {
           id: Date.now() + 1,
           sender: 'bot',
-          text: botResponse,
+          text: mainText,
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         },
       ]);
       setIsTyping(false);
-    }, 600);
+    }, 500);
   };
 
   const openWhatsAppDirect = () => {
@@ -136,7 +161,7 @@ export default function FloatingWhatsApp({ onOpenResume }) {
                   </div>
                 )}
                 <div
-                  className={`max-w-[82%] rounded-2xl px-3.5 py-2.5 leading-relaxed ${
+                  className={`max-w-[84%] rounded-2xl px-3.5 py-2.5 leading-relaxed ${
                     msg.sender === 'user'
                       ? 'bg-emerald-500 text-slate-950 font-medium rounded-tr-none'
                       : 'bg-slate-800/90 text-slate-200 border border-slate-700/60 rounded-tl-none'

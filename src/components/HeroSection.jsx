@@ -24,7 +24,7 @@ export default function HeroSection({ onOpenResume }) {
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
               </span>
               <span className="text-xs font-medium text-emerald-300">
-                Analista de Sistemas @ FIND Soluções • 8º Período Sistemas de Informação
+                Analista de Sistemas & Desenvolvedor de Software • 8º Período SI
               </span>
             </div>
 
@@ -75,7 +75,7 @@ export default function HeroSection({ onOpenResume }) {
                 className="flex items-center gap-2 rounded-xl border border-slate-800 bg-slate-950/60 px-4 py-3.5 text-sm font-medium text-slate-300 transition-all hover:text-white hover:border-slate-700"
               >
                 <Github className="h-4 w-4" />
-                <span>GitHub Repos</span>
+                <span>Repositórios no GitHub</span>
               </a>
 
               {/* LinkedIn */}
@@ -141,10 +141,10 @@ export default function HeroSection({ onOpenResume }) {
                     <div>
                       <div className="text-xs font-bold text-white flex items-center gap-1.5">
                         <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
-                        Saulo Oliveira
+                        Saulo Oliveira Moreira
                       </div>
                       <div className="text-[11px] text-emerald-400 font-mono">
-                        Analista @ FIND SOLUÇÕES
+                        Analista de Sistemas & Dev
                       </div>
                     </div>
                     <button
@@ -173,9 +173,9 @@ export default function HeroSection({ onOpenResume }) {
         {/* Live Metrics Grid Bottom */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-12 border-t border-slate-800/80 max-w-5xl mx-auto">
           <div className="p-4 rounded-xl border border-slate-800/60 bg-slate-900/40 backdrop-blur-sm text-center">
-            <div className="text-2xl sm:text-3xl font-extrabold text-white font-mono">Atual</div>
-            <div className="text-xs text-emerald-400 font-medium mt-1">FIND SOLUÇÕES</div>
-            <div className="text-[11px] text-slate-400">Analista de Sistemas</div>
+            <div className="text-2xl sm:text-3xl font-extrabold text-white font-mono">Carreira</div>
+            <div className="text-xs text-emerald-400 font-medium mt-1">Analista de Sistemas</div>
+            <div className="text-[11px] text-slate-400">Requisitos & Engenharia de Software</div>
           </div>
 
           <div className="p-4 rounded-xl border border-slate-800/60 bg-slate-900/40 backdrop-blur-sm text-center">
