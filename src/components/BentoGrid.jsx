@@ -94,13 +94,13 @@ export default function BentoGrid({ onOpenResume }) {
               <p className="text-sm font-semibold text-sky-400 mt-1">Faculdade Anhanguera de Divinópolis</p>
 
               <p className="mt-3 text-sm text-slate-300 leading-relaxed">
-                6º período concluído com foco em engenharia de software, modelagem de banco de dados, arquitetura de sistemas corporativos, redes e governança de tecnologia da informação.
+                8º período em andamento com foco em engenharia de software, modelagem de banco de dados, arquitetura de sistemas corporativos, redes e governança de tecnologia da informação.
               </p>
 
               <div className="mt-5 grid grid-cols-2 gap-2 text-xs">
                 <div className="rounded-lg bg-slate-800/50 p-2.5 border border-slate-700/40">
-                  <div className="text-white font-semibold">6º Período</div>
-                  <div className="text-slate-400 text-[11px]">Consistência acadêmica</div>
+                  <div className="text-white font-semibold">8º Período</div>
+                  <div className="text-slate-400 text-[11px]">Formatura: Dez/2026</div>
                 </div>
                 <div className="rounded-lg bg-slate-800/50 p-2.5 border border-slate-700/40">
                   <div className="text-white font-semibold">Divinópolis - MG</div>

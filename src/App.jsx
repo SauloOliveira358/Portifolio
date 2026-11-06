@@ -74,8 +74,8 @@ export default function App() {
       {/* Footer */}
       <Footer />
 
-      {/* Floating 1-Click WhatsApp Messenger */}
-      <FloatingWhatsApp />
+      {/* Floating 1-Click WhatsApp Messenger & Assistant Bot */}
+      <FloatingWhatsApp onOpenResume={() => setResumeOpen(true)} />
 
       {/* Complete Professional Resume Modal */}
       <ResumeModal isOpen={resumeOpen} onClose={() => setResumeOpen(false)} />

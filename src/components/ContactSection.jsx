@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import SpotlightCard from './SpotlightCard';
 import { Mail, MessageCircle, Phone, Linkedin, Github, Send, Copy, Check, MapPin, Sparkles, ArrowRight } from 'lucide-react';
-import confetti from 'canvas-confetti';
+import { fireEpicConfetti } from '../utils/confetti';
 
 export default function ContactSection() {
   const [copiedEmail, setCopiedEmail] = useState(false);
@@ -35,12 +35,8 @@ export default function ContactSection() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Trigger celebration
-    confetti({
-      particleCount: 70,
-      spread: 60,
-      origin: { y: 0.8 }
-    });
+    // Trigger epic celebration
+    fireEpicConfetti();
 
     setTimeout(() => {
       setIsSubmitting(false);

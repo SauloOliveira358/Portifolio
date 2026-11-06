@@ -52,9 +52,9 @@ export default function ExperienceTimeline({ onOpenResume }) {
       description:
         'Formação acadêmica sólida voltada para a gestão estratégica de TI, engenharia de software e banco de dados.',
       achievements: [
-        '6º período concluído com foco em arquitetura orientada a objetos (Java/Python) e banco de dados relacional.',
-        'Estudos de engenharia de software, modelagem de banco de dados MySQL, metodologias ágeis e redes de computadores.',
-        'Participação ativa em projetos práticos de desenvolvimento e análise de viabilidade técnica.',
+        '8º período em andamento com foco em engenharia de software, arquitetura de microsserviços e banco de dados relacional.',
+        'Estudos avançados de engenharia de software, modelagem de banco de dados MySQL e PostgreSQL, concorrência e redes.',
+        'Participação ativa em projetos práticos de desenvolvimento corporativo e análise de viabilidade técnica.',
       ],
       skills: ['Sistemas de Informação', 'Engenharia de Software', 'Banco de Dados Relacional', 'Estruturas de Dados'],
       badgeColor: 'bg-sky-500/10 text-sky-400 border-sky-500/20',

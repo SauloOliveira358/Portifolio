@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Download, Printer, Mail, Phone, MapPin, Building, GraduationCap, Award, CheckCircle2, ExternalLink } from 'lucide-react';
+import { X, Printer, Mail, Phone, MapPin, CheckCircle2, ExternalLink } from 'lucide-react';
 
 export default function ResumeModal({ isOpen, onClose }) {
   if (!isOpen) return null;
@@ -9,10 +9,62 @@ export default function ResumeModal({ isOpen, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-10 bg-black/80 backdrop-blur-md animate-fade-in">
-      <div className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-700 bg-slate-900 shadow-2xl">
-        {/* Modal Top Actions */}
-        <div className="sticky top-0 z-20 flex items-center justify-between border-b border-slate-800 bg-slate-900/95 px-6 py-4 backdrop-blur-md">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 md:p-6 bg-black/80 backdrop-blur-md animate-fade-in print:p-0 print:bg-white print:static print:inset-auto">
+      
+      {/* Print-specific style tag to force 1 clean single page layout */}
+      <style>{`
+        @media print {
+          @page {
+            size: A4 portrait;
+            margin: 8mm 10mm;
+          }
+          body * {
+            visibility: hidden;
+          }
+          #printable-resume, #printable-resume * {
+            visibility: visible;
+          }
+          #printable-resume {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            background: white !important;
+            color: #1e293b !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            font-size: 11px !important;
+            line-height: 1.35 !important;
+            box-shadow: none !important;
+            border: none !important;
+          }
+          .no-print {
+            display: none !important;
+          }
+          .print-compact-gap {
+            gap: 4px !important;
+          }
+          .print-text-dark {
+            color: #0f172a !important;
+          }
+          .print-text-muted {
+            color: #475569 !important;
+          }
+          .print-border {
+            border-color: #cbd5e1 !important;
+          }
+          .print-pill {
+            background-color: #f1f5f9 !important;
+            color: #0f172a !important;
+            border: 1px solid #cbd5e1 !important;
+          }
+        }
+      `}</style>
+
+      <div className="relative w-full max-w-4xl max-h-[92vh] overflow-y-auto rounded-2xl border border-slate-700 bg-slate-900 shadow-2xl print:max-h-none print:overflow-visible print:border-none print:shadow-none print:bg-white">
+        
+        {/* Modal Top Actions (Hidden on Print) */}
+        <div className="sticky top-0 z-20 flex items-center justify-between border-b border-slate-800 bg-slate-900/95 px-6 py-3.5 backdrop-blur-md no-print">
           <div className="flex items-center gap-2">
             <span className="h-3 w-3 rounded-full bg-emerald-400 animate-pulse" />
             <span className="font-semibold text-white text-sm sm:text-base">Currículo Profissional — Saulo Oliveira Moreira</span>
@@ -21,11 +73,11 @@ export default function ResumeModal({ isOpen, onClose }) {
           <div className="flex items-center gap-2">
             <button
               onClick={handlePrint}
-              className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800/80 px-3 py-1.5 text-xs font-medium text-slate-200 hover:bg-slate-700 transition-colors"
-              title="Imprimir ou Salvar em PDF"
+              className="flex items-center gap-1.5 rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3.5 py-1.5 text-xs font-bold text-emerald-400 hover:bg-emerald-500 hover:text-slate-950 transition-all"
+              title="Imprimir em 1 página ou Salvar em PDF"
             >
               <Printer className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Imprimir / Salvar PDF</span>
+              <span>Imprimir / Salvar PDF (1 Página)</span>
             </button>
             <button
               onClick={onClose}
@@ -36,152 +88,156 @@ export default function ResumeModal({ isOpen, onClose }) {
           </div>
         </div>
 
-        {/* Resume Content Body */}
-        <div className="p-6 sm:p-10 space-y-8 text-slate-300 font-sans" id="printable-resume">
-          {/* Header */}
-          <div className="border-b border-slate-800 pb-6">
-            <h1 className="text-3xl font-extrabold text-white tracking-tight">Saulo Oliveira Moreira</h1>
-            <p className="mt-1 text-lg font-medium text-emerald-400">Analista de Sistemas & Desenvolvedor de Software</p>
-            
-            <div className="mt-4 flex flex-wrap gap-4 text-xs sm:text-sm text-slate-400">
-              <div className="flex items-center gap-1.5">
-                <Phone className="h-4 w-4 text-emerald-400" />
-                <a href="https://wa.me/5537999165471" target="_blank" rel="noopener noreferrer" className="hover:text-emerald-400 transition-colors">
+        {/* Printable Resume Body */}
+        <div
+          id="printable-resume"
+          className="p-6 sm:p-8 space-y-5 text-slate-300 font-sans print:p-0 print:text-slate-800"
+        >
+          {/* Header with Photo */}
+          <div className="border-b border-slate-800 pb-4 print:border-slate-300 print:pb-3 flex items-center justify-between gap-4">
+            <div className="space-y-1">
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight print:text-slate-900">
+                Saulo Oliveira Moreira
+              </h1>
+              <p className="text-sm sm:text-base font-semibold text-emerald-400 print:text-emerald-700">
+                Analista de Sistemas & Desenvolvedor de Software (8º Período SI)
+              </p>
+              
+              <div className="flex flex-wrap gap-x-4 gap-y-1 pt-1 text-xs text-slate-400 print:text-slate-600 font-mono">
+                <span className="flex items-center gap-1">
+                  <Phone className="h-3.5 w-3.5 text-emerald-400 print:text-emerald-700" />
                   (37) 99916-5471
-                </a>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <Mail className="h-4 w-4 text-emerald-400" />
-                <a href="mailto:saulooliveiram358@gmail.com" className="hover:text-emerald-400 transition-colors">
+                </span>
+                <span className="flex items-center gap-1">
+                  <Mail className="h-3.5 w-3.5 text-emerald-400 print:text-emerald-700" />
                   saulooliveiram358@gmail.com
-                </a>
+                </span>
+                <span className="flex items-center gap-1">
+                  <MapPin className="h-3.5 w-3.5 text-emerald-400 print:text-emerald-700" />
+                  Divinópolis - MG
+                </span>
+                <span className="flex items-center gap-1">
+                  github.com/SauloOliveira358
+                </span>
               </div>
-              <div className="flex items-center gap-1.5">
-                <MapPin className="h-4 w-4 text-emerald-400" />
-                <span>Divinópolis - MG</span>
+            </div>
+
+            {/* Candidate Photo */}
+            <div className="shrink-0">
+              <div className="h-20 w-18 sm:h-24 sm:w-20 rounded-xl overflow-hidden border-2 border-emerald-500/50 print:border-slate-400 shadow-md">
+                <img
+                  src="/profile.jpg"
+                  alt="Saulo Oliveira Moreira"
+                  className="h-full w-full object-cover object-center"
+                />
               </div>
             </div>
           </div>
 
           {/* Objetivo */}
-          <div>
-            <h2 className="text-xs font-bold uppercase tracking-wider text-emerald-400 mb-2">Objetivo</h2>
-            <p className="text-sm sm:text-base leading-relaxed text-slate-300">
-              Busco atuar nas áreas de <strong>Análise de Sistemas, Programação e Análise de Dados</strong>, onde possa aplicar e expandir meus conhecimentos em tecnologia. Forte interesse e experiência em contribuir com levantamento de requisitos, desenvolvimento e sustentação de soluções de software e análise aprofundada de dados relacionais, visando otimização de processos, melhoria contínua da eficiência operacional e apoio estratégico à tomada de decisão.
+          <div className="space-y-1">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-emerald-400 print:text-emerald-800">
+              Objetivo
+            </h2>
+            <p className="text-xs sm:text-sm leading-relaxed text-slate-300 print:text-slate-700">
+              Atuação nas áreas de <strong>Análise de Sistemas, Programação e Análise de Dados</strong>. Experiência consolidada em levantamento de requisitos operacionais, desenvolvimento de soluções de software e integração de dados relacionais para otimização de processos e eficiência corporativa.
             </p>
           </div>
 
           {/* Experiências Profissionais */}
-          <div>
-            <h2 className="text-xs font-bold uppercase tracking-wider text-emerald-400 mb-4">Experiências Profissionais</h2>
+          <div className="space-y-3">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-emerald-400 print:text-emerald-800">
+              Experiências Profissionais
+            </h2>
             
-            <div className="space-y-6">
+            <div className="space-y-3.5">
               {/* FIND SOLUÇÕES */}
-              <div className="relative pl-6 border-l-2 border-emerald-500/60">
-                <div className="absolute -left-[9px] top-1 h-4 w-4 rounded-full bg-slate-900 border-2 border-emerald-400" />
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
-                  <h3 className="text-base font-bold text-white">FIND SOLUÇÕES</h3>
-                  <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 w-fit">
+              <div className="border-l-2 border-emerald-500/60 pl-3.5 print:border-emerald-600">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-bold text-white print:text-slate-900">FIND SOLUÇÕES</h3>
+                  <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 print:bg-slate-100 print:text-slate-800 print:border-slate-300">
                     Agosto de 2025 — Atual
                   </span>
                 </div>
-                <p className="text-sm font-medium text-slate-300 mt-0.5">Analista de Sistemas</p>
-                <ul className="mt-2.5 space-y-2 text-sm text-slate-400 list-disc list-inside">
-                  <li>Atuação direta como Analista de Sistemas, conduzindo levantamento minucioso de requisitos de negócio para implementação e melhorias contínuas em sistemas corporativos.</li>
-                  <li>Garantia do alinhamento preciso entre as necessidades estratégicas do negócio e as soluções tecnológicas desenvolvidas.</li>
-                  <li>Responsável por conduzir treinamentos técnicos e operacionais, prestando suporte de missão crítica aos usuários finais.</li>
-                  <li>Assegurar a correta usabilidade dos sistemas, atuando ativamente na redução de gargalos e aumento da eficiência operacional.</li>
+                <p className="text-xs font-semibold text-emerald-400 print:text-emerald-700">Analista de Sistemas</p>
+                <ul className="mt-1 space-y-0.5 text-xs text-slate-300 print:text-slate-700 list-disc list-inside">
+                  <li>Levantamento minucioso de requisitos de negócio para novas funcionalidades e sustentação de sistemas.</li>
+                  <li>Alinhamento direto entre os objetivos do cliente/negócio e a arquitetura técnica de engenharia.</li>
+                  <li>Condução de treinamentos operacionais e suporte de missão crítica aos usuários para aumento de eficiência.</li>
                 </ul>
               </div>
 
               {/* Ferlig Ferro Liga Ltda */}
-              <div className="relative pl-6 border-l-2 border-slate-700">
-                <div className="absolute -left-[9px] top-1 h-4 w-4 rounded-full bg-slate-900 border-2 border-slate-600" />
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
-                  <h3 className="text-base font-bold text-white">Ferlig Ferro Liga Ltda</h3>
-                  <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-400 w-fit">
+              <div className="border-l-2 border-slate-700 pl-3.5 print:border-slate-400">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-bold text-white print:text-slate-900">Ferlig Ferro Liga Ltda</h3>
+                  <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400 print:bg-slate-100 print:text-slate-800 print:border-slate-300">
                     Dezembro de 2022 — Agosto de 2025
                   </span>
                 </div>
-                <p className="text-sm font-medium text-slate-300 mt-0.5">Eletricista com atuação em Informática & TI</p>
-                <ul className="mt-2.5 space-y-2 text-sm text-slate-400 list-disc list-inside">
-                  <li>Atuação em manutenção elétrica industrial, residencial e comercial, reparos e inspeções com foco em conformidade e segurança.</li>
-                  <li>Aplicação de conhecimentos em informática e tecnologia da informação, atuando em suporte técnico, configuração de equipamentos e soluções de infraestrutura básica de redes.</li>
-                  <li>Integração de habilidades técnicas e lógicas, contribuindo com precisão técnica em projetos que uniram eletricidade, instrumentação e TI.</li>
+                <p className="text-xs font-semibold text-slate-300 print:text-slate-700">Eletricista com atuação em Informática & TI</p>
+                <ul className="mt-1 space-y-0.5 text-xs text-slate-300 print:text-slate-700 list-disc list-inside">
+                  <li>Manutenção elétrica predial e industrial com conformidade técnica e segurança operacional.</li>
+                  <li>Suporte técnico a microinformática, reparo de computadores e configuração de infraestrutura básica de rede.</li>
+                  <li>Integração de raciocínio lógico e eletricidade para diagnósticos rápidos de falhas e conectividade.</li>
                 </ul>
               </div>
             </div>
           </div>
 
           {/* Formação Acadêmica */}
-          <div>
-            <h2 className="text-xs font-bold uppercase tracking-wider text-emerald-400 mb-3">Formação Acadêmica</h2>
-            <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
-                <div>
-                  <h3 className="text-base font-bold text-white">Sistemas de Informação</h3>
-                  <p className="text-sm text-slate-400">Faculdade Anhanguera de Divinópolis</p>
-                </div>
-                <span className="text-xs font-semibold px-2.5 py-1 rounded bg-slate-800 text-emerald-400 border border-slate-700 w-fit">
-                  6º Período (Previsão de Formatura: Dezembro/2026)
-                </span>
+          <div className="space-y-1">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-emerald-400 print:text-emerald-800">
+              Formação Acadêmica
+            </h2>
+            <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-2.5 print:border-slate-300 print:bg-slate-50 flex items-center justify-between">
+              <div>
+                <h3 className="text-xs sm:text-sm font-bold text-white print:text-slate-900">Sistemas de Informação (Bacharelado)</h3>
+                <p className="text-xs text-slate-400 print:text-slate-600">Faculdade Anhanguera de Divinópolis</p>
               </div>
+              <span className="text-xs font-semibold font-mono text-emerald-400 print:text-emerald-700">
+                8º Período (Previsão: Dezembro/2026)
+              </span>
             </div>
           </div>
 
           {/* Competências */}
-          <div>
-            <h2 className="text-xs font-bold uppercase tracking-wider text-emerald-400 mb-3">Competências & Habilidades Técnicas</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-              <div className="flex items-start gap-2">
-                <CheckCircle2 className="h-4 w-4 text-emerald-400 mt-0.5 shrink-0" />
-                <span><strong>Análise de Requisitos:</strong> Levantamento, validação e especificação funcional de sistemas</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <CheckCircle2 className="h-4 w-4 text-emerald-400 mt-0.5 shrink-0" />
-                <span><strong>Programação:</strong> Python e Java (lógica, estruturas de dados, POO e desenvolvimento)</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <CheckCircle2 className="h-4 w-4 text-emerald-400 mt-0.5 shrink-0" />
-                <span><strong>Banco de Dados:</strong> MySQL (consultas, manipulação de dados, modelagem e integridade relacional)</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <CheckCircle2 className="h-4 w-4 text-emerald-400 mt-0.5 shrink-0" />
-                <span><strong>Infraestrutura & Redes:</strong> Fundamentos de redes de computadores, TCP/IP e TI</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <CheckCircle2 className="h-4 w-4 text-emerald-400 mt-0.5 shrink-0" />
-                <span><strong>Suporte & Treinamentos:</strong> Condução de capacitação de usuários e suporte técnico em sistemas</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <CheckCircle2 className="h-4 w-4 text-emerald-400 mt-0.5 shrink-0" />
-                <span><strong>Comunicação & Gestão:</strong> Trabalho em equipe, organização multitarefas e proatividade</span>
-              </div>
+          <div className="space-y-1.5">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-emerald-400 print:text-emerald-800">
+              Competências Técnicas
+            </h2>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs print:text-slate-700">
+              <div><strong>Análise de Sistemas:</strong> Requisitos, UML, BPMN, Suporte N3</div>
+              <div><strong>Bancos de Dados:</strong> MySQL, PostgreSQL, PLpgSQL, Triggers</div>
+              <div><strong>Programação:</strong> Python (Flask/Scripts), Java (Spring/POO/JDBC)</div>
+              <div><strong>Infraestrutura:</strong> Redes de Computadores, TCP/IP, Hardware</div>
+              <div><strong>Web:</strong> React, JavaScript, HTML5/CSS3, Tailwind CSS</div>
+              <div><strong>Idiomas:</strong> Inglês Básico (leitura de documentação técnica)</div>
             </div>
-          </div>
-
-          {/* Idiomas */}
-          <div>
-            <h2 className="text-xs font-bold uppercase tracking-wider text-emerald-400 mb-2">Idiomas</h2>
-            <p className="text-sm text-slate-300">Inglês — Básico (leitura técnica e documentação)</p>
           </div>
         </div>
 
-        {/* Modal Footer */}
-        <div className="border-t border-slate-800 bg-slate-900/90 px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-xs text-slate-400">Disponível para oportunidades presenciais e remotas.</p>
-          <div className="flex items-center gap-3 w-full sm:w-auto">
+        {/* Modal Footer (Hidden on Print) */}
+        <div className="border-t border-slate-800 bg-slate-900/95 px-6 py-3.5 flex flex-col sm:flex-row items-center justify-between gap-3 no-print">
+          <p className="text-xs text-slate-400">Currículo atualizado com atuação na FIND Soluções e 8º período.</p>
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <button
+              onClick={handlePrint}
+              className="flex-1 sm:flex-initial rounded-lg border border-slate-700 bg-slate-800 px-3.5 py-1.5 text-xs font-semibold text-slate-200 hover:bg-slate-700 transition-colors"
+            >
+              Imprimir
+            </button>
             <a
               href="https://wa.me/5537999165471?text=Ol%C3%A1%20Saulo,%20analisei%20seu%20curr%C3%ADculo%20e%20gostaria%20de%20agendar%20uma%20conversa!"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 sm:flex-initial text-center rounded-lg bg-emerald-500 px-4 py-2 text-xs font-bold text-slate-950 hover:bg-emerald-400 transition-colors shadow-lg shadow-emerald-500/20"
+              className="flex-1 sm:flex-initial text-center rounded-lg bg-emerald-500 px-4 py-1.5 text-xs font-bold text-slate-950 hover:bg-emerald-400 transition-colors"
             >
-              Contatar no WhatsApp
+              Falar no WhatsApp
             </a>
             <button
               onClick={onClose}
-              className="rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-xs font-medium text-slate-300 hover:bg-slate-700 transition-colors"
+              className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-white transition-colors"
             >
               Fechar
             </button>

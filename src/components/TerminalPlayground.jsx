@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Terminal, Send, Play, Sparkles, Check, Copy } from 'lucide-react';
-import confetti from 'canvas-confetti';
+import { Terminal, Play, Sparkles, Check, Copy } from 'lucide-react';
+import { fireEpicConfetti } from '../utils/confetti';
 
 export default function TerminalPlayground({ onOpenResume, onOpenContact }) {
   const [history, setHistory] = useState([
@@ -14,14 +14,17 @@ export default function TerminalPlayground({ onOpenResume, onOpenContact }) {
     },
     {
       type: 'output',
-      text: 'Saulo Oliveira Moreira | Analista de Sistemas @ FIND Soluções & Dev Python/Java/MySQL.',
+      text: 'Saulo Oliveira Moreira | Analista de Sistemas @ FIND Soluções & 8º Período de Sistemas de Informação.',
     },
   ]);
   const [inputVal, setInputVal] = useState('');
-  const bottomRef = useRef(null);
+  const terminalBodyRef = useRef(null);
 
+  // Auto-scroll ONLY within the terminal container, NOT the browser window!
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (terminalBodyRef.current) {
+      terminalBodyRef.current.scrollTop = terminalBodyRef.current.scrollHeight;
+    }
   }, [history]);
 
   const runCommand = (cmdStr) => {
@@ -36,15 +39,15 @@ export default function TerminalPlayground({ onOpenResume, onOpenContact }) {
         newItems.push({
           type: 'output',
           text: `Comandos disponíveis:
-  • about       - Resumo profissional e formação
+  • about       - Resumo profissional e formação (8º período)
   • skills      - Habilidades técnicas e competências
-  • sql         - Executar query de simulação no MySQL
+  • sql         - Executar query de simulação no MySQL/Postgres
   • experience  - Histórico na FIND Soluções & Ferlig
-  • projects    - Principais projetos e repositórios
+  • projects    - Principais projetos (MedFlow, Bela Busca, Salpay, etc.)
   • whatsapp    - Iniciar conversa direta no WhatsApp (+55 37 99916-5471)
-  • cv          - Ver currículo profissional completo
+  • cv          - Ver currículo profissional completo com foto
   • clear       - Limpar o terminal
-  • confetti    - Celebrar e disparar confetes! 🎉`,
+  • confetti    - Celebrar e disparar confetes no site inteiro! 🎉`,
         });
         break;
 
@@ -54,7 +57,7 @@ export default function TerminalPlayground({ onOpenResume, onOpenContact }) {
           text: `Saulo Oliveira Moreira
 ----------------------------------------
 Cargo: Analista de Sistemas na FIND SOLUÇÕES
-Formação: Sistemas de Informação (6º Período - Formatura 12/2026)
+Formação: Sistemas de Informação (8º Período - Conclusão em 2026)
 Instituição: Faculdade Anhanguera de Divinópolis
 Foco: Análise de Requisitos, Eficiência Operacional, Integração de Dados & Código Limpo.`,
         });
@@ -64,11 +67,11 @@ Foco: Análise de Requisitos, Eficiência Operacional, Integração de Dados & C
         newItems.push({
           type: 'output',
           text: `[STACK TÉCNICA PRINCIPAL]:
-  ✓ Linguagens: Python (Automação, Scripts, FastAPI), Java (POO, MVC, JPA), JavaScript, TypeScript
-  ✓ Banco de Dados: MySQL (Modelagem relacional, consultas avançadas, integridade, stored procedures)
-  ✓ Análise de Sistemas: Levantamento de requisitos, diagramas UML, modelagem de processos, suporte e treinamento
-  ✓ Infraestrutura: Redes de computadores, TCP/IP, cabeamento, manutenção elétrica e hardware
-  ✓ Frontend: React, Vue.js, Tailwind CSS, Vite`,
+  ✓ Linguagens: Python (Flask, Automação), Java (Spring Boot, POO, JDBC), JavaScript/TypeScript
+  ✓ Bancos de Dados: MySQL & PostgreSQL (Modelagem relacional, PLpgSQL, Joins, Triggers, ACID)
+  ✓ Análise de Sistemas: Levantamento minucioso de requisitos, diagramas UML, BPMN, suporte & treinamentos
+  ✓ Infraestrutura: Redes de computadores, TCP/IP, cabeamento, hardware e segurança
+  ✓ Frontend: React, Tailwind CSS, Vite, HTML5 Canvas`,
         });
         break;
 
@@ -81,9 +84,9 @@ Foco: Análise de Requisitos, Eficiência Operacional, Integração de Dados & C
 | skill                     | level       | area                |
 +---------------------------+-------------+---------------------+
 | Levantamento de Requisitos| Senior      | Análise de Sistemas |
-| Python & Automação        | Avançado    | Backend / Dados     |
-| MySQL & Modelagem         | Avançado    | Banco de Dados      |
-| Java (POO & Lógica)       | Sólido      | Backend             |
+| Python (Flask & Scripts)  | Avançado    | Backend / Dados     |
+| MySQL & PostgreSQL        | Avançado    | Banco de Dados      |
+| Java & Spring Boot        | Sólido      | Backend / POO       |
 | Suporte & Treinamentos    | Especialista| Operações / Usuários|
 | Redes & Infraestrutura    | Sólido      | Infra & Hardware    |
 +---------------------------+-------------+---------------------+
@@ -110,11 +113,13 @@ Foco: Análise de Requisitos, Eficiência Operacional, Integração de Dados & C
         newItems.push({
           type: 'output',
           text: `GitHub: https://github.com/SauloOliveira358
-Repositórios e projetos em destaque na seção de Projetos abaixo:
-1. Requisitos & ERP Ops System (FIND Soluções Architecture)
-2. Python Data Integrator & SQL Pipeline
-3. Java Core Enterprise Suite (POO & JDBC)
-4. Infra & Network Connectivity Monitor`,
+Repositórios oficiais:
+  1. Bela Busca (ElaServices) - Plataforma de serviços profissionais
+  2. MedFlow - Sistema médico com controle estrito de concorrência
+  3. Dashboard Comercial Aurora - Flask, Python, Postgres & Chart.js
+  4. Projeto Vendas - PLpgSQL avançado, triggers e modelagem
+  5. Salpay - Gestão de gastos e finanças pessoais/empresariais em Java
+  6. Indiana Jones - Jogo 2D retrô com física em JavaScript puro`,
         });
         break;
 
@@ -129,20 +134,16 @@ Repositórios e projetos em destaque na seção de Projetos abaixo:
       case 'cv':
         newItems.push({
           type: 'output',
-          text: 'Abrindo visualizador de Currículo...',
+          text: 'Abrindo visualizador de Currículo com foto...',
         });
         if (onOpenResume) onOpenResume();
         break;
 
       case 'confetti':
-        confetti({
-          particleCount: 100,
-          spread: 70,
-          origin: { y: 0.6 }
-        });
+        fireEpicConfetti();
         newItems.push({
           type: 'output',
-          text: '🎉 Sucesso! Parabéns pelo bom gosto ao visitar o portfólio de Saulo!',
+          text: '🎉 Sucesso! Efeito épico de confetes disparado pelo site inteiro!',
         });
         break;
 
@@ -166,11 +167,12 @@ Repositórios e projetos em destaque na seção de Projetos abaixo:
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
+      e.preventDefault();
       runCommand();
     }
   };
 
-  const quickCommands = ['help', 'sql', 'skills', 'about', 'confetti'];
+  const quickCommands = ['help', 'sql', 'skills', 'projects', 'confetti'];
 
   return (
     <div className="relative overflow-hidden rounded-2xl border border-slate-800 bg-[#0b0f19] shadow-2xl backdrop-blur-xl">
@@ -201,8 +203,11 @@ Repositórios e projetos em destaque na seção de Projetos abaixo:
         </div>
       </div>
 
-      {/* Terminal Body */}
-      <div className="h-80 overflow-y-auto p-4 font-mono text-xs sm:text-sm leading-relaxed text-slate-300 space-y-2 selection:bg-emerald-500 selection:text-slate-950">
+      {/* Terminal Body with strict isolated internal scroll */}
+      <div
+        ref={terminalBodyRef}
+        className="h-80 overflow-y-auto p-4 font-mono text-xs sm:text-sm leading-relaxed text-slate-300 space-y-2 selection:bg-emerald-500 selection:text-slate-950 scroll-smooth"
+      >
         {history.map((item, idx) => (
           <div key={idx} className="break-words">
             {item.type === 'system' && (
@@ -215,13 +220,12 @@ Repositórios e projetos em destaque na seção de Projetos abaixo:
               </div>
             )}
             {item.type === 'output' && (
-              <pre className="whitespace-pre-wrap text-slate-400 pl-4 border-l-2 border-slate-800/80 my-1">
+              <pre className="whitespace-pre-wrap text-slate-400 pl-4 border-l-2 border-slate-800/80 my-1 font-mono">
                 {item.text}
               </pre>
             )}
           </div>
         ))}
-        <div ref={bottomRef} />
       </div>
 
       {/* Terminal Input Bar */}
@@ -232,7 +236,7 @@ Repositórios e projetos em destaque na seção de Projetos abaixo:
           value={inputVal}
           onChange={(e) => setInputVal(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Digite um comando (ex: help, sql, skills, confetti)..."
+          placeholder="Digite um comando (ex: help, sql, projects, confetti)..."
           className="flex-1 bg-transparent font-mono text-xs sm:text-sm text-white placeholder-slate-400 outline-none"
         />
         <button
