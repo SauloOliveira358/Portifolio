@@ -45,6 +45,7 @@ export default function ContactSection() {
           
           {/* WhatsApp Direct Card (Destaque Principal) */}
           <SpotlightCard
+            delay={0}
             className="p-6 sm:p-8 border-emerald-500/30 group flex flex-col justify-between"
             spotlightColor="rgba(16, 185, 129, 0.28)"
           >
@@ -96,6 +97,7 @@ export default function ContactSection() {
 
           {/* Email Card */}
           <SpotlightCard
+            delay={120}
             className="p-6 sm:p-8 group flex flex-col justify-between"
             spotlightColor="rgba(56, 189, 248, 0.25)"
           >
@@ -146,6 +148,7 @@ export default function ContactSection() {
 
           {/* LinkedIn Card */}
           <SpotlightCard
+            delay={200}
             className="p-6 group flex flex-col justify-between"
             spotlightColor="rgba(56, 189, 248, 0.2)"
           >
@@ -177,6 +180,7 @@ export default function ContactSection() {
 
           {/* GitHub Card */}
           <SpotlightCard
+            delay={280}
             className="p-6 group flex flex-col justify-between"
             spotlightColor="rgba(168, 85, 247, 0.2)"
           >

@@ -92,6 +92,7 @@ export default function SkillsMatrix() {
             return (
               <SpotlightCard
                 key={idx}
+                delay={idx * 130}
                 className="p-6 sm:p-8"
                 spotlightColor={cat.spotlight}
               >

@@ -25,6 +25,7 @@ export default function BentoGrid({ onOpenResume }) {
           
           {/* Bento Item 1: FIND Soluções (Col-span 2) */}
           <SpotlightCard
+            delay={0}
             className="md:col-span-2 lg:col-span-2 flex flex-col justify-between group"
             spotlightColor="rgba(16, 185, 129, 0.22)"
           >
@@ -77,6 +78,7 @@ export default function BentoGrid({ onOpenResume }) {
 
           {/* Bento Item 2: Formação Acadêmica (Col-span 1 ou 2) */}
           <SpotlightCard
+            delay={100}
             className="md:col-span-1 lg:col-span-2 flex flex-col justify-between"
             spotlightColor="rgba(56, 189, 248, 0.22)"
             borderColor="rgba(56, 189, 248, 0.4)"
@@ -117,6 +119,7 @@ export default function BentoGrid({ onOpenResume }) {
 
           {/* Bento Item 3: Core Tech Stack (Col-span 1 ou 2) */}
           <SpotlightCard
+            delay={180}
             className="md:col-span-1 lg:col-span-2 flex flex-col justify-between"
             spotlightColor="rgba(168, 85, 247, 0.22)"
             borderColor="rgba(168, 85, 247, 0.4)"
@@ -182,6 +185,7 @@ export default function BentoGrid({ onOpenResume }) {
 
           {/* Bento Item 4: Ferlig & Hardware / Redes (Col-span 1 ou 2) */}
           <SpotlightCard
+            delay={260}
             className="md:col-span-2 lg:col-span-2 flex flex-col justify-between"
             spotlightColor="rgba(245, 158, 11, 0.22)"
             borderColor="rgba(245, 158, 11, 0.4)"

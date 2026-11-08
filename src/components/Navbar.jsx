@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import DecryptedText from './DecryptedText';
 import { Terminal, Github, Linkedin, MessageCircle, FileText, Menu, X, ArrowUpRight } from 'lucide-react';
 
 export default function Navbar({ onOpenResume }) {
@@ -43,7 +44,7 @@ export default function Navbar({ onOpenResume }) {
             </div>
             <div className="flex flex-col">
               <span className="font-bold text-white text-sm tracking-tight">
-                Saulo Oliveira Moreira
+                <DecryptedText text="Saulo Oliveira Moreira" speed={28} />
               </span>
               <span className="text-[11px] text-emerald-400 font-mono">Analista de Sistemas & Desenvolvedor</span>
             </div>

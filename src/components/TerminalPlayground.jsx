@@ -19,6 +19,28 @@ export default function TerminalPlayground({ onOpenResume, onOpenContact }) {
   ]);
   const [inputVal, setInputVal] = useState('');
   const terminalBodyRef = useRef(null);
+  const terminalRef = useRef(null);
+  const [isHoloActive, setIsHoloActive] = useState(false);
+
+  useEffect(() => {
+    const el = terminalRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsHoloActive(true);
+          setTimeout(() => setIsHoloActive(false), 950);
+        } else if (entry.boundingClientRect.top > window.innerHeight * 0.98) {
+          setIsHoloActive(false);
+        }
+      },
+      { threshold: 0.15 }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   // Auto-scroll ONLY within the terminal container, NOT the browser window!
   useEffect(() => {
@@ -175,7 +197,37 @@ Repositórios oficiais:
   const quickCommands = ['help', 'sql', 'skills', 'projects', 'confetti'];
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-slate-800 bg-[#0b0f19] shadow-2xl backdrop-blur-xl">
+    <div
+      ref={terminalRef}
+      className={`relative overflow-hidden rounded-2xl border bg-[#0b0f19] shadow-2xl backdrop-blur-xl transition-all duration-500 ${
+        isHoloActive ? 'holo-card-glow border-cyan-400/50' : 'border-slate-800'
+      }`}
+    >
+      {/* Feixe de escaneamento holográfico ao descer a tela */}
+      {isHoloActive && (
+        <div
+          className="pointer-events-none absolute inset-x-0 h-32 bg-gradient-to-b from-transparent via-cyan-400/25 to-transparent animate-holo-scanline z-30"
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Grade de varredura holográfica */}
+      <div
+        className={`pointer-events-none absolute inset-0 z-20 bg-[linear-gradient(rgba(6,182,212,0.05)_1px,transparent_1px)] bg-[size:100%_4px] transition-opacity duration-700 ${
+          isHoloActive ? 'opacity-100' : 'opacity-0'
+        }`}
+        aria-hidden="true"
+      />
+
+      {/* Cantoneiras HUD Sci-Fi */}
+      {isHoloActive && (
+        <>
+          <span className="absolute top-2 left-2 h-3 w-3 border-t-2 border-l-2 border-cyan-400/90 pointer-events-none z-30" />
+          <span className="absolute top-2 right-2 h-3 w-3 border-t-2 border-r-2 border-cyan-400/90 pointer-events-none z-30" />
+          <span className="absolute bottom-2 left-2 h-3 w-3 border-b-2 border-l-2 border-cyan-400/90 pointer-events-none z-30" />
+          <span className="absolute bottom-2 right-2 h-3 w-3 border-b-2 border-r-2 border-cyan-400/90 pointer-events-none z-30" />
+        </>
+      )}
       {/* Terminal Titlebar */}
       <div className="flex items-center justify-between border-b border-slate-800 bg-slate-900/80 px-4 py-3">
         <div className="flex items-center space-x-2">

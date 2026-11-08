@@ -12,6 +12,7 @@ import Footer from './components/Footer';
 import FloatingWhatsApp from './components/FloatingWhatsApp';
 import ResumeModal from './components/ResumeModal';
 import CometCursor from './components/CometCursor';
+import ScrollReveal from './components/ScrollReveal';
 import { Terminal as TerminalIcon, Sparkles } from 'lucide-react';
 
 export default function App() {
@@ -61,66 +62,82 @@ export default function App() {
           <main className="relative z-10">
             {/* 1. Hero Section */}
             <div className={getFlyClass('hero')}>
-              <HeroSection onOpenResume={() => setResumeOpen(true)} />
+              <ScrollReveal animation="fade-up" duration={700}>
+                <HeroSection onOpenResume={() => setResumeOpen(true)} />
+              </ScrollReveal>
             </div>
 
             {/* 2. Bento Grid Section */}
             <div className={getFlyClass('bento')}>
-              <BentoGrid onOpenResume={() => setResumeOpen(true)} />
+              <ScrollReveal animation="slide-left" duration={950}>
+                <BentoGrid onOpenResume={() => setResumeOpen(true)} />
+              </ScrollReveal>
             </div>
 
             {/* 3. Interactive Terminal Playground */}
             <div className={getFlyClass('terminal')}>
-              <section id="terminal" className="py-16 px-4 sm:px-6 relative">
-                <div className="mx-auto max-w-5xl">
-                  <div className="text-center max-w-2xl mx-auto mb-10">
-                    <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-mono text-emerald-400 border border-emerald-500/20 mb-3">
-                      <TerminalIcon className="h-3.5 w-3.5" />
-                      <span>TERMINAL CLI INTERATIVO</span>
+              <ScrollReveal animation="tilt-3d" duration={1000}>
+                <section id="terminal" className="py-16 px-4 sm:px-6 relative">
+                  <div className="mx-auto max-w-5xl">
+                    <div className="text-center max-w-2xl mx-auto mb-10">
+                      <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-mono text-emerald-400 border border-emerald-500/20 mb-3">
+                        <TerminalIcon className="h-3.5 w-3.5" />
+                        <span>TERMINAL CLI INTERATIVO</span>
+                      </div>
+                      <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+                        Experimente o Console de Desenvolvedor
+                      </h2>
+                      <p className="mt-2 text-sm sm:text-base text-slate-400">
+                        Execute comandos em tempo real, consulte o schema SQL simulado, explore as habilidades ou lance confetes.
+                      </p>
                     </div>
-                    <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-                      Experimente o Console de Desenvolvedor
-                    </h2>
-                    <p className="mt-2 text-sm sm:text-base text-slate-400">
-                      Execute comandos em tempo real, consulte o schema SQL simulado, explore as habilidades ou lance confetes.
-                    </p>
-                  </div>
 
-                  <TerminalPlayground
-                    onOpenResume={() => setResumeOpen(true)}
-                    onOpenContact={() => {
-                      const el = document.getElementById('contato');
-                      el?.scrollIntoView({ behavior: 'smooth' });
-                    }}
-                  />
-                </div>
-              </section>
+                    <TerminalPlayground
+                      onOpenResume={() => setResumeOpen(true)}
+                      onOpenContact={() => {
+                        const el = document.getElementById('contato');
+                        el?.scrollIntoView({ behavior: 'smooth' });
+                      }}
+                    />
+                  </div>
+                </section>
+              </ScrollReveal>
             </div>
 
             {/* 4. Projects Showcase */}
             <div className={getFlyClass('projects')}>
-              <ProjectsSection />
+              <ScrollReveal animation="slide-right" duration={950}>
+                <ProjectsSection />
+              </ScrollReveal>
             </div>
 
             {/* 5. Career & Education Timeline */}
             <div className={getFlyClass('experience')}>
-              <ExperienceTimeline onOpenResume={() => setResumeOpen(true)} />
+              <ScrollReveal animation="gravitational-rise" duration={1000}>
+                <ExperienceTimeline onOpenResume={() => setResumeOpen(true)} />
+              </ScrollReveal>
             </div>
 
             {/* 6. Technical Skills Matrix */}
             <div className={getFlyClass('skills')}>
-              <SkillsMatrix />
+              <ScrollReveal animation="zoom-in" duration={900}>
+                <SkillsMatrix />
+              </ScrollReveal>
             </div>
 
             {/* 7. Contact Section */}
             <div className={getFlyClass('contact')}>
-              <ContactSection />
+              <ScrollReveal animation="quantum-flip" duration={1000}>
+                <ContactSection />
+              </ScrollReveal>
             </div>
           </main>
 
           {/* Footer */}
           <div className={getFlyClass('footer')}>
-            <Footer />
+            <ScrollReveal animation="fade-up" duration={800}>
+              <Footer />
+            </ScrollReveal>
           </div>
         </div>
       )}

@@ -99,6 +99,7 @@ export default function ExperienceTimeline({ onOpenResume }) {
 
               {/* Card Container */}
               <SpotlightCard
+                delay={idx * 140}
                 className={`p-6 sm:p-8 ${exp.current ? 'border-emerald-500/40 bg-slate-900/80' : ''}`}
                 spotlightColor={exp.current ? 'rgba(16, 185, 129, 0.2)' : 'rgba(56, 189, 248, 0.15)'}
               >

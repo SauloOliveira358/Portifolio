@@ -33,10 +33,8 @@ export default function HeroSection({ onOpenResume }) {
               <span className="block text-slate-400 text-sm sm:text-lg font-mono font-medium">
                 Olá, seja muito bem-vindo! Eu sou
               </span>
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-white leading-tight">
-                <span className="text-gradient-emerald">
-                  Saulo Oliveira Moreira
-                </span>
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-white leading-tight min-h-[1.2em]">
+                <DecryptedText text="Saulo Oliveira Moreira" />
               </h1>
               <p className="text-base sm:text-xl text-slate-300 font-normal leading-relaxed pt-2">
                 Especialista em unir <span className="text-white font-semibold">regras de negócio</span> com <span className="text-emerald-400 font-medium">engenharia de software e análise de dados</span>. Experiência sólida em levantamento de requisitos, arquitetura em Python, Java, MySQL e resolução de problemas operacionais críticos.
