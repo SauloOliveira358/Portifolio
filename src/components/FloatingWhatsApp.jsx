@@ -141,6 +141,35 @@ export const PLANET_DIALOGS = {
       },
     ],
   },
+  blackhole: {
+    id: 'blackhole',
+    name: 'Buraco Negro',
+    subtitle: 'Resolução de Problemas / Inovação',
+    emoji: '🕳️',
+    badgeColor: 'border-violet-500/40 bg-violet-500/10 text-violet-300',
+    botMessage: 'Alerta de anomalia gravitacional! 🕳️ Você atingiu o Horizonte de Eventos. A pressão aqui é extrema. Este é o setor de Pesquisa, Inovação e Solução de Problemas Complexos. É para cá que o Saulo puxa os desafios mais densos: arquitetura em nuvem (AWS), integrações difíceis e segurança avançada. Quer ver como ele resolve problemas dos quais a maioria dos devs tenta fugir?',
+    options: [
+      {
+        id: 'concorrencia_critica',
+        label: 'Prevenção de Falhas Críticas & Concorrência',
+        reply: 'No MedFlow, o Saulo solucionou o desafio crítico de agendamento concorrente simultâneo (Race Condition e Double Booking) no Spring Boot com PostgreSQL, garantindo integridade transacional mesmo sob alto volume.',
+        github: 'https://github.com/SauloOliveira358/MedFlow',
+        githubLabel: 'Ver Solução de Concorrência no MedFlow',
+      },
+      {
+        id: 'cloud_seguranca',
+        label: 'Arquitetura em Nuvem (AWS) & Segurança',
+        reply: 'Estruturação de servidores Linux seguros, conteinerização com Docker, noções de redes/firewall e infraestrutura em nuvem AWS, transformando desafios complexos em soluções sólidas e auditáveis.',
+        github: 'https://github.com/SauloOliveira358',
+        githubLabel: 'Ver Repositórios & Arquitetura no GitHub',
+      },
+      {
+        id: 'close_blackhole',
+        label: 'Voltar ao Cosmos',
+        isClose: true,
+      },
+    ],
+  },
 };
 
 export default function FloatingWhatsApp({

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { Globe, Sparkles, Trash2, RotateCcw } from 'lucide-react';
+import { Sparkles, Trash2, RotateCcw } from 'lucide-react';
 
 /**
  * Ultra-Realistic Interactive Solar System & Cinema-Grade Gargantua Black Hole (Interestelar)
@@ -545,8 +545,8 @@ export default function InteractiveBackground({
     // - Sem desconexões, sem moiré, com cúpula e arcos contínuos
     // - Shader de fluxo e advecção contínua de plasma sugado em direção à singularidade ("mexendo para o centro")
     const blackHoleGroup = new THREE.Group();
-    blackHoleGroup.visible = false;
-    scene.add(blackHoleGroup);
+    blackHoleGroup.visible = true;
+    cosmosGroup.add(blackHoleGroup);
 
     const gargantuaTex = textureLoader.load('/earth/gargantua.png');
     gargantuaTex.colorSpace = THREE.SRGBColorSpace;
@@ -644,18 +644,26 @@ export default function InteractiveBackground({
     blackHoleGroup.add(gargantuaMesh);
 
     const blackHoleState = {
-      active: false,
-      phase: 'HIDDEN',
+      active: true,
+      phase: 'ORBIT',
+      isSiteCleaned: false,
       clicks: 0,
       timer: 0,
       angle: Math.random() * Math.PI * 2,
       orbitRadius: 55,
       startPos: new THREE.Vector3(),
       targetPos: new THREE.Vector3(),
-      currentScale: 0.01,
+      currentScale: 0.36,
       pulseScale: 1.0,
-      radius: 5.5,
+      radius: 6.8,
     };
+
+    blackHoleGroup.position.set(
+      Math.cos(blackHoleState.angle) * blackHoleState.orbitRadius,
+      4.2 + Math.sin(blackHoleState.angle * 1.6) * 2.8,
+      Math.sin(blackHoleState.angle) * blackHoleState.orbitRadius - 48
+    );
+    blackHoleGroup.scale.setScalar(blackHoleState.currentScale);
 
     // 9. EARTH STATE & DISTANT ORBIT
     let earthAngle = Math.random() * Math.PI * 2;
@@ -680,8 +688,8 @@ export default function InteractiveBackground({
 
     // 10. SCREEN-TO-WORLD UNPROJECT & OBSTACLE DETECTION
     const isSolidComponent = (el) => {
-      // Quando o buraco negro está ativo (modo limpo), NENHUM componente bloqueia!
-      if (blackHoleState.active) return false;
+      // Quando o site está limpo, NENHUM componente bloqueia!
+      if (blackHoleState.isSiteCleaned) return false;
       if (!el) return false;
       if (el.closest('button, a, input, textarea, select, [role="button"]')) return true;
       if (el.closest('.glass-panel, form, pre, [data-spotlight="true"], [role="dialog"], header, nav')) return true;
@@ -838,8 +846,8 @@ export default function InteractiveBackground({
     // TRIGGER TRASH SUCTION:
     // Surge logo ACIMA da lixeira, devagar, e suga tudo como um ralo!
     const triggerSuction = () => {
-      if (blackHoleState.active) return;
-      blackHoleState.active = true;
+      if (blackHoleState.isSiteCleaned) return;
+      blackHoleState.isSiteCleaned = true;
       setBlackHoleActiveUI(true);
       blackHoleGroup.visible = true;
 
@@ -870,7 +878,7 @@ export default function InteractiveBackground({
 
           // Anexa o Buraco Negro ao cosmosGroup para girar junto com o céu!
           blackHoleGroup.position.set(Math.cos(blackHoleState.angle) * 55, 3.5, Math.sin(blackHoleState.angle) * 55 - 45);
-          blackHoleGroup.scale.setScalar(0.22);
+          blackHoleGroup.scale.setScalar(0.36);
           cosmosGroup.attach(blackHoleGroup);
 
           blackHoleState.phase = 'ORBIT';
@@ -884,7 +892,7 @@ export default function InteractiveBackground({
 
     // TRIGGER COLLAPSE & EXPEL SITE BACK OUT (Upon 5 clicks or button)
     const triggerRestore = () => {
-      if (!blackHoleState.active || blackHoleState.phase === 'COLLAPSING') return;
+      if (!blackHoleState.isSiteCleaned || blackHoleState.phase === 'COLLAPSING') return;
       blackHoleState.phase = 'COLLAPSING';
       blackHoleState.timer = 0;
       setHudText('✨ Singularidade colapsada! Cuspindo os componentes de volta...');
@@ -895,12 +903,22 @@ export default function InteractiveBackground({
       if (onStartRestore) onStartRestore();
 
       setTimeout(() => {
-        blackHoleGroup.visible = false;
-        blackHoleState.active = false;
+        blackHoleState.isSiteCleaned = false;
         setBlackHoleActiveUI(false);
         blackHoleState.clicks = 0;
         setBlackHoleClicksUI(0);
-        blackHoleState.phase = 'HIDDEN';
+
+        // Retorna o Buraco Negro para sua órbita normal no cosmosGroup, visível para continuar explorando!
+        blackHoleGroup.visible = true;
+        blackHoleGroup.position.set(
+          Math.cos(blackHoleState.angle) * blackHoleState.orbitRadius,
+          4.2 + Math.sin(blackHoleState.angle * 1.6) * 2.8,
+          Math.sin(blackHoleState.angle) * blackHoleState.orbitRadius - 48
+        );
+        blackHoleGroup.scale.setScalar(0.36);
+        cosmosGroup.attach(blackHoleGroup);
+        blackHoleState.phase = 'ORBIT';
+
         setHudActive(false);
         setHudText('Em órbita distante');
         document.body.style.overflow = '';
@@ -926,6 +944,12 @@ export default function InteractiveBackground({
         earthState.timer = 0;
         earthState.startPos.copy(earthGroup.position);
         setHudText('Afastando Terra de volta à sua órbita...');
+      }
+      if (blackHoleState.phase === 'CLOSE' || blackHoleState.phase === 'APPROACHING') {
+        blackHoleState.phase = 'DEPARTING';
+        blackHoleState.timer = 0;
+        blackHoleState.startPos.copy(blackHoleGroup.position);
+        setHudText('Afastando Buraco Negro de volta à sua órbita profunda...');
       }
     };
     dismissPlanetsRef.current = dismissActivePlanets;
@@ -960,8 +984,8 @@ export default function InteractiveBackground({
 
       const el = document.elementFromPoint(clientX, clientY);
       
-      // Em modo limpo, apenas os botões fixos da UI (Lixeira/Restaurar/Terra) barram o clique
-      if (blackHoleState.active) {
+      // Em modo limpo, apenas os botões fixos da UI (Lixeira/Restaurar) barram o clique
+      if (blackHoleState.isSiteCleaned) {
         if (el && el.closest('button, [role="button"]')) return;
       } else {
         const isButtonOrLink = el && el.closest('button, a, input, textarea, select, [role="button"]');
@@ -971,7 +995,7 @@ export default function InteractiveBackground({
       // 2. Check if clicking on Large Black Hole when CLOSE (Counts towards 5 Clicks to Restore!)
       if (blackHoleState.phase === 'CLOSE' || blackHoleState.phase === 'APPROACHING') {
         const screen = getScreenCoords(blackHoleGroup);
-        if (!screen.isBehind && Math.hypot(clientX - screen.x, clientY - screen.y) <= 240) {
+        if (!screen.isBehind && Math.hypot(clientX - screen.x, clientY - screen.y) <= 290) {
           mouse.isDraggingPlanet = true;
           activeGrabbedTarget = 'blackhole';
           setCursorMode('grabbing');
@@ -1009,28 +1033,33 @@ export default function InteractiveBackground({
       }
 
       // 5. Check if clicking on a DISTANT body embedded in the rotating cosmos!
-      if (blackHoleState.active || !isSolidComponent(el)) {
+      if (blackHoleState.isSiteCleaned || !isSolidComponent(el)) {
         // Distant Black Hole (Embedded in cosmosGroup - summon it!)
-        if (blackHoleState.active && blackHoleState.phase === 'ORBIT') {
+        if (blackHoleState.phase === 'ORBIT') {
           const bhScreen = getScreenCoords(blackHoleGroup);
-          if (!bhScreen.isBehind && Math.hypot(clientX - bhScreen.x, clientY - bhScreen.y) <= 65) {
-            scene.attach(blackHoleGroup);
+          if (!bhScreen.isBehind && Math.hypot(clientX - bhScreen.x, clientY - bhScreen.y) <= 85) {
+            const now = Date.now();
+            if (now - lastPlanetClickTime > 1000) {
+              lastPlanetClickTime = now;
+              scene.attach(blackHoleGroup);
 
-            const avoidList = [];
-            if (earthState.current === 'APPROACHING' || earthState.current === 'CLOSE') {
-              avoidList.push(earthGroup.position);
-            }
-            for (const other of activePlanets) {
-              if (other.state === 'APPROACHING' || other.state === 'CLOSE') {
-                avoidList.push(other.group.position);
+              const avoidList = [];
+              if (earthState.current === 'APPROACHING' || earthState.current === 'CLOSE') {
+                avoidList.push(earthGroup.position);
               }
+              for (const other of activePlanets) {
+                if (other.state === 'APPROACHING' || other.state === 'CLOSE') {
+                  avoidList.push(other.group.position);
+                }
+              }
+              blackHoleState.phase = 'APPROACHING';
+              blackHoleState.timer = 0;
+              blackHoleState.startPos.copy(blackHoleGroup.position);
+              blackHoleState.targetPos.copy(findSafeScreenWorldPosition(avoidList, 5.5));
+              setHudText('🕳️ Buraco Negro Gargantua em aproximação orbital...');
+              setHudActive(true);
+              if (onPlanetClick) onPlanetClick('blackhole');
             }
-            blackHoleState.phase = 'APPROACHING';
-            blackHoleState.timer = 0;
-            blackHoleState.startPos.copy(blackHoleGroup.position);
-            blackHoleState.targetPos.copy(findSafeScreenWorldPosition(avoidList, 5.5));
-            setHudText('🕳️ Buraco Negro Gargantua em aproximação orbital...');
-            setHudActive(true);
             return;
           }
         }
@@ -1147,9 +1176,11 @@ export default function InteractiveBackground({
       // 1. Hover on Close Black Hole
       if (blackHoleState.phase === 'CLOSE' || blackHoleState.phase === 'APPROACHING') {
         const screen = getScreenCoords(blackHoleGroup);
-        if (!screen.isBehind && Math.hypot(clientX - screen.x, clientY - screen.y) <= 240) {
+        if (!screen.isBehind && Math.hypot(clientX - screen.x, clientY - screen.y) <= 290) {
           nextCursor = 'pointer';
-          foundHover = `🕳️ Buraco Negro [${blackHoleState.clicks}/5 cliques para restaurar o site]`;
+          foundHover = blackHoleState.isSiteCleaned
+            ? `🕳️ Buraco Negro [${blackHoleState.clicks}/5 cliques para restaurar o site]`
+            : '🕳️ Buraco Negro Gargantua (Clique e segure para arrastar!)';
         }
       }
 
@@ -1176,10 +1207,10 @@ export default function InteractiveBackground({
       }
 
       // 3. Hover on Distant bodies in open space (embedded in the cosmos!)
-      if (!foundHover && (blackHoleState.active || !isSolidComponent(el))) {
-        if (blackHoleState.active && blackHoleState.phase === 'ORBIT') {
+      if (!foundHover && (blackHoleState.isSiteCleaned || !isSolidComponent(el))) {
+        if (blackHoleState.phase === 'ORBIT') {
           const bhScreen = getScreenCoords(blackHoleGroup);
-          if (!bhScreen.isBehind && Math.hypot(clientX - bhScreen.x, clientY - bhScreen.y) <= 60) {
+          if (!bhScreen.isBehind && Math.hypot(clientX - bhScreen.x, clientY - bhScreen.y) <= 80) {
             nextCursor = 'pointer';
             foundHover = '🕳️ Buraco Negro Gargantua (Clique para aproximar!)';
           }
@@ -1221,7 +1252,7 @@ export default function InteractiveBackground({
       }
 
       // 5 CLIQUES NO BURACO NEGRO GRANDE PARA RESTAURAR O SITE!
-      if (activeGrabbedTarget === 'blackhole' && blackHoleState.phase === 'CLOSE') {
+      if (blackHoleState.isSiteCleaned && activeGrabbedTarget === 'blackhole' && blackHoleState.phase === 'CLOSE') {
         const movedDist = Math.hypot(clientX - mouse.dragStartPos.x, clientY - mouse.dragStartPos.y);
         if (movedDist < 12) {
           blackHoleState.clicks += 1;
@@ -1492,12 +1523,12 @@ export default function InteractiveBackground({
 
         switch (blackHoleState.phase) {
           case 'SPAWNING_SUCTION':
-            // Surge no lado esquerdo acima da lixeira e cresce até ficar grande e imponente (~0.50)!
+            // Surge no lado esquerdo acima da lixeira e cresce até ficar grande e imponente (~0.65)!
             blackHoleState.timer += dt;
             const spawnProgress = Math.min(1, blackHoleState.timer / 1.05);
             // Ease out cubic para uma chegada suave e impactante
             const easeSpawn = 1 - Math.pow(1 - spawnProgress, 3);
-            blackHoleState.currentScale = THREE.MathUtils.lerp(0.04, 0.50, easeSpawn);
+            blackHoleState.currentScale = THREE.MathUtils.lerp(0.04, 0.65, easeSpawn);
             blackHoleGroup.scale.setScalar(blackHoleState.currentScale * blackHoleState.pulseScale);
             break;
 
@@ -1507,7 +1538,7 @@ export default function InteractiveBackground({
             blackHoleGroup.position.z = Math.sin(blackHoleState.angle) * blackHoleState.orbitRadius - 48;
             blackHoleGroup.position.y = 4.2 + Math.sin(blackHoleState.angle * 1.6) * 2.8;
 
-            blackHoleState.currentScale = 0.22;
+            blackHoleState.currentScale = 0.36;
             blackHoleGroup.scale.setScalar(blackHoleState.currentScale);
             break;
 
@@ -1516,20 +1547,24 @@ export default function InteractiveBackground({
             const bhApp = Math.min(1, blackHoleState.timer / 3.0);
             const easeBhApp = bhApp < 0.5 ? 4 * bhApp * bhApp * bhApp : 1 - Math.pow(-2 * bhApp + 2, 3) / 2;
 
-            blackHoleState.currentScale = THREE.MathUtils.lerp(0.22, 1.15, easeBhApp);
+            blackHoleState.currentScale = THREE.MathUtils.lerp(0.36, 1.55, easeBhApp);
             blackHoleGroup.scale.setScalar(blackHoleState.currentScale * blackHoleState.pulseScale);
             blackHoleGroup.position.lerpVectors(blackHoleState.startPos, blackHoleState.targetPos, easeBhApp);
 
             if (bhApp >= 1) {
               blackHoleState.phase = 'CLOSE';
               blackHoleState.timer = 0;
-              setHudText(`🕳️ Buraco Negro Gigante (Fica 10s! Clique 5 vezes nele para restaurar o site)`);
+              setHudText(
+                blackHoleState.isSiteCleaned
+                  ? '🕳️ Buraco Negro Gigante (Fica 10s! Clique 5 vezes nele para restaurar o site)'
+                  : '🕳️ Buraco Negro Gargantua (Horizonte de Eventos)'
+              );
             }
             break;
 
           case 'CLOSE':
             blackHoleState.timer += dt;
-            blackHoleState.currentScale = 1.15;
+            blackHoleState.currentScale = 1.55;
             blackHoleGroup.scale.setScalar(blackHoleState.currentScale * blackHoleState.pulseScale);
 
             if (!mouse.isDraggingPlanet || activeGrabbedTarget !== 'blackhole') {
@@ -1558,7 +1593,7 @@ export default function InteractiveBackground({
               Math.sin(blackHoleState.angle) * blackHoleState.orbitRadius - 48
             );
 
-            blackHoleState.currentScale = THREE.MathUtils.lerp(1.15, 0.22, easeBhDep);
+            blackHoleState.currentScale = THREE.MathUtils.lerp(1.55, 0.36, easeBhDep);
             blackHoleGroup.scale.setScalar(blackHoleState.currentScale);
             blackHoleGroup.position.lerpVectors(blackHoleState.startPos, bhOrbitReturn, easeBhDep);
 
@@ -1577,7 +1612,7 @@ export default function InteractiveBackground({
             blackHoleState.timer += dt;
             const colP = Math.min(1, blackHoleState.timer / 0.7);
             const easeCol = Math.pow(colP, 2);
-            blackHoleState.currentScale = THREE.MathUtils.lerp(1.15, 0.001, easeCol);
+            blackHoleState.currentScale = THREE.MathUtils.lerp(1.55, 0.001, easeCol);
             blackHoleGroup.scale.setScalar(blackHoleState.currentScale);
             break;
         }
@@ -1695,76 +1730,27 @@ export default function InteractiveBackground({
         </div>
       )}
 
-      {/* CONTROLES INFERIORES: Aproximar Terra e Lixeira (Botão de girar foi removido!) */}
-      <div className="fixed bottom-6 left-6 z-30 flex flex-wrap items-center gap-2">
-        {/* 1. Earth Orbit Button */}
-        <button
-          onClick={() => {
-            if (triggerEarthRef.current) triggerEarthRef.current();
-            if (onPlanetClick) onPlanetClick('earth');
-          }}
-          className="group flex items-center gap-2 rounded-xl border border-slate-800/80 bg-slate-900/85 px-3.5 py-2 text-xs font-mono text-slate-300 backdrop-blur-md hover:border-emerald-500/50 hover:text-white transition-all shadow-2xl"
-          title="Clique na Terra para aproximá-la ou segure o Scroll do mouse (clique da rodinha) para girar o céu e procurar os planetas!"
-        >
-          <div className="relative flex h-3 w-3 items-center justify-center">
-            {hudActive ? (
-              <>
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-              </>
-            ) : (
-              <span className="h-2 w-2 rounded-full bg-slate-500" />
-            )}
-          </div>
-          <span className="text-[11px] font-medium flex items-center gap-1.5">
-            <Globe className={`h-3.5 w-3.5 ${hudActive ? 'text-emerald-400' : 'text-slate-400'}`} />
-            <span>{hudText}</span>
-          </span>
-          {!hudActive && (
-            <span className="text-[10px] text-emerald-400 hidden sm:inline border-l border-slate-700 pl-2 group-hover:underline">
-              Aproximar Terra
-            </span>
-          )}
-        </button>
-
-        {/* 2. LIXEIRA (Surge logo acima dela, pouco maior, devagar, e suga o site como um ralo!) */}
-        <button
-          onClick={() => triggerSuctionRef.current && triggerSuctionRef.current()}
-          disabled={blackHoleActiveUI}
-          className={`group flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-mono backdrop-blur-md transition-all shadow-2xl ${
-            blackHoleActiveUI
-              ? 'border-violet-500/50 bg-violet-950/80 text-violet-300 cursor-default'
-              : 'border-rose-500/40 bg-slate-900/85 text-rose-300 hover:border-rose-400 hover:bg-rose-950/50 hover:text-white'
-          }`}
-          title={
-            blackHoleActiveUI
-              ? 'Buraco Negro Ativo! Segure o Scroll do mouse para procurá-lo no céu e clique 5 vezes nele quando grande para restaurar o site.'
-              : 'Limpar Site: Buraco Negro surge logo acima da lixeira e suga todos os componentes como um ralo!'
-          }
-        >
-          <Trash2
-            className={`h-3.5 w-3.5 ${
-              blackHoleActiveUI
-                ? 'text-violet-400 animate-spin'
-                : 'text-rose-400 group-hover:scale-110 group-hover:rotate-12 transition-transform'
-            }`}
-          />
-          <span className="text-[11px] font-medium hidden sm:inline">
-            {blackHoleActiveUI ? 'Vazio Ativo' : 'Limpar Site'}
-          </span>
-        </button>
-
-        {/* 3. Restore Button (Shows when Black Hole is active, reveals 5-clicks progress!) */}
-        {blackHoleActiveUI && (
+      {/* CONTROLE INFERIOR ESQUERDO: Apenas a lixeira (quando normal) ou o botão de voltar (quando limpo) */}
+      <div className="fixed bottom-6 left-6 z-30 flex items-center">
+        {!blackHoleActiveUI ? (
+          /* 1. LIXEIRA (Único elemento no canto inferior esquerdo no modo normal) */
+          <button
+            onClick={() => triggerSuctionRef.current && triggerSuctionRef.current()}
+            className="group flex items-center gap-2 rounded-xl border border-rose-500/40 bg-slate-900/85 px-3.5 py-2 text-xs font-mono text-rose-300 backdrop-blur-md hover:border-rose-400 hover:bg-rose-950/50 hover:text-white transition-all shadow-2xl"
+            title="Limpar Site: Buraco Negro surge no lado esquerdo e suga os componentes!"
+          >
+            <Trash2 className="h-3.5 w-3.5 text-rose-400 group-hover:scale-110 group-hover:rotate-12 transition-transform" />
+            <span className="text-[11px] font-medium hidden sm:inline">Limpar Site</span>
+          </button>
+        ) : (
+          /* 2. BOTÃO PARA VOLTAR (Aparece quando o site estiver limpo) */
           <button
             onClick={() => triggerRestoreRef.current && triggerRestoreRef.current()}
-            className="flex items-center gap-2 rounded-xl border border-amber-500/60 bg-amber-950/80 px-3 py-2 text-xs font-mono text-amber-300 backdrop-blur-md hover:bg-amber-900/90 hover:text-white transition-all shadow-2xl animate-pulse"
-            title="Restaurar o site agora ou clique 5 vezes no Buraco Negro grande!"
+            className="group flex items-center gap-2 rounded-xl border border-emerald-500/60 bg-slate-900/95 px-4 py-2 text-xs font-mono text-emerald-300 backdrop-blur-md hover:border-emerald-400 hover:bg-emerald-950/80 hover:text-white transition-all shadow-2xl shadow-emerald-500/25 animate-pulse"
+            title="Voltar ao Site: Restaura todos os componentes do portfólio"
           >
-            <RotateCcw className="h-3.5 w-3.5" />
-            <span className="text-[11px] font-medium">
-              Restaurar Site ({blackHoleClicksUI}/5 cliques)
-            </span>
+            <RotateCcw className="h-3.5 w-3.5 text-emerald-400 group-hover:-rotate-90 transition-transform" />
+            <span className="text-[11px] font-bold">Voltar ao Site</span>
           </button>
         )}
       </div>
