@@ -1,135 +1,1720 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import * as THREE from 'three';
+import { Globe, Sparkles, Trash2, RotateCcw } from 'lucide-react';
 
-export default function InteractiveBackground() {
-  const canvasRef = useRef(null);
+/**
+ * Ultra-Realistic Interactive Solar System & Cinema-Grade Gargantua Black Hole (Interestelar)
+ * - 3D Rotating Cosmos Starfield with 360° Real Constellations
+ * - Planetas e Buraco Negro GRUDADOS no Espaço:
+ *    • Segure o SCROLL DO MOUSE (clique da rodinha / MMB) e mexa para girar o espaço em 3D livremente!
+ *    • Soltou o scroll? O giro para imediatamente!
+ *    • Os planetas, a Terra e o buraco negro giram juntos no céu (você procura eles no cosmos!).
+ * - Buraco Negro Gargantua Autêntico (Idêntico à foto de Interestelar):
+ *    • Horizonte de Eventos preto absoluto que oculta o fundo
+ *    • Anel de fótons branco incandescente
+ *    • Disco de acreção horizontal cortando na frente
+ *    • Arcos de lente gravitacional curvados superior e inferior (formato exato da foto!)
+ *    • Plasma com MOVIMENTO PARA O CENTRO (inward accretion flow contínuo e hipnótico)
+ *    • Surge calmamente logo ACIMA da lixeira, pouco maior que ela
+ *    • Suga todos os componentes como um RALO/FUNIL (espremendo-os para dentro)
+ *    • 5 cliques no Buraco Negro grande colapsam a singularidade e cospem o site de volta para fora!
+ */
+export default function InteractiveBackground({
+  onStartSuction,
+  onCompleteSuction,
+  onStartRestore,
+  onCompleteRestore,
+}) {
+  const containerRef = useRef(null);
+  const [hudText, setHudText] = useState('Em órbita distante');
+  const [hudActive, setHudActive] = useState(false);
+  const [hoveredTarget, setHoveredTarget] = useState(null);
+  const [cursorMode, setCursorMode] = useState('default');
+  const [blackHoleActiveUI, setBlackHoleActiveUI] = useState(false);
+  const [blackHoleClicksUI, setBlackHoleClicksUI] = useState(0);
+  const [isRotatingSpaceUI, setIsRotatingSpaceUI] = useState(false);
+
+  const triggerEarthRef = useRef(null);
+  const triggerSuctionRef = useRef(null);
+  const triggerRestoreRef = useRef(null);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    let animationFrameId;
-    let width = (canvas.width = window.innerWidth);
-    let height = (canvas.height = window.innerHeight);
+    const container = containerRef.current;
+    if (!container) return;
 
-    const handleResize = () => {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+
+    // 1. Scene, Camera, Renderer
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 2500);
+    camera.position.z = 24;
+
+    const renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      alpha: true,
+      powerPreference: 'high-performance',
+    });
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.25;
+    container.appendChild(renderer.domElement);
+
+    const textureLoader = new THREE.TextureLoader();
+
+    // 2. High-Res Circular Glowing Star Texture
+    const createCircularStarTexture = () => {
+      const c = document.createElement('canvas');
+      c.width = 64;
+      c.height = 64;
+      const ctx = c.getContext('2d');
+      const grad = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+      grad.addColorStop(0, 'rgba(255, 255, 255, 1)');
+      grad.addColorStop(0.12, 'rgba(240, 249, 255, 0.95)');
+      grad.addColorStop(0.3, 'rgba(56, 189, 248, 0.45)');
+      grad.addColorStop(0.65, 'rgba(14, 165, 233, 0.1)');
+      grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 64, 64);
+      return new THREE.CanvasTexture(c);
     };
 
-    window.addEventListener('resize', handleResize);
+    const starTexture = createCircularStarTexture();
 
-    const mouse = { x: -1000, y: -1000, radius: 150 };
+    // 3. COSMOS ROTATING GROUP:
+    // Holds the starfield, constellations, and ALL distant bodies in orbit.
+    // When the user holds the middle mouse button (scroll click), EVERYTHING rotates together!
+    const cosmosGroup = new THREE.Group();
+    scene.add(cosmosGroup);
 
-    const handleMouseMove = (e) => {
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
-    };
+    // 2,600 Circular Glowing Stars
+    const starCount = 2600;
+    const starGeo = new THREE.BufferGeometry();
+    const starPos = new Float32Array(starCount * 3);
+    const starCols = new Float32Array(starCount * 3);
 
-    const handleMouseLeave = () => {
-      mouse.x = -1000;
-      mouse.y = -1000;
-    };
+    const palette = [
+      new THREE.Color('#ffffff'),
+      new THREE.Color('#e0f2fe'),
+      new THREE.Color('#38bdf8'),
+      new THREE.Color('#fef08a'),
+      new THREE.Color('#fed7aa'),
+      new THREE.Color('#e9d5ff'),
+    ];
 
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseleave', handleMouseLeave);
+    for (let i = 0; i < starCount; i++) {
+      const r = THREE.MathUtils.randFloat(80, 800);
+      const theta = THREE.MathUtils.randFloat(0, Math.PI * 2);
+      const phi = THREE.MathUtils.randFloat(0, Math.PI);
 
-    // Generate particles
-    const particleCount = Math.min(Math.floor((width * height) / 14000), 75);
-    const particles = [];
+      starPos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+      starPos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+      starPos[i * 3 + 2] = r * Math.cos(phi);
 
-    for (let i = 0; i < particleCount; i++) {
-      particles.push({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.4,
-        vy: (Math.random() - 0.5) * 0.4,
-        radius: Math.random() * 1.6 + 0.8,
-        color: Math.random() > 0.4 ? 'rgba(16, 185, 129, ' : 'rgba(56, 189, 248, ',
-        baseAlpha: Math.random() * 0.35 + 0.15,
-      });
+      const col = palette[Math.floor(Math.random() * palette.length)];
+      starCols[i * 3] = col.r;
+      starCols[i * 3 + 1] = col.g;
+      starCols[i * 3 + 2] = col.b;
     }
 
-    const render = () => {
-      ctx.clearRect(0, 0, width, height);
+    starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+    starGeo.setAttribute('color', new THREE.BufferAttribute(starCols, 3));
 
-      // Draw subtle ambient glow gradients
-      const radial1 = ctx.createRadialGradient(width * 0.2, height * 0.15, 0, width * 0.2, height * 0.15, 500);
-      radial1.addColorStop(0, 'rgba(16, 185, 129, 0.05)');
-      radial1.addColorStop(1, 'rgba(16, 185, 129, 0)');
-      ctx.fillStyle = radial1;
-      ctx.fillRect(0, 0, width, height);
+    const starMat = new THREE.PointsMaterial({
+      size: 3.5,
+      map: starTexture,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.95,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    const starDome = new THREE.Points(starGeo, starMat);
+    cosmosGroup.add(starDome);
 
-      const radial2 = ctx.createRadialGradient(width * 0.85, height * 0.5, 0, width * 0.85, height * 0.5, 600);
-      radial2.addColorStop(0, 'rgba(56, 189, 248, 0.04)');
-      radial2.addColorStop(1, 'rgba(56, 189, 248, 0)');
-      ctx.fillStyle = radial2;
-      ctx.fillRect(0, 0, width, height);
+    // 4. Real 360° Constellations & Glowing Star Nodes
+    const constellationLines = [];
+    const constStarPos = [];
+    const constStarCols = [];
 
-      // Update & Draw particles
-      for (let i = 0; i < particles.length; i++) {
-        const p = particles[i];
+    const sph = (ra, dec, r = 118) => {
+      const radRa = (ra * Math.PI) / 180;
+      const radDec = (dec * Math.PI) / 180;
+      return new THREE.Vector3(
+        r * Math.cos(radDec) * Math.cos(radRa),
+        r * Math.sin(radDec),
+        r * Math.cos(radDec) * Math.sin(radRa)
+      );
+    };
 
-        // Move
-        p.x += p.vx;
-        p.y += p.vy;
+    const addStarNode = (vec, colorHex = '#7dd3fc') => {
+      const col = new THREE.Color(colorHex);
+      constStarPos.push(vec.x, vec.y, vec.z);
+      constStarCols.push(col.r, col.g, col.b);
+    };
 
-        // Bounce on boundaries
-        if (p.x < 0 || p.x > width) p.vx *= -1;
-        if (p.y < 0 || p.y > height) p.vy *= -1;
+    const addSegment = (p1, p2) => {
+      if (p1 && p2) {
+        constellationLines.push(p1.x, p1.y, p1.z, p2.x, p2.y, p2.z);
+      }
+    };
 
-        // Mouse interaction
-        const dx = mouse.x - p.x;
-        const dy = mouse.y - p.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        let alphaBoost = 0;
+    const addPolyline = (points, colorHex = '#7dd3fc') => {
+      for (let i = 0; i < points.length - 1; i++) {
+        addSegment(points[i], points[i + 1]);
+      }
+      for (const p of points) {
+        addStarNode(p, colorHex);
+      }
+    };
 
-        if (dist < mouse.radius) {
-          const force = (1 - dist / mouse.radius) * 0.02;
-          p.x -= dx * force;
-          p.y -= dy * force;
-          alphaBoost = (1 - dist / mouse.radius) * 0.4;
+    // Cruzeiro do Sul
+    const acrux = sph(186.6, -63.1);
+    const gacrux = sph(187.8, -57.1);
+    const mimosa = sph(191.9, -59.7);
+    const deltaCru = sph(183.8, -58.7);
+    const intrometida = sph(185.3, -60.4);
+    const alphaCen = sph(219.9, -60.8);
+    const betaCen = sph(210.9, -60.4);
+
+    addSegment(gacrux, acrux);
+    addSegment(deltaCru, mimosa);
+    addSegment(alphaCen, betaCen);
+    addStarNode(acrux, '#93c5fd');
+    addStarNode(gacrux, '#fb923c');
+    addStarNode(mimosa, '#38bdf8');
+    addStarNode(deltaCru, '#bae6fd');
+    addStarNode(intrometida, '#ffffff');
+    addStarNode(alphaCen, '#fde047');
+    addStarNode(betaCen, '#38bdf8');
+
+    // Orion
+    const betelgeuse = sph(88.8, 7.4);
+    const rigel = sph(78.6, -8.2);
+    const bellatrix = sph(81.3, 6.3);
+    const saiph = sph(86.9, -9.7);
+    const mintaka = sph(83.0, -0.3);
+    const alnilam = sph(84.1, -1.2);
+    const alnitak = sph(85.2, -1.9);
+
+    addSegment(betelgeuse, bellatrix);
+    addSegment(betelgeuse, alnitak);
+    addSegment(bellatrix, mintaka);
+    addSegment(mintaka, alnilam);
+    addSegment(alnilam, alnitak);
+    addSegment(alnilam, saiph);
+    addSegment(mintaka, rigel);
+    addSegment(saiph, rigel);
+
+    addStarNode(betelgeuse, '#f97316');
+    addStarNode(rigel, '#bfdbfe');
+    addStarNode(bellatrix, '#38bdf8');
+    addStarNode(saiph, '#7dd3fc');
+    addStarNode(mintaka, '#ffffff');
+    addStarNode(alnilam, '#ffffff');
+    addStarNode(alnitak, '#ffffff');
+
+    // Ursa Maior
+    const dubhe = sph(165.9, 61.8);
+    const merak = sph(165.5, 56.4);
+    const phecda = sph(178.5, 53.7);
+    const megrez = sph(183.9, 57.0);
+    const alioth = sph(193.5, 56.0);
+    const mizar = sph(200.0, 54.9);
+    const alkaid = sph(206.9, 49.3);
+
+    addPolyline([dubhe, merak, phecda, megrez, dubhe], '#38bdf8');
+    addPolyline([megrez, alioth, mizar, alkaid], '#7dd3fc');
+    addStarNode(dubhe, '#fde047');
+    addStarNode(mizar, '#e0f2fe');
+
+    // Cassiopeia
+    const caph = sph(2.3, 59.2);
+    const schedar = sph(10.1, 56.5);
+    const navi = sph(14.2, 60.7);
+    const ruchbah = sph(21.4, 60.2);
+    const segin = sph(26.6, 63.7);
+
+    addPolyline([caph, schedar, navi, ruchbah, segin], '#38bdf8');
+    addStarNode(schedar, '#fbbf24');
+    addStarNode(navi, '#ffffff');
+
+    // Cygnus
+    const deneb = sph(310.4, 45.3);
+    const sadr = sph(305.5, 40.3);
+    const albireo = sph(292.7, 27.9);
+    const gienah = sph(311.5, 33.9);
+    const deltaCyg = sph(296.2, 45.1);
+
+    addSegment(albireo, sadr);
+    addSegment(sadr, deneb);
+    addSegment(deltaCyg, sadr);
+    addSegment(sadr, gienah);
+    addStarNode(deneb, '#ffffff');
+    addStarNode(sadr, '#38bdf8');
+    addStarNode(albireo, '#fde047');
+    addStarNode(gienah, '#7dd3fc');
+    addStarNode(deltaCyg, '#bae6fd');
+
+    // Escorpião
+    const antares = sph(247.4, -26.4);
+    const graffias = sph(241.3, -19.8);
+    const dschubba = sph(240.1, -22.6);
+    const piSco = sph(239.7, -26.1);
+    const weiSco = sph(252.5, -34.3);
+    const sargas = sph(264.3, -43.0);
+    const shaula = sph(263.4, -37.1);
+
+    addPolyline([graffias, dschubba, piSco], '#38bdf8');
+    addPolyline([dschubba, antares, weiSco, sargas, shaula], '#7dd3fc');
+    addStarNode(antares, '#ef4444');
+    addStarNode(shaula, '#38bdf8');
+
+    // Touro
+    const aldebaran = sph(68.9, 16.5);
+    const elnath = sph(81.6, 28.6);
+    const tianguan = sph(84.4, 21.1);
+    const ain = sph(67.1, 19.2);
+    const gammaTau = sph(64.9, 15.6);
+
+    addSegment(aldebaran, ain);
+    addSegment(ain, gammaTau);
+    addSegment(aldebaran, tianguan);
+    addSegment(ain, elnath);
+    addStarNode(aldebaran, '#f97316');
+    addStarNode(elnath, '#93c5fd');
+    addStarNode(tianguan, '#38bdf8');
+
+    // Pégaso
+    const markab = sph(346.2, 15.2);
+    const scheat = sph(345.9, 28.1);
+    const alpheratz = sph(2.1, 29.1);
+    const algenib = sph(3.3, 15.2);
+
+    addPolyline([markab, scheat, alpheratz, algenib, markab], '#38bdf8');
+    addStarNode(scheat, '#fbbf24');
+    addStarNode(alpheratz, '#ffffff');
+
+    // Leão
+    const regulus = sph(152.1, 12.0);
+    const algieba = sph(154.9, 19.8);
+    const adhafera = sph(154.2, 23.4);
+    const denebola = sph(177.3, 14.6);
+    const zosma = sph(168.5, 20.5);
+    const chertan = sph(168.6, 15.4);
+
+    addPolyline([regulus, algieba, adhafera], '#38bdf8');
+    addSegment(algieba, zosma);
+    addSegment(zosma, denebola);
+    addSegment(denebola, chertan);
+    addSegment(chertan, regulus);
+    addSegment(zosma, chertan);
+    addStarNode(regulus, '#93c5fd');
+    addStarNode(algieba, '#fde047');
+    addStarNode(denebola, '#ffffff');
+
+    const constGeo = new THREE.BufferGeometry();
+    constGeo.setAttribute('position', new THREE.Float32BufferAttribute(constellationLines, 3));
+    const constMat = new THREE.LineBasicMaterial({
+      color: 0x38bdf8,
+      transparent: true,
+      opacity: 0.52,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    const constLineMesh = new THREE.LineSegments(constGeo, constMat);
+    cosmosGroup.add(constLineMesh);
+
+    const constStarsGeo = new THREE.BufferGeometry();
+    constStarsGeo.setAttribute('position', new THREE.Float32BufferAttribute(constStarPos, 3));
+    constStarsGeo.setAttribute('color', new THREE.Float32BufferAttribute(constStarCols, 3));
+    const constStarsMat = new THREE.PointsMaterial({
+      size: 6.5,
+      map: starTexture,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.95,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    const constStarsMesh = new THREE.Points(constStarsGeo, constStarsMat);
+    cosmosGroup.add(constStarsMesh);
+
+    // 5. Lighting
+    const sunLight = new THREE.DirectionalLight(0xffffff, 2.5);
+    sunLight.position.set(16, 9, 14);
+    scene.add(sunLight);
+
+    const cosmicAmbient = new THREE.AmbientLight(0x0c1530, 0.45);
+    scene.add(cosmicAmbient);
+
+    // 6. Earth Setup (NASA Blue Marble)
+    const earthGroup = new THREE.Group();
+    earthGroup.rotation.z = (23.4 * Math.PI) / 180;
+
+    const earthGeo = new THREE.SphereGeometry(3.5, 64, 64);
+    const dayTex = textureLoader.load('/earth/earth-day.jpg');
+    dayTex.colorSpace = THREE.SRGBColorSpace;
+    const earthMat = new THREE.MeshPhongMaterial({
+      map: dayTex,
+      specular: new THREE.Color(0x224466),
+      shininess: 12,
+    });
+    const earthMesh = new THREE.Mesh(earthGeo, earthMat);
+    earthGroup.add(earthMesh);
+
+    // Earth Clouds
+    const cloudsGeo = new THREE.SphereGeometry(3.53, 64, 64);
+    const cloudsTex = textureLoader.load('/earth/earth-clouds.png');
+    cloudsTex.colorSpace = THREE.SRGBColorSpace;
+    const cloudsMat = new THREE.MeshStandardMaterial({
+      map: cloudsTex,
+      transparent: true,
+      opacity: 0.55,
+      blending: THREE.NormalBlending,
+      depthWrite: false,
+      roughness: 0.9,
+    });
+    const cloudsMesh = new THREE.Mesh(cloudsGeo, cloudsMat);
+    earthGroup.add(cloudsMesh);
+
+    // Atmospheric Fresnel Glow
+    const atmosphereGeo = new THREE.SphereGeometry(3.56, 64, 64);
+    const atmosphereMat = new THREE.ShaderMaterial({
+      vertexShader: `
+        varying vec3 vNormal;
+        varying vec3 vViewPosition;
+        void main() {
+          vNormal = normalize(normalMatrix * normal);
+          vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+          vViewPosition = -mvPosition.xyz;
+          gl_Position = projectionMatrix * mvPosition;
+        }
+      `,
+      fragmentShader: `
+        varying vec3 vNormal;
+        varying vec3 vViewPosition;
+        void main() {
+          vec3 normal = normalize(vNormal);
+          vec3 viewDir = normalize(vViewPosition);
+          float fresnel = 1.0 - dot(normal, viewDir);
+          float alpha = smoothstep(0.35, 0.88, fresnel) * 0.42;
+          gl_FragColor = vec4(0.22, 0.74, 0.98, alpha);
+        }
+      `,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    earthGroup.add(new THREE.Mesh(atmosphereGeo, atmosphereMat));
+
+    // ATTACH EARTH TO COSMOS GROUP (Gira junto com o céu 3D!)
+    cosmosGroup.add(earthGroup);
+
+    // 7. CELESTIAL BODIES (Lua, Marte, Saturno, Júpiter)
+    const planetsData = [
+      {
+        id: 'moon',
+        name: 'Lua Terrestre',
+        emoji: '🌕',
+        radius: 2.2,
+        map: '/earth/moon.jpg',
+        distantRadius: 0.38,
+        orbitRadius: 38,
+        orbitSpeed: 0.075,
+        yOffset: 3.5,
+        tilt: 0.1,
+      },
+      {
+        id: 'mars',
+        name: 'Marte (Planeta Vermelho)',
+        emoji: '🔴',
+        radius: 2.8,
+        map: '/earth/mars.jpg',
+        distantRadius: 0.48,
+        orbitRadius: 54,
+        orbitSpeed: 0.05,
+        yOffset: -3.8,
+        tilt: 0.44,
+      },
+      {
+        id: 'saturn',
+        name: 'Saturno com Anéis de Gelo',
+        emoji: '🪐',
+        radius: 3.0,
+        map: '/earth/saturn.jpg',
+        ringMap: '/earth/saturn-ring.jpg',
+        hasRing: true,
+        distantRadius: 0.62,
+        orbitRadius: 72,
+        orbitSpeed: 0.032,
+        yOffset: 6.8,
+        tilt: 0.47,
+      },
+      {
+        id: 'jupiter',
+        name: 'Júpiter (Gigante Gasoso)',
+        emoji: '🟠',
+        radius: 3.8,
+        map: '/earth/jupiter.jpg',
+        distantRadius: 0.78,
+        orbitRadius: 92,
+        orbitSpeed: 0.02,
+        yOffset: -5.5,
+        tilt: 0.05,
+      },
+    ];
+
+    const activePlanets = [];
+
+    planetsData.forEach((pData) => {
+      const pGroup = new THREE.Group();
+
+      const pGeo = new THREE.SphereGeometry(pData.radius, 64, 64);
+      const tex = textureLoader.load(pData.map);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      const pMat = new THREE.MeshPhongMaterial({
+        map: tex,
+        shininess: pData.id === 'saturn' || pData.id === 'jupiter' ? 8 : 4,
+      });
+      const pMesh = new THREE.Mesh(pGeo, pMat);
+      pGroup.add(pMesh);
+
+      let ringMesh = null;
+      if (pData.hasRing) {
+        const rInner = pData.radius * 1.25;
+        const rOuter = pData.radius * 2.35;
+        const ringGeo = new THREE.RingGeometry(rInner, rOuter, 64);
+
+        const pos = ringGeo.attributes.position;
+        const uvs = ringGeo.attributes.uv;
+        for (let i = 0; i < pos.count; i++) {
+          const x = pos.getX(i);
+          const y = pos.getY(i);
+          const dist = Math.sqrt(x * x + y * y);
+          const u = (dist - rInner) / (rOuter - rInner);
+          uvs.setXY(i, u, 0.5);
         }
 
-        // Draw particle
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `${p.color}${Math.min(p.baseAlpha + alphaBoost, 0.9)})`;
-        ctx.fill();
+        const ringTex = textureLoader.load(pData.ringMap);
+        ringTex.colorSpace = THREE.SRGBColorSpace;
+        const ringMat = new THREE.MeshStandardMaterial({
+          map: ringTex,
+          side: THREE.DoubleSide,
+          transparent: true,
+          opacity: 0.95,
+          roughness: 0.6,
+        });
 
-        // Connect nearby particles
-        for (let j = i + 1; j < particles.length; j++) {
-          const p2 = particles[j];
-          const dist2 = Math.hypot(p.x - p2.x, p.y - p2.y);
-          if (dist2 < 110) {
-            const lineAlpha = (1 - dist2 / 110) * 0.12;
-            ctx.beginPath();
-            ctx.moveTo(p.x, p.y);
-            ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = `rgba(148, 163, 184, ${lineAlpha})`;
-            ctx.lineWidth = 0.6;
-            ctx.stroke();
+        ringMesh = new THREE.Mesh(ringGeo, ringMat);
+        ringMesh.rotation.x = Math.PI / 2.15;
+        pGroup.add(ringMesh);
+      }
+
+      pGroup.rotation.z = pData.tilt;
+
+      // ATTACH PLANET TO COSMOS GROUP (Gira junto com o céu 3D!)
+      cosmosGroup.add(pGroup);
+
+      activePlanets.push({
+        ...pData,
+        group: pGroup,
+        mesh: pMesh,
+        ringMesh,
+        angle: Math.random() * Math.PI * 2,
+        state: 'ORBIT',
+        timer: 0,
+        startPos: new THREE.Vector3(),
+        targetPos: new THREE.Vector3(),
+        currentScale: pData.distantRadius / pData.radius,
+      });
+    });
+
+    // 8. AUTÊNTICO BURACO NEGRO GARGANTUA (100% IDÊNTICO À IMAGEM DE REFERÊNCIA DO USUÁRIO)
+    // - Usa a textura autêntica do filme Interestelar / foto do usuário (/earth/gargantua.png)
+    // - Sem desconexões, sem moiré, com cúpula e arcos contínuos
+    // - Shader de fluxo e advecção contínua de plasma sugado em direção à singularidade ("mexendo para o centro")
+    const blackHoleGroup = new THREE.Group();
+    blackHoleGroup.visible = false;
+    scene.add(blackHoleGroup);
+
+    const gargantuaTex = textureLoader.load('/earth/gargantua.png');
+    gargantuaTex.colorSpace = THREE.SRGBColorSpace;
+    gargantuaTex.generateMipmaps = true;
+    gargantuaTex.minFilter = THREE.LinearMipmapLinearFilter;
+    gargantuaTex.magFilter = THREE.LinearFilter;
+
+    // Proporção exata da imagem do usuário (781 x 339 -> aspecto 2.304)
+    const gargantuaQuadGeo = new THREE.PlaneGeometry(10.0, 4.34, 1, 1);
+    const gargantuaUniforms = {
+      uMap: { value: gargantuaTex },
+      uTime: { value: 0 },
+    };
+
+    const gargantuaShaderMat = new THREE.ShaderMaterial({
+      uniforms: gargantuaUniforms,
+      vertexShader: `
+        varying vec2 vUv;
+        void main() {
+          vUv = uv;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform sampler2D uMap;
+        uniform float uTime;
+        varying vec2 vUv;
+
+        void main() {
+          // Centro exato do horizonte de eventos na imagem do usuário
+          vec2 centerUv = vec2(0.5122, 0.4218);
+          vec2 d = vUv - centerUv;
+
+          // Correção de proporção exata da textura (781 x 339 -> 2.3038)
+          vec2 dAspect = vec2(d.x, d.y / 2.3038);
+          float r = length(dAspect);
+
+          // A BOLA PRETA DO MEIO NÃO PODE COMPRIMIR:
+          // O horizonte de eventos / bola preta central (r <= 0.110) é 100% fixo, estável e nunca comprime!
+          // O fluxo de plasma atua suavemente apenas no disco de acreção externo (r > 0.110)
+          float flowMask = smoothstep(0.110, 0.170, r);
+
+          // Vetor de fluxo relativístico direcionado para o centro no espaço corrigido por aspecto
+          float lenDAspect = max(0.0001, r);
+          vec2 dirInwardAspect = -dAspect / lenDAspect;
+          vec2 dirSwirlAspect = vec2(-dAspect.y, dAspect.x) / lenDAspect;
+          float swirlFactor = clamp(1.0 - r * 2.5, 0.0, 1.0);
+          vec2 flowDirAspect = normalize(dirInwardAspect * 0.75 + dirSwirlAspect * swirlFactor * 0.55);
+
+          // Vetor de fluxo projetado uniformemente no espaço UV (sem deformação assimétrica)
+          vec2 flowVecUV = vec2(flowDirAspect.x, flowDirAspect.y * 2.3038);
+
+          // Aceleração gravitacional no disco externo, completamente zerada na bola preta
+          float plunge = 1.0 + 0.6 / max(0.12, r);
+          float speed = 0.16;
+
+          // Advecção contínua bifásica (Flow-Map) para movimento suave e infinito no plasma externo
+          float p1 = fract(uTime * speed);
+          float p2 = fract(uTime * speed + 0.5);
+
+          float weight = abs(2.0 * p1 - 1.0);
+          weight = smoothstep(0.0, 1.0, weight);
+
+          // flowMag é estritamente 0 na bola preta (ela nunca comprime nem se deforma)
+          float flowMag = 0.024 * plunge * flowMask;
+          vec2 uv1 = vUv - flowVecUV * p1 * flowMag;
+          vec2 uv2 = vUv - flowVecUV * p2 * flowMag;
+
+          vec4 col1 = texture2D(uMap, uv1);
+          vec4 col2 = texture2D(uMap, uv2);
+          vec4 baseCol = mix(col1, col2, weight);
+
+          // Ondas e filamentos de plasma ativos apenas no disco externo (fora da bola preta)
+          float streamWave = sin(r * 90.0 - uTime * 4.0) * 0.5 + 0.5;
+          float microStream = sin(r * 180.0 - uTime * 7.0) * 0.5 + 0.5;
+          float streamBoost = 1.0 + (streamWave * 0.14 + microStream * 0.08) * smoothstep(0.120, 0.35, r);
+
+          vec3 finalRgb = baseCol.rgb * streamBoost;
+
+          // Brilho pulsante sutil estritamente no anel de fótons exterior (sem iluminar o interior da bola preta)
+          if (r > 0.110 && r < 0.145) {
+            float photonPulse = sin(uTime * 2.8) * 0.08;
+            finalRgb += vec3(0.16, 0.14, 0.16) * photonPulse;
+          }
+
+          gl_FragColor = vec4(finalRgb, baseCol.a);
+        }
+      `,
+      side: THREE.DoubleSide,
+      transparent: true,
+      depthWrite: false,
+    });
+
+    const gargantuaMesh = new THREE.Mesh(gargantuaQuadGeo, gargantuaShaderMat);
+    blackHoleGroup.add(gargantuaMesh);
+
+    const blackHoleState = {
+      active: false,
+      phase: 'HIDDEN',
+      clicks: 0,
+      timer: 0,
+      angle: Math.random() * Math.PI * 2,
+      orbitRadius: 55,
+      startPos: new THREE.Vector3(),
+      targetPos: new THREE.Vector3(),
+      currentScale: 0.01,
+      pulseScale: 1.0,
+      radius: 5.5,
+    };
+
+    // 9. EARTH STATE & DISTANT ORBIT
+    let earthAngle = Math.random() * Math.PI * 2;
+    const earthState = {
+      current: 'ORBIT',
+      timer: 0,
+      orbitDuration: 60,
+      closeDuration: 10,
+      startPos: new THREE.Vector3(),
+      targetPos: new THREE.Vector3(),
+      departPos: new THREE.Vector3(),
+      currentScale: 0.16,
+      radius: 3.5,
+    };
+
+    earthGroup.position.set(
+      Math.cos(earthAngle) * 44,
+      1.5 + Math.sin(earthAngle * 1.5) * 2.0,
+      Math.sin(earthAngle) * 44 - 48
+    );
+    earthGroup.scale.setScalar(earthState.currentScale);
+
+    // 10. SCREEN-TO-WORLD UNPROJECT & OBSTACLE DETECTION
+    const isSolidComponent = (el) => {
+      // Quando o buraco negro está ativo (modo limpo), NENHUM componente bloqueia!
+      if (blackHoleState.active) return false;
+      if (!el) return false;
+      if (el.closest('button, a, input, textarea, select, [role="button"]')) return true;
+      if (el.closest('.glass-panel, form, pre, [data-spotlight="true"], [role="dialog"], header, nav')) return true;
+      const cardParent = el.closest('.bg-slate-900, .bg-slate-950, .rounded-2xl, .rounded-3xl, .shadow-xl, .shadow-2xl, .border-slate-800');
+      if (cardParent && !cardParent.classList.contains('fixed') && !cardParent.classList.contains('pointer-events-none')) {
+        return true;
+      }
+      return false;
+    };
+
+    const getScreenToWorldZ0 = (screenX, screenY) => {
+      const d = camera.position.z - 0;
+      const vH = 2 * Math.tan((camera.fov * Math.PI) / 360) * d;
+      const vW = vH * (width / height);
+      const ndcX = (screenX / width) * 2 - 1;
+      const ndcY = -(screenY / height) * 2 + 1;
+      return new THREE.Vector3(
+        ndcX * (vW / 2) + camera.position.x,
+        ndcY * (vH / 2) + camera.position.y,
+        0
+      );
+    };
+
+    const getScreenCoords = (obj3D) => {
+      const worldPos = new THREE.Vector3();
+      obj3D.getWorldPosition(worldPos);
+      const p = worldPos.clone().project(camera);
+      return {
+        x: ((p.x + 1) * width) / 2,
+        y: ((-p.y + 1) * height) / 2,
+        isBehind: p.z > 1,
+      };
+    };
+
+    const findSafeScreenWorldPosition = (avoidWorldPositions = [], bodyRadius = 3.5) => {
+      const d = camera.position.z - 0;
+      const vH = 2 * Math.tan((camera.fov * Math.PI) / 360) * d;
+      const vW = vH * (width / height);
+
+      const isMobile = width < 1024;
+      if (isMobile) {
+        return new THREE.Vector3(0, 1.2, 0);
+      }
+
+      const xRatios = [0.18, 0.28, 0.38, 0.52, 0.68, 0.78, 0.84];
+      const yRatios = [0.22, 0.34, 0.48, 0.62, 0.74];
+
+      const candidates = [];
+      for (const rx of xRatios) {
+        for (const ry of yRatios) {
+          candidates.push({ sx: rx * width, sy: ry * height });
+        }
+      }
+      candidates.sort(() => Math.random() - 0.5);
+
+      let bestWorldPos = null;
+      let bestScore = -999999;
+
+      for (const cand of candidates) {
+        const testPoints = [
+          { x: cand.sx, y: cand.sy },
+          { x: cand.sx + 45, y: cand.sy },
+          { x: cand.sx - 45, y: cand.sy },
+          { x: cand.sx, y: cand.sy + 45 },
+          { x: cand.sx, y: cand.sy - 45 },
+        ];
+
+        let hitsSolid = false;
+        for (const pt of testPoints) {
+          if (pt.x < 15 || pt.x > width - 15 || pt.y < 75 || pt.y > height - 65) {
+            hitsSolid = true;
+            break;
+          }
+          const el = document.elementFromPoint(pt.x, pt.y);
+          if (isSolidComponent(el)) {
+            hitsSolid = true;
+            break;
+          }
+        }
+
+        const ndcX = (cand.sx / width) * 2 - 1;
+        const ndcY = -(cand.sy / height) * 2 + 1;
+        const worldX = ndcX * (vW / 2) + camera.position.x;
+        const worldY = ndcY * (vH / 2) + camera.position.y;
+        const candidateWorld = new THREE.Vector3(worldX, worldY, 0);
+
+        let minClearance = 999;
+        for (const avoidPos of avoidWorldPositions) {
+          const dist = candidateWorld.distanceTo(avoidPos);
+          if (dist < minClearance) {
+            minClearance = dist;
+          }
+        }
+
+        const score = (hitsSolid ? -1000 : 150) + Math.min(minClearance, 25);
+
+        if (score > bestScore) {
+          bestScore = score;
+          bestWorldPos = candidateWorld;
+          if (!hitsSolid && minClearance >= 9.5) {
+            break;
           }
         }
       }
 
-      animationFrameId = requestAnimationFrame(render);
+      if (!bestWorldPos) {
+        const fallbackSide = Math.random() > 0.5 ? 1 : -1;
+        bestWorldPos = new THREE.Vector3(fallbackSide * (vW * 0.32), 0.5, 0);
+      }
+
+      return bestWorldPos;
     };
 
-    render();
+    // START EARTH APPROACH
+    const startEarthApproach = () => {
+      scene.attach(earthGroup);
+
+      const avoidPositions = activePlanets
+        .filter((p) => p.state === 'APPROACHING' || p.state === 'CLOSE')
+        .map((p) => {
+          const wp = new THREE.Vector3();
+          p.group.getWorldPosition(wp);
+          return wp;
+        });
+
+      if (blackHoleState.phase === 'APPROACHING' || blackHoleState.phase === 'CLOSE') {
+        const wp = new THREE.Vector3();
+        blackHoleGroup.getWorldPosition(wp);
+        avoidPositions.push(wp);
+      }
+
+      const safeTarget = findSafeScreenWorldPosition(avoidPositions, 3.5);
+
+      earthState.startPos.copy(earthGroup.position);
+      earthState.targetPos.copy(safeTarget);
+      earthState.departPos.set(
+        Math.cos(earthAngle + 1.2) * 44,
+        -2.5,
+        Math.sin(earthAngle + 1.2) * 44 - 48
+      );
+
+      earthState.current = 'APPROACHING';
+      earthState.timer = 0;
+      setHudText('🌍 Terra em aproximação orbital...');
+      setHudActive(true);
+    };
+
+    triggerEarthRef.current = () => {
+      if (earthState.current === 'ORBIT') {
+        startEarthApproach();
+      }
+    };
+
+    // TRIGGER TRASH SUCTION:
+    // Surge logo ACIMA da lixeira, devagar, e suga tudo como um ralo!
+    const triggerSuction = () => {
+      if (blackHoleState.active) return;
+      blackHoleState.active = true;
+      setBlackHoleActiveUI(true);
+      blackHoleGroup.visible = true;
+
+      // Position black hole in scene right ACIMA da lixeira (screen x: ~120px, y: height - 130px)
+      scene.attach(blackHoleGroup);
+      const spawnPos = getScreenToWorldZ0(120, height - 130);
+      blackHoleGroup.position.copy(spawnPos);
+      blackHoleGroup.scale.setScalar(0.04);
+
+      blackHoleState.phase = 'SPAWNING_SUCTION';
+      blackHoleState.timer = 0;
+      setHudText('🕳️ Buraco Negro ativado! Sugando os componentes para o ralo...');
+      setHudActive(true);
+
+      // Trava o scroll do body e reseta para o topo
+      document.body.style.overflow = 'hidden';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      if (onStartSuction) onStartSuction();
+
+      // Suction rápido e decisivo (~0.65s) para liberar a tela inteira de vez
+      setTimeout(() => {
+        if (onCompleteSuction) onCompleteSuction();
+
+        // Anexa o Buraco Negro ao cosmosGroup para girar junto com o céu!
+        blackHoleGroup.position.set(Math.cos(blackHoleState.angle) * 55, 3.5, Math.sin(blackHoleState.angle) * 55 - 45);
+        blackHoleGroup.scale.setScalar(0.22);
+        cosmosGroup.attach(blackHoleGroup);
+
+        blackHoleState.phase = 'ORBIT';
+        blackHoleState.timer = 0;
+        setHudText('🕳️ Espaço 100% livre! Segure o Scroll do mouse (clique da rodinha) para girar o cosmos e clique nos planetas!');
+      }, 650);
+    };
+
+    triggerSuctionRef.current = triggerSuction;
+
+    // TRIGGER COLLAPSE & EXPEL SITE BACK OUT (Upon 5 clicks or button)
+    const triggerRestore = () => {
+      if (!blackHoleState.active || blackHoleState.phase === 'COLLAPSING') return;
+      blackHoleState.phase = 'COLLAPSING';
+      blackHoleState.timer = 0;
+      setHudText('✨ Singularidade colapsada! Cuspindo os componentes de volta...');
+
+      if (onStartRestore) onStartRestore();
+
+      setTimeout(() => {
+        blackHoleGroup.visible = false;
+        blackHoleState.active = false;
+        setBlackHoleActiveUI(false);
+        blackHoleState.clicks = 0;
+        setBlackHoleClicksUI(0);
+        blackHoleState.phase = 'HIDDEN';
+        setHudActive(false);
+        setHudText('Em órbita distante');
+        document.body.style.overflow = '';
+        if (onCompleteRestore) onCompleteRestore();
+      }, 850);
+    };
+
+    triggerRestoreRef.current = triggerRestore;
+
+    // 11. POINTER INTERACTION: SEGURAR O SCROLL DO MOUSE (MMB / CLIQUE DA RODINHA) PARA GIRAR O ESPAÇO!
+    let isHoldingScrollButton = false;
+    let activeGrabbedTarget = null;
+
+    const mouse = {
+      x: 0,
+      y: 0,
+      targetX: 0,
+      targetY: 0,
+      isDraggingPlanet: false,
+      dragStartPos: { x: 0, y: 0 },
+      prevPos: { x: 0, y: 0 },
+    };
+
+    const handlePointerDown = (clientX, clientY, button = 0) => {
+      mouse.dragStartPos = { x: clientX, y: clientY };
+      mouse.prevPos = { x: clientX, y: clientY };
+
+      // 1. SEGURAR O SCROLL DO MOUSE (BUTTON === 1 / CLIQUE DA RODINHA) GIRA O ESPAÇO!
+      if (button === 1) {
+        isHoldingScrollButton = true;
+        setIsRotatingSpaceUI(true);
+        setCursorMode('grabbing');
+        return;
+      }
+
+      const el = document.elementFromPoint(clientX, clientY);
+      
+      // Em modo limpo, apenas os botões fixos da UI (Lixeira/Restaurar/Terra) barram o clique
+      if (blackHoleState.active) {
+        if (el && el.closest('button, [role="button"]')) return;
+      } else {
+        const isButtonOrLink = el && el.closest('button, a, input, textarea, select, [role="button"]');
+        if (isButtonOrLink) return;
+      }
+
+      // 2. Check if clicking on Large Black Hole when CLOSE (Counts towards 5 Clicks to Restore!)
+      if (blackHoleState.phase === 'CLOSE' || blackHoleState.phase === 'APPROACHING') {
+        const screen = getScreenCoords(blackHoleGroup);
+        if (!screen.isBehind && Math.hypot(clientX - screen.x, clientY - screen.y) <= 240) {
+          mouse.isDraggingPlanet = true;
+          activeGrabbedTarget = 'blackhole';
+          setCursorMode('grabbing');
+          return;
+        }
+      }
+
+      // 3. Check if clicking on Earth when CLOSE (Drag across screen)
+      if (earthState.current === 'CLOSE' || earthState.current === 'APPROACHING') {
+        const screen = getScreenCoords(earthGroup);
+        if (!screen.isBehind && Math.hypot(clientX - screen.x, clientY - screen.y) <= 220) {
+          mouse.isDraggingPlanet = true;
+          activeGrabbedTarget = 'earth';
+          setCursorMode('grabbing');
+          setHudText('🌍 Arrastando Terra pela tela (Segure para mover!)');
+          return;
+        }
+      }
+
+      // 4. Check if clicking on a CLOSE Planet (Drag across screen)
+      for (const p of activePlanets) {
+        if (p.state === 'CLOSE' || p.state === 'APPROACHING') {
+          const screen = getScreenCoords(p.group);
+          if (!screen.isBehind) {
+            const hitR = p.id === 'saturn' ? 260 : 210;
+            if (Math.hypot(clientX - screen.x, clientY - screen.y) <= hitR) {
+              mouse.isDraggingPlanet = true;
+              activeGrabbedTarget = p;
+              setCursorMode('grabbing');
+              setHudText(`${p.emoji} Arrastando ${p.name} pela tela (Segure para mover!)`);
+              return;
+            }
+          }
+        }
+      }
+
+      // 5. Check if clicking on a DISTANT body embedded in the rotating cosmos!
+      if (blackHoleState.active || !isSolidComponent(el)) {
+        // Distant Black Hole (Embedded in cosmosGroup - summon it!)
+        if (blackHoleState.active && blackHoleState.phase === 'ORBIT') {
+          const bhScreen = getScreenCoords(blackHoleGroup);
+          if (!bhScreen.isBehind && Math.hypot(clientX - bhScreen.x, clientY - bhScreen.y) <= 65) {
+            scene.attach(blackHoleGroup);
+
+            const avoidList = [];
+            if (earthState.current === 'APPROACHING' || earthState.current === 'CLOSE') {
+              avoidList.push(earthGroup.position);
+            }
+            for (const other of activePlanets) {
+              if (other.state === 'APPROACHING' || other.state === 'CLOSE') {
+                avoidList.push(other.group.position);
+              }
+            }
+            blackHoleState.phase = 'APPROACHING';
+            blackHoleState.timer = 0;
+            blackHoleState.startPos.copy(blackHoleGroup.position);
+            blackHoleState.targetPos.copy(findSafeScreenWorldPosition(avoidList, 5.5));
+            setHudText('🕳️ Buraco Negro Gargantua em aproximação orbital...');
+            setHudActive(true);
+            return;
+          }
+        }
+
+        // Distant Earth click
+        if (earthState.current === 'ORBIT') {
+          const earthScreen = getScreenCoords(earthGroup);
+          if (!earthScreen.isBehind && Math.hypot(clientX - earthScreen.x, clientY - earthScreen.y) <= 60) {
+            startEarthApproach();
+            return;
+          }
+        }
+
+        // Distant Planet click (Embedded in cosmosGroup - summon it!)
+        for (const p of activePlanets) {
+          if (p.state === 'ORBIT') {
+            const screen = getScreenCoords(p.group);
+            if (!screen.isBehind && Math.hypot(clientX - screen.x, clientY - screen.y) <= 60) {
+              scene.attach(p.group);
+
+              const avoidList = [];
+              if (earthState.current === 'APPROACHING' || earthState.current === 'CLOSE') {
+                avoidList.push(earthGroup.position);
+              }
+              if (blackHoleState.phase === 'APPROACHING' || blackHoleState.phase === 'CLOSE') {
+                avoidList.push(blackHoleGroup.position);
+              }
+              for (const other of activePlanets) {
+                if (other !== p && (other.state === 'APPROACHING' || other.state === 'CLOSE')) {
+                  avoidList.push(other.group.position);
+                }
+              }
+
+              p.state = 'APPROACHING';
+              p.timer = 0;
+              p.startPos.copy(p.group.position);
+              p.targetPos.copy(findSafeScreenWorldPosition(avoidList, p.radius));
+
+              setHudText(`${p.emoji} ${p.name} em aproximação orbital...`);
+              setHudActive(true);
+              return;
+            }
+          }
+        }
+      }
+    };
+
+    const handlePointerMove = (clientX, clientY, isTwoFingerTouch = false) => {
+      mouse.targetX = (clientX / width) * 2 - 1;
+      mouse.targetY = -(clientY / height) * 2 + 1;
+
+      // ROTATING THE 3D COSMOS: SOMENTE AO SEGURAR O SCROLL DO MOUSE (OU DOIS DEDOS EM TOUCH)!
+      if (isHoldingScrollButton || isTwoFingerTouch) {
+        const deltaX = clientX - mouse.prevPos.x;
+        const deltaY = clientY - mouse.prevPos.y;
+        cosmosGroup.rotation.y += deltaX * 0.0055;
+        cosmosGroup.rotation.x += deltaY * 0.0055;
+        mouse.prevPos = { x: clientX, y: clientY };
+        return;
+      }
+
+      // DRAGGING A CLOSE CELESTIAL BODY ACROSS SCREEN
+      if (mouse.isDraggingPlanet && activeGrabbedTarget) {
+        const deltaX = clientX - mouse.prevPos.x;
+        const deltaY = clientY - mouse.prevPos.y;
+
+        const targetGroup =
+          activeGrabbedTarget === 'earth'
+            ? earthGroup
+            : activeGrabbedTarget === 'blackhole'
+            ? blackHoleGroup
+            : activeGrabbedTarget.group;
+
+        const d = camera.position.z - targetGroup.position.z;
+        const vH = 2 * Math.tan((camera.fov * Math.PI) / 360) * d;
+        const vW = vH * (width / height);
+
+        const worldDeltaX = (deltaX / width) * vW;
+        const worldDeltaY = -(deltaY / height) * vH;
+
+        targetGroup.position.x += worldDeltaX;
+        targetGroup.position.y += worldDeltaY;
+
+        if (activeGrabbedTarget === 'earth') {
+          earthState.targetPos.copy(earthGroup.position);
+          earthMesh.rotation.y += deltaX * 0.006;
+          cloudsMesh.rotation.y += deltaX * 0.006;
+        } else if (activeGrabbedTarget === 'blackhole') {
+          blackHoleState.targetPos.copy(blackHoleGroup.position);
+        } else {
+          activeGrabbedTarget.targetPos.copy(targetGroup.position);
+          activeGrabbedTarget.mesh.rotation.y += deltaX * 0.006;
+        }
+
+        mouse.prevPos = { x: clientX, y: clientY };
+        return;
+      }
+
+      // Hover detections
+      const el = document.elementFromPoint(clientX, clientY);
+      let foundHover = null;
+      let nextCursor = 'default';
+
+      // 1. Hover on Close Black Hole
+      if (blackHoleState.phase === 'CLOSE' || blackHoleState.phase === 'APPROACHING') {
+        const screen = getScreenCoords(blackHoleGroup);
+        if (!screen.isBehind && Math.hypot(clientX - screen.x, clientY - screen.y) <= 240) {
+          nextCursor = 'pointer';
+          foundHover = `🕳️ Buraco Negro [${blackHoleState.clicks}/5 cliques para restaurar o site]`;
+        }
+      }
+
+      // 2. Hover on Close Earth or Planets
+      if (!foundHover && (earthState.current === 'CLOSE' || earthState.current === 'APPROACHING')) {
+        const screen = getScreenCoords(earthGroup);
+        if (!screen.isBehind && Math.hypot(clientX - screen.x, clientY - screen.y) <= 200) {
+          nextCursor = 'grab';
+          foundHover = '🌍 Terra (Clique e segure para arrastar!)';
+        }
+      }
+
+      if (!foundHover) {
+        for (const p of activePlanets) {
+          if (p.state === 'CLOSE' || p.state === 'APPROACHING') {
+            const screen = getScreenCoords(p.group);
+            if (!screen.isBehind && Math.hypot(clientX - screen.x, clientY - screen.y) <= 220) {
+              nextCursor = 'grab';
+              foundHover = `${p.emoji} ${p.name} (Clique e segure para arrastar!)`;
+              break;
+            }
+          }
+        }
+      }
+
+      // 3. Hover on Distant bodies in open space (embedded in the cosmos!)
+      if (!foundHover && (blackHoleState.active || !isSolidComponent(el))) {
+        if (blackHoleState.active && blackHoleState.phase === 'ORBIT') {
+          const bhScreen = getScreenCoords(blackHoleGroup);
+          if (!bhScreen.isBehind && Math.hypot(clientX - bhScreen.x, clientY - bhScreen.y) <= 60) {
+            nextCursor = 'pointer';
+            foundHover = '🕳️ Buraco Negro Gargantua (Clique para aproximar!)';
+          }
+        }
+
+        if (!foundHover && earthState.current === 'ORBIT') {
+          const earthScreen = getScreenCoords(earthGroup);
+          if (!earthScreen.isBehind && Math.hypot(clientX - earthScreen.x, clientY - earthScreen.y) <= 55) {
+            nextCursor = 'pointer';
+            foundHover = '🌍 Terra Terrestre (Clique para aproximar!)';
+          }
+        }
+
+        if (!foundHover) {
+          for (const p of activePlanets) {
+            if (p.state === 'ORBIT') {
+              const screen = getScreenCoords(p.group);
+              if (!screen.isBehind && Math.hypot(clientX - screen.x, clientY - screen.y) <= 55) {
+                nextCursor = 'pointer';
+                foundHover = `${p.emoji} ${p.name} (Clique para aproximar!)`;
+                break;
+              }
+            }
+          }
+        }
+      }
+
+      setHoveredTarget(foundHover);
+      setCursorMode(nextCursor);
+      mouse.prevPos = { x: clientX, y: clientY };
+    };
+
+    const handlePointerUp = (clientX, clientY, button = 0) => {
+      // SOLTOU O SCROLL DO MOUSE (BUTTON === 1): PARA IMEDIATAMENTE O GIRO!
+      if (button === 1 || isHoldingScrollButton) {
+        isHoldingScrollButton = false;
+        setIsRotatingSpaceUI(false);
+        setCursorMode('default');
+      }
+
+      // 5 CLIQUES NO BURACO NEGRO GRANDE PARA RESTAURAR O SITE!
+      if (activeGrabbedTarget === 'blackhole' && blackHoleState.phase === 'CLOSE') {
+        const movedDist = Math.hypot(clientX - mouse.dragStartPos.x, clientY - mouse.dragStartPos.y);
+        if (movedDist < 12) {
+          blackHoleState.clicks += 1;
+          setBlackHoleClicksUI(blackHoleState.clicks);
+          blackHoleState.pulseScale = 1.35;
+
+          if (blackHoleState.clicks >= 5) {
+            triggerRestore();
+          } else {
+            setHudText(`🕳️ Colapso da Singularidade: [${blackHoleState.clicks}/5 cliques para restaurar o site]`);
+          }
+        }
+      }
+
+      mouse.isDraggingPlanet = false;
+      activeGrabbedTarget = null;
+    };
+
+    const onMouseDown = (e) => {
+      if (e.button === 1) e.preventDefault();
+      handlePointerDown(e.clientX, e.clientY, e.button);
+    };
+    const onMouseMove = (e) => handlePointerMove(e.clientX, e.clientY, false);
+    const onMouseUp = (e) => {
+      if (e.button === 1) e.preventDefault();
+      handlePointerUp(e.clientX, e.clientY, e.button);
+    };
+
+    const onAuxClick = (e) => {
+      if (e.button === 1) e.preventDefault(); // Prevents autoscroll icon
+    };
+
+    const onWindowBlur = () => {
+      isHoldingScrollButton = false;
+      setIsRotatingSpaceUI(false);
+      setCursorMode('default');
+      mouse.isDraggingPlanet = false;
+      activeGrabbedTarget = null;
+    };
+
+    let isTouchTwoFinger = false;
+    const onTouchStart = (e) => {
+      if (e.touches.length === 1) {
+        isTouchTwoFinger = false;
+        handlePointerDown(e.touches[0].clientX, e.touches[0].clientY, 0);
+      } else if (e.touches.length === 2) {
+        isTouchTwoFinger = true;
+        mouse.prevPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      }
+    };
+    const onTouchMove = (e) => {
+      if (e.touches.length === 1 && !isTouchTwoFinger) {
+        handlePointerMove(e.touches[0].clientX, e.touches[0].clientY, false);
+      } else if (e.touches.length === 2) {
+        handlePointerMove(e.touches[0].clientX, e.touches[0].clientY, true);
+      }
+    };
+    const onTouchEnd = (e) => {
+      isTouchTwoFinger = false;
+      const touch = e.changedTouches[0] || { clientX: mouse.prevPos.x, clientY: mouse.prevPos.y };
+      handlePointerUp(touch.clientX, touch.clientY, 0);
+    };
+
+    window.addEventListener('mousedown', onMouseDown);
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+    window.addEventListener('auxclick', onAuxClick);
+    window.addEventListener('blur', onWindowBlur);
+    window.addEventListener('touchstart', onTouchStart, { passive: true });
+    window.addEventListener('touchmove', onTouchMove, { passive: true });
+    window.addEventListener('touchend', onTouchEnd);
+
+    // Resize handler
+    const handleResize = () => {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+      renderer.setSize(width, height);
+    };
+    window.addEventListener('resize', handleResize);
+
+    // 12. Main Animation & Physics Loop
+    let clock = new THREE.Clock();
+
+    const animate = () => {
+      const dt = clock.getDelta();
+      const elapsed = clock.getElapsedTime();
+
+      // Orient Gargantua toward camera and update inward plasma flow
+      gargantuaMesh.lookAt(camera.position);
+      gargantuaUniforms.uTime.value = elapsed;
+
+      // Cosmic background idle slow drift (when user is not rotating with scroll click)
+      if (!isHoldingScrollButton && !isTouchTwoFinger) {
+        cosmosGroup.rotation.y += dt * 0.04;
+      }
+
+      // Parallax camera movement
+      mouse.x += (mouse.targetX - mouse.x) * 0.04;
+      mouse.y += (mouse.targetY - mouse.y) * 0.04;
+      camera.position.x = mouse.x * 1.6;
+      camera.position.y = mouse.y * 1.2;
+      camera.lookAt(0, 0, 0);
+
+      // EARTH ROTATION & LIFECYCLE
+      if (!mouse.isDraggingPlanet || activeGrabbedTarget !== 'earth') {
+        earthMesh.rotation.y += 0.0012;
+        cloudsMesh.rotation.y += 0.0016;
+      }
+
+      switch (earthState.current) {
+        case 'ORBIT':
+          earthAngle += dt * 0.035;
+          earthGroup.position.x = Math.cos(earthAngle) * 44;
+          earthGroup.position.z = Math.sin(earthAngle) * 44 - 48;
+          earthGroup.position.y = 1.8 + Math.sin(earthAngle * 1.5) * 2.5;
+
+          earthState.currentScale = 0.16;
+          earthGroup.scale.setScalar(earthState.currentScale);
+
+          earthState.timer += dt;
+          if (earthState.timer >= earthState.orbitDuration) {
+            startEarthApproach();
+          }
+          break;
+
+        case 'APPROACHING':
+          earthState.timer += dt;
+          const appT = Math.min(1, earthState.timer / 3.0);
+          const easeApp = appT < 0.5 ? 4 * appT * appT * appT : 1 - Math.pow(-2 * appT + 2, 3) / 2;
+
+          earthState.currentScale = THREE.MathUtils.lerp(0.16, 1.0, easeApp);
+          earthGroup.scale.setScalar(earthState.currentScale);
+          earthGroup.position.lerpVectors(earthState.startPos, earthState.targetPos, easeApp);
+
+          if (appT >= 1) {
+            earthState.current = 'CLOSE';
+            earthState.timer = 0;
+            setHudText('🌍 Terra Hiper-Realista (Segure e arraste para mover!)');
+          }
+          break;
+
+        case 'CLOSE':
+          earthState.timer += dt;
+          earthState.currentScale = 1.0;
+          earthGroup.scale.setScalar(1.0);
+
+          if (!mouse.isDraggingPlanet || activeGrabbedTarget !== 'earth') {
+            const driftOffset = Math.sin(elapsed * 0.8) * 0.22;
+            earthGroup.position.y = earthState.targetPos.y + driftOffset;
+            earthGroup.position.x = earthState.targetPos.x + Math.cos(elapsed * 0.5) * 0.25;
+          }
+
+          if (earthState.timer >= earthState.closeDuration) {
+            earthState.current = 'DEPARTING';
+            earthState.timer = 0;
+            earthState.startPos.copy(earthGroup.position);
+            setHudText('Afastando Terra de volta à órbita...');
+          }
+          break;
+
+        case 'DEPARTING':
+          earthState.timer += dt;
+          const depT = Math.min(1, earthState.timer / 3.0);
+          const easeDep = depT < 0.5 ? 4 * depT * depT * depT : 1 - Math.pow(-2 * depT + 2, 3) / 2;
+
+          const returnPos = new THREE.Vector3(
+            Math.cos(earthAngle) * 44,
+            1.8,
+            Math.sin(earthAngle) * 44 - 48
+          );
+
+          earthState.currentScale = THREE.MathUtils.lerp(1.0, 0.16, easeDep);
+          earthGroup.scale.setScalar(earthState.currentScale);
+          earthGroup.position.lerpVectors(earthState.startPos, returnPos, easeDep);
+
+          if (depT >= 1) {
+            cosmosGroup.attach(earthGroup);
+            earthState.current = 'ORBIT';
+            earthState.timer = 0;
+            earthState.currentScale = 0.16;
+            setHudActive(false);
+            setHudText('Em órbita distante');
+          }
+          break;
+      }
+
+      // DISTANT PLANETS LIFECYCLE
+      for (const p of activePlanets) {
+        if (!mouse.isDraggingPlanet || activeGrabbedTarget !== p) {
+          p.mesh.rotation.y += 0.003;
+        }
+
+        switch (p.state) {
+          case 'ORBIT':
+            p.angle += dt * p.orbitSpeed;
+            p.group.position.x = Math.cos(p.angle) * p.orbitRadius;
+            p.group.position.z = Math.sin(p.angle) * p.orbitRadius - 45;
+            p.group.position.y = p.yOffset + Math.sin(p.angle * 2) * 1.6;
+            p.currentScale = p.distantRadius / p.radius;
+            p.group.scale.setScalar(p.currentScale);
+            break;
+
+          case 'APPROACHING':
+            p.timer += dt;
+            const pApp = Math.min(1, p.timer / 3.0);
+            const easePApp = pApp < 0.5 ? 4 * pApp * pApp * pApp : 1 - Math.pow(-2 * pApp + 2, 3) / 2;
+
+            p.currentScale = THREE.MathUtils.lerp(p.distantRadius / p.radius, 1.0, easePApp);
+            p.group.scale.setScalar(p.currentScale);
+            p.group.position.lerpVectors(p.startPos, p.targetPos, easePApp);
+
+            if (pApp >= 1) {
+              p.state = 'CLOSE';
+              p.timer = 0;
+              setHudText(`${p.emoji} ${p.name} (Segure e arraste para mover!)`);
+            }
+            break;
+
+          case 'CLOSE':
+            p.timer += dt;
+            p.currentScale = 1.0;
+            p.group.scale.setScalar(1.0);
+
+            if (!mouse.isDraggingPlanet || activeGrabbedTarget !== p) {
+              p.group.position.y = p.targetPos.y + Math.sin(elapsed * 0.85 + p.orbitRadius) * 0.22;
+              p.group.position.x = p.targetPos.x + Math.cos(elapsed * 0.55 + p.orbitRadius) * 0.25;
+            }
+
+            if (p.timer >= 10.0) {
+              p.state = 'DEPARTING';
+              p.timer = 0;
+              p.startPos.copy(p.group.position);
+              setHudText(`Afastando ${p.name} de volta à sua órbita...`);
+            }
+            break;
+
+          case 'DEPARTING':
+            p.timer += dt;
+            const pDep = Math.min(1, p.timer / 3.0);
+            const easePDep = pDep < 0.5 ? 4 * pDep * pDep * pDep : 1 - Math.pow(-2 * pDep + 2, 3) / 2;
+
+            const orbitReturn = new THREE.Vector3(
+              Math.cos(p.angle) * p.orbitRadius,
+              p.yOffset,
+              Math.sin(p.angle) * p.orbitRadius - 45
+            );
+
+            p.currentScale = THREE.MathUtils.lerp(1.0, p.distantRadius / p.radius, easePDep);
+            p.group.scale.setScalar(p.currentScale);
+            p.group.position.lerpVectors(p.startPos, orbitReturn, easePDep);
+
+            if (pDep >= 1) {
+              cosmosGroup.attach(p.group);
+              p.state = 'ORBIT';
+              p.timer = 0;
+              setHudActive(false);
+              setHudText('Em órbita distante');
+            }
+            break;
+        }
+      }
+
+      // GARGANTUA BLACK HOLE LIFECYCLE
+      if (blackHoleState.active) {
+        blackHoleState.pulseScale = THREE.MathUtils.lerp(blackHoleState.pulseScale, 1.0, 0.08);
+
+        switch (blackHoleState.phase) {
+          case 'SPAWNING_SUCTION':
+            // Surge logo acima da lixeira, devagar, e pouco maior que ela (escala ~0.35)!
+            blackHoleState.timer += dt;
+            const suckProgress = Math.min(1, blackHoleState.timer / 1.8);
+            const easeSuck = suckProgress < 0.5 ? 4 * suckProgress * suckProgress * suckProgress : 1 - Math.pow(-2 * suckProgress + 2, 3) / 2;
+            blackHoleState.currentScale = THREE.MathUtils.lerp(0.04, 0.38, easeSuck);
+            blackHoleGroup.scale.setScalar(blackHoleState.currentScale * blackHoleState.pulseScale);
+            break;
+
+          case 'ORBIT':
+            blackHoleState.angle += dt * 0.028;
+            blackHoleGroup.position.x = Math.cos(blackHoleState.angle) * blackHoleState.orbitRadius;
+            blackHoleGroup.position.z = Math.sin(blackHoleState.angle) * blackHoleState.orbitRadius - 48;
+            blackHoleGroup.position.y = 4.2 + Math.sin(blackHoleState.angle * 1.6) * 2.8;
+
+            blackHoleState.currentScale = 0.22;
+            blackHoleGroup.scale.setScalar(blackHoleState.currentScale);
+            break;
+
+          case 'APPROACHING':
+            blackHoleState.timer += dt;
+            const bhApp = Math.min(1, blackHoleState.timer / 3.0);
+            const easeBhApp = bhApp < 0.5 ? 4 * bhApp * bhApp * bhApp : 1 - Math.pow(-2 * bhApp + 2, 3) / 2;
+
+            blackHoleState.currentScale = THREE.MathUtils.lerp(0.22, 1.15, easeBhApp);
+            blackHoleGroup.scale.setScalar(blackHoleState.currentScale * blackHoleState.pulseScale);
+            blackHoleGroup.position.lerpVectors(blackHoleState.startPos, blackHoleState.targetPos, easeBhApp);
+
+            if (bhApp >= 1) {
+              blackHoleState.phase = 'CLOSE';
+              blackHoleState.timer = 0;
+              setHudText(`🕳️ Buraco Negro Gigante (Fica 10s! Clique 5 vezes nele para restaurar o site)`);
+            }
+            break;
+
+          case 'CLOSE':
+            blackHoleState.timer += dt;
+            blackHoleState.currentScale = 1.15;
+            blackHoleGroup.scale.setScalar(blackHoleState.currentScale * blackHoleState.pulseScale);
+
+            if (!mouse.isDraggingPlanet || activeGrabbedTarget !== 'blackhole') {
+              blackHoleGroup.position.y = blackHoleState.targetPos.y + Math.sin(elapsed * 0.9) * 0.22;
+              blackHoleGroup.position.x = blackHoleState.targetPos.x + Math.cos(elapsed * 0.6) * 0.25;
+            }
+
+            // APÓS 10 SEGUNDOS VOLTA À ÓRBITA IGUAL AOS OUTROS PLANETAS!
+            // Só se o usuário clicar 5 vezes nele que faz o colapso e restauração do site!
+            if (blackHoleState.timer >= 10.0) {
+              blackHoleState.phase = 'DEPARTING';
+              blackHoleState.timer = 0;
+              blackHoleState.startPos.copy(blackHoleGroup.position);
+              setHudText('Afastando Buraco Negro de volta à sua órbita profunda...');
+            }
+            break;
+
+          case 'DEPARTING':
+            blackHoleState.timer += dt;
+            const bhDep = Math.min(1, blackHoleState.timer / 3.0);
+            const easeBhDep = bhDep < 0.5 ? 4 * bhDep * bhDep * bhDep : 1 - Math.pow(-2 * bhDep + 2, 3) / 2;
+
+            const bhOrbitReturn = new THREE.Vector3(
+              Math.cos(blackHoleState.angle) * blackHoleState.orbitRadius,
+              4.2,
+              Math.sin(blackHoleState.angle) * blackHoleState.orbitRadius - 48
+            );
+
+            blackHoleState.currentScale = THREE.MathUtils.lerp(1.15, 0.22, easeBhDep);
+            blackHoleGroup.scale.setScalar(blackHoleState.currentScale);
+            blackHoleGroup.position.lerpVectors(blackHoleState.startPos, bhOrbitReturn, easeBhDep);
+
+            if (bhDep >= 1) {
+              cosmosGroup.attach(blackHoleGroup);
+              blackHoleState.phase = 'ORBIT';
+              blackHoleState.timer = 0;
+              blackHoleState.clicks = 0;
+              setBlackHoleClicksUI(0);
+              setHudActive(false);
+              setHudText('Em órbita distante');
+            }
+            break;
+
+          case 'COLLAPSING':
+            blackHoleState.timer += dt;
+            const colP = Math.min(1, blackHoleState.timer / 0.7);
+            const easeCol = Math.pow(colP, 2);
+            blackHoleState.currentScale = THREE.MathUtils.lerp(1.15, 0.001, easeCol);
+            blackHoleGroup.scale.setScalar(blackHoleState.currentScale);
+            break;
+        }
+      }
+
+      // ANTI-COLLISION REPULSION: Keep close celestial bodies from ever clipping
+      const activeBodies = [];
+      if (earthState.current === 'APPROACHING' || earthState.current === 'CLOSE') {
+        activeBodies.push({ group: earthGroup, radius: 3.8, id: 'earth' });
+      }
+      for (const p of activePlanets) {
+        if (p.state === 'APPROACHING' || p.state === 'CLOSE') {
+          activeBodies.push({
+            group: p.group,
+            radius: p.id === 'saturn' ? 6.2 : p.radius,
+            id: p.id,
+          });
+        }
+      }
+      if (blackHoleState.active && (blackHoleState.phase === 'APPROACHING' || blackHoleState.phase === 'CLOSE' || blackHoleState.phase === 'DEPARTING')) {
+        activeBodies.push({ group: blackHoleGroup, radius: 6.5, id: 'blackhole' });
+      }
+
+      for (let i = 0; i < activeBodies.length; i++) {
+        for (let j = i + 1; j < activeBodies.length; j++) {
+          const b1 = activeBodies[i];
+          const b2 = activeBodies[j];
+          const minDist = b1.radius + b2.radius + 1.2;
+          const dist = b1.group.position.distanceTo(b2.group.position);
+          if (dist < minDist && dist > 0.001) {
+            const overlap = (minDist - dist) * 0.5;
+            const push = b1.group.position.clone().sub(b2.group.position).normalize().multiplyScalar(overlap);
+            b1.group.position.add(push);
+            b2.group.position.sub(push);
+          }
+        }
+      }
+
+      renderer.render(scene, camera);
+      requestAnimationFrame(animate);
+    };
+
+    const animId = requestAnimationFrame(animate);
 
     return () => {
+      cancelAnimationFrame(animId);
+      document.body.style.overflow = '';
       window.removeEventListener('resize', handleResize);
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseleave', handleMouseLeave);
-      cancelAnimationFrame(animationFrameId);
+      window.removeEventListener('mousedown', onMouseDown);
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+      window.removeEventListener('auxclick', onAuxClick);
+      window.removeEventListener('blur', onWindowBlur);
+      window.removeEventListener('touchstart', onTouchStart);
+      window.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener('touchend', onTouchEnd);
+      if (renderer.domElement && container.contains(renderer.domElement)) {
+        container.removeChild(renderer.domElement);
+      }
+      renderer.dispose();
+      starGeo.dispose();
+      starMat.dispose();
+      starTexture.dispose();
+      constGeo.dispose();
+      constMat.dispose();
+      constStarsGeo.dispose();
+      constStarsMat.dispose();
+      earthGeo.dispose();
+      earthMat.dispose();
+      cloudsGeo.dispose();
+      cloudsMat.dispose();
+      atmosphereGeo.dispose();
+      atmosphereMat.dispose();
+      gargantuaQuadGeo.dispose();
+      gargantuaShaderMat.dispose();
     };
   }, []);
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-0"
-      aria-hidden="true"
-    />
+    <>
+      {/* 3D WebGL Solar System & Gargantua Canvas */}
+      <div
+        ref={containerRef}
+        className="fixed inset-0 z-0 select-none overflow-hidden"
+        style={{
+          cursor:
+            cursorMode === 'grabbing'
+              ? 'grabbing'
+              : cursorMode === 'grab'
+              ? 'grab'
+              : cursorMode === 'pointer'
+              ? 'pointer'
+              : 'default',
+        }}
+        aria-hidden="true"
+      />
+
+      {/* Floating Hover Indicator when cursor is over Earth, Black Hole, or distant planet in open space */}
+      {hoveredTarget && (
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-30 pointer-events-none animate-fade-in">
+          <div className="rounded-full bg-slate-900/95 border border-cyan-500/60 px-5 py-2 text-xs font-mono text-cyan-300 backdrop-blur-md shadow-2xl flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-cyan-400 animate-ping" />
+            <span className="font-semibold">{hoveredTarget}</span>
+          </div>
+        </div>
+      )}
+
+      {/* Floating Scroll-to-Rotate Hint when in clean mode */}
+      {blackHoleActiveUI && (
+        <div className="fixed top-6 right-6 z-30 pointer-events-none animate-pulse">
+          <div className="rounded-xl border border-cyan-500/40 bg-slate-900/90 px-3.5 py-2 text-[11px] font-mono text-cyan-300 backdrop-blur-md shadow-2xl flex items-center gap-2">
+            <span className={`h-2 w-2 rounded-full ${isRotatingSpaceUI ? 'bg-emerald-400 animate-ping' : 'bg-cyan-400'}`} />
+            <span>{isRotatingSpaceUI ? 'Girando o cosmos...' : 'Segure o Scroll (rodinha) e mexa o mouse para girar o espaço'}</span>
+          </div>
+        </div>
+      )}
+
+      {/* CONTROLES INFERIORES: Aproximar Terra e Lixeira (Botão de girar foi removido!) */}
+      <div className="fixed bottom-6 left-6 z-30 flex flex-wrap items-center gap-2">
+        {/* 1. Earth Orbit Button */}
+        <button
+          onClick={() => triggerEarthRef.current && triggerEarthRef.current()}
+          className="group flex items-center gap-2 rounded-xl border border-slate-800/80 bg-slate-900/85 px-3.5 py-2 text-xs font-mono text-slate-300 backdrop-blur-md hover:border-emerald-500/50 hover:text-white transition-all shadow-2xl"
+          title="Clique na Terra para aproximá-la ou segure o Scroll do mouse (clique da rodinha) para girar o céu e procurar os planetas!"
+        >
+          <div className="relative flex h-3 w-3 items-center justify-center">
+            {hudActive ? (
+              <>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+              </>
+            ) : (
+              <span className="h-2 w-2 rounded-full bg-slate-500" />
+            )}
+          </div>
+          <span className="text-[11px] font-medium flex items-center gap-1.5">
+            <Globe className={`h-3.5 w-3.5 ${hudActive ? 'text-emerald-400' : 'text-slate-400'}`} />
+            <span>{hudText}</span>
+          </span>
+          {!hudActive && (
+            <span className="text-[10px] text-emerald-400 hidden sm:inline border-l border-slate-700 pl-2 group-hover:underline">
+              Aproximar Terra
+            </span>
+          )}
+        </button>
+
+        {/* 2. LIXEIRA (Surge logo acima dela, pouco maior, devagar, e suga o site como um ralo!) */}
+        <button
+          onClick={() => triggerSuctionRef.current && triggerSuctionRef.current()}
+          disabled={blackHoleActiveUI}
+          className={`group flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-mono backdrop-blur-md transition-all shadow-2xl ${
+            blackHoleActiveUI
+              ? 'border-violet-500/50 bg-violet-950/80 text-violet-300 cursor-default'
+              : 'border-rose-500/40 bg-slate-900/85 text-rose-300 hover:border-rose-400 hover:bg-rose-950/50 hover:text-white'
+          }`}
+          title={
+            blackHoleActiveUI
+              ? 'Buraco Negro Ativo! Segure o Scroll do mouse para procurá-lo no céu e clique 5 vezes nele quando grande para restaurar o site.'
+              : 'Limpar Site: Buraco Negro surge logo acima da lixeira e suga todos os componentes como um ralo!'
+          }
+        >
+          <Trash2
+            className={`h-3.5 w-3.5 ${
+              blackHoleActiveUI
+                ? 'text-violet-400 animate-spin'
+                : 'text-rose-400 group-hover:scale-110 group-hover:rotate-12 transition-transform'
+            }`}
+          />
+          <span className="text-[11px] font-medium hidden sm:inline">
+            {blackHoleActiveUI ? 'Vazio Ativo' : 'Limpar Site'}
+          </span>
+        </button>
+
+        {/* 3. Restore Button (Shows when Black Hole is active, reveals 5-clicks progress!) */}
+        {blackHoleActiveUI && (
+          <button
+            onClick={() => triggerRestoreRef.current && triggerRestoreRef.current()}
+            className="flex items-center gap-2 rounded-xl border border-amber-500/60 bg-amber-950/80 px-3 py-2 text-xs font-mono text-amber-300 backdrop-blur-md hover:bg-amber-900/90 hover:text-white transition-all shadow-2xl animate-pulse"
+            title="Restaurar o site agora ou clique 5 vezes no Buraco Negro grande!"
+          >
+            <RotateCcw className="h-3.5 w-3.5" />
+            <span className="text-[11px] font-medium">
+              Restaurar Site ({blackHoleClicksUI}/5 cliques)
+            </span>
+          </button>
+        )}
+      </div>
+    </>
   );
 }

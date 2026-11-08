@@ -73,3 +73,111 @@
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
+
+/* Black Hole Gravitational Drain Vortex (Efeito Ralo / Funil: Espremendo componentes para dentro do Buraco Negro) */
+@keyframes blackholeDrainSuck {
+  0% {
+    transform: scale(1) rotate(0deg) translate(0, 0);
+    transform-origin: 120px calc(100vh - 130px);
+    opacity: 1;
+    filter: blur(0px);
+  }
+  25% {
+    transform: scale(0.72, 0.85) rotate(40deg) translate(-4vw, 6vh) skew(-12deg, -6deg);
+    transform-origin: 120px calc(100vh - 130px);
+    opacity: 0.95;
+    filter: blur(1px) brightness(1.2);
+  }
+  55% {
+    transform: scale(0.28, 0.45) rotate(190deg) translate(-14vw, 18vh) skew(-28deg, -14deg);
+    transform-origin: 120px calc(100vh - 130px);
+    opacity: 0.7;
+    filter: blur(4px) brightness(1.8) hue-rotate(30deg);
+  }
+  85% {
+    transform: scale(0.06, 0.14) rotate(460deg) translate(-22vw, 28vh) skew(-45deg, -20deg);
+    transform-origin: 120px calc(100vh - 130px);
+    opacity: 0.35;
+    filter: blur(8px) brightness(3);
+  }
+  100% {
+    transform: scale(0) rotate(720deg) translate(-26vw, 32vh);
+    transform-origin: 120px calc(100vh - 130px);
+    opacity: 0;
+    filter: blur(16px) brightness(4);
+    pointer-events: none;
+  }
+}
+
+@keyframes blackholeDrainEject {
+  0% {
+    transform: scale(0) rotate(720deg) translate(-26vw, 32vh);
+    transform-origin: 120px calc(100vh - 130px);
+    opacity: 0;
+    filter: blur(16px) brightness(4);
+  }
+  30% {
+    transform: scale(0.12, 0.28) rotate(460deg) translate(-20vw, 26vh) skew(40deg, 18deg);
+    transform-origin: 120px calc(100vh - 130px);
+    opacity: 0.45;
+    filter: blur(8px) brightness(2.5);
+  }
+  65% {
+    transform: scale(0.5, 0.7) rotate(180deg) translate(-10vw, 12vh) skew(18deg, 8deg);
+    transform-origin: 120px calc(100vh - 130px);
+    opacity: 0.8;
+    filter: blur(3px) brightness(1.5);
+  }
+  88% {
+    transform: scale(1.04, 1.02) rotate(15deg) translate(-2vw, 2vh);
+    transform-origin: 120px calc(100vh - 130px);
+    opacity: 0.95;
+    filter: blur(1px) brightness(1.1);
+  }
+  100% {
+    transform: scale(1) rotate(0deg) translate(0, 0);
+    transform-origin: 120px calc(100vh - 130px);
+    opacity: 1;
+    filter: blur(0px) brightness(1);
+  }
+}
+
+/* Staggered classes for drain funnel suction (Rápido e decisivo para liberar a tela) */
+.animate-suck-stagger-0 {
+  animation: blackholeDrainSuck 0.45s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards;
+  pointer-events: none;
+}
+.animate-suck-stagger-1 {
+  animation: blackholeDrainSuck 0.5s 0.04s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards;
+  pointer-events: none;
+}
+.animate-suck-stagger-2 {
+  animation: blackholeDrainSuck 0.55s 0.08s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards;
+  pointer-events: none;
+}
+.animate-suck-stagger-3 {
+  animation: blackholeDrainSuck 0.6s 0.12s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards;
+  pointer-events: none;
+}
+
+.animate-restore-stagger-0 {
+  animation: blackholeDrainEject 0.6s 0.12s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
+}
+.animate-restore-stagger-1 {
+  animation: blackholeDrainEject 0.65s 0.08s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
+}
+.animate-restore-stagger-2 {
+  animation: blackholeDrainEject 0.7s 0.04s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
+}
+.animate-restore-stagger-3 {
+  animation: blackholeDrainEject 0.75s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
+}
+
+.animate-blackhole-suck {
+  animation: blackholeDrainSuck 1.4s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards;
+  pointer-events: none;
+}
+
+.animate-blackhole-restore {
+  animation: blackholeDrainEject 1.4s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
+}
