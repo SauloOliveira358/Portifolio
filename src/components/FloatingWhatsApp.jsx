@@ -1,14 +1,160 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageCircle, X, Send, Bot, Sparkles, ExternalLink, ArrowRight } from 'lucide-react';
+import { MessageCircle, X, Send, Bot, ExternalLink, ArrowRight, FolderGit2, Sparkles, Minus } from 'lucide-react';
 import { fireEpicConfetti } from '../utils/confetti';
 
-export default function FloatingWhatsApp({ onOpenResume }) {
+export const PLANET_DIALOGS = {
+  jupiter: {
+    id: 'jupiter',
+    name: 'Júpiter',
+    subtitle: 'O Núcleo / Backend',
+    emoji: '🪐',
+    badgeColor: 'border-amber-500/40 bg-amber-500/10 text-amber-300',
+    botMessage: 'Bip, bip! 🪐 Você escaneou Júpiter. A gravidade aqui é forte, assim como o Backend do Saulo. É neste núcleo que ele constrói APIs robustas e seguras usando Python (FastAPI) e Java (Spring Boot). Qual motor você quer inspecionar primeiro?',
+    options: [
+      {
+        id: 'belabusca_api',
+        label: 'Ver API do BelaBusca',
+        reply: 'O BelaBusca (projeto-ela) conta com arquitetura de serviços em Python e Node.js para intermediação e busca de serviços profissionais, busca filtrada dinâmica e autenticação segura.',
+        github: 'https://github.com/SauloOliveira358/projeto-ela',
+        githubLabel: 'Acessar API do BelaBusca no GitHub',
+      },
+      {
+        id: 'vendas_bi_backend',
+        label: 'Ver Backend do Projeto Vendas BI',
+        reply: 'O backend do Projeto Vendas BI e Rede Aurora foi estruturado em Flask (Python) com PostgreSQL avançado (PLpgSQL, triggers e procedures de auditoria para KPIs de vendas e ticket médio).',
+        github: 'https://github.com/SauloOliveira358/projeto-comercial',
+        githubSecondary: 'https://github.com/SauloOliveira358/projeto_vendas',
+        githubLabel: 'Ver Backend de Vendas BI no GitHub',
+      },
+      {
+        id: 'close_jupiter',
+        label: 'Voltar à Galáxia',
+        isClose: true,
+      },
+    ],
+  },
+  saturn: {
+    id: 'saturn',
+    name: 'Saturno',
+    subtitle: 'A Interface / Frontend',
+    emoji: '🪐',
+    badgeColor: 'border-yellow-500/40 bg-yellow-500/10 text-yellow-300',
+    botMessage: 'Sinal captado! 🪐 Bem-vindo aos anéis de Saturno. Esta é a camada visual (Frontend), onde a mágica da interação acontece. O Saulo utiliza Angular 19 e React para criar interfaces bonitas e fluidas para os usuários. Quer explorar as telas que ele construiu?',
+    options: [
+      {
+        id: 'medflow_ui',
+        label: 'Ver Interface do MedFlow (React)',
+        reply: 'O MedFlow possui uma interface moderna desenvolvida em React para gestão hospitalar e agendamento de consultas em tempo real, com prevenção visual de concorrência e design limpo.',
+        github: 'https://github.com/SauloOliveira358/MedFlow',
+        githubLabel: 'Ver UI do MedFlow no GitHub',
+      },
+      {
+        id: 'jogo_senha_ui',
+        label: 'Ver UI do Jogo da Senha',
+        reply: 'O Jogo da Senha e os projetos de games do Saulo (como Indiana Jones 2D e Birdzin) utilizam Canvas a 60 FPS, gerenciamento de estado reativo, sons dinâmicos e design retrô moderno.',
+        github: 'https://github.com/SauloOliveira358/idianajhones',
+        githubSecondary: 'https://github.com/SauloOliveira358/Show-do-Android',
+        githubLabel: 'Ver Projetos de Jogos & UI no GitHub',
+      },
+      {
+        id: 'close_saturn',
+        label: 'Continuar voo',
+        isClose: true,
+      },
+    ],
+  },
+  mars: {
+    id: 'mars',
+    name: 'Marte',
+    subtitle: 'Estrutura / Banco de Dados',
+    emoji: '🔴',
+    badgeColor: 'border-rose-500/40 bg-rose-500/10 text-rose-300',
+    botMessage: 'Pouso em Marte autorizado! 🔴 Terreno denso e focado em Dados. Aqui o Saulo constrói fundações sólidas com PostgreSQL, MySQL e Supabase. Ele é especialista em modelagem relacional. Quer escavar as estruturas de dados dos projetos?',
+    options: [
+      {
+        id: 'modelagem_projeto_vendas',
+        label: 'Modelagem do Projeto Vendas (PLpgSQL)',
+        reply: 'O Projeto Vendas explora modelagem relacional de alta performance no PostgreSQL, com estruturação de schemas normalizados, procedures em PLpgSQL, triggers de integridade e auditoria de transações comerciais.',
+        github: 'https://github.com/SauloOliveira358/projeto_vendas',
+        githubSecondary: 'https://github.com/SauloOliveira358/projeto-comercial',
+        githubLabel: 'Ver Modelagem do Projeto Vendas no GitHub',
+      },
+      {
+        id: 'banco_belabusca',
+        label: 'Banco de Dados do BelaBusca',
+        reply: 'Modelagem relacional com tabelas de usuários, prestadores de serviços, categorias, agendamentos com validação temporal e chaves estrangeiras com índices otimizados.',
+        github: 'https://github.com/SauloOliveira358/projeto-ela',
+        githubLabel: 'Ver Database do BelaBusca no GitHub',
+      },
+      {
+        id: 'close_mars',
+        label: 'Explorar outro planeta',
+        isClose: true,
+      },
+    ],
+  },
+  earth: {
+    id: 'earth',
+    name: 'Terra',
+    subtitle: 'O Hub / Sistemas Completos',
+    emoji: '🌍',
+    badgeColor: 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300',
+    botMessage: 'Bem-vindo à Terra! 🌍 É aqui que o código vira solução para o mundo real. Neste planeta, você tem uma visão Full-Stack de sistemas completos que já estão gerando impacto. Qual ecossistema você quer abrir?',
+    options: [
+      {
+        id: 'overview_belabusca',
+        label: 'Visão Geral: BelaBusca',
+        reply: 'O BelaBusca é uma plataforma Full-Stack completa: frontend moderno e responsivo em React integrado a APIs de agendamento e gerenciamento de prestadores de serviços especializados.',
+        github: 'https://github.com/SauloOliveira358/projeto-ela',
+        githubLabel: 'Acessar Repositório do BelaBusca',
+      },
+      {
+        id: 'overview_medflow',
+        label: 'Visão Geral: MedFlow (Hospitalar)',
+        reply: 'O MedFlow é um sistema hospitalar Full-Stack robusto: frontend reativo em React conectado a backend em Spring Boot (Java) e PostgreSQL/Supabase, com proteção contra Race Condition e conflitos de agenda médica.',
+        github: 'https://github.com/SauloOliveira358/MedFlow',
+        githubLabel: 'Acessar Repositório do MedFlow',
+      },
+      {
+        id: 'github_profile',
+        label: 'Acessar o GitHub do Saulo',
+        reply: 'Você pode acessar o perfil completo do Saulo no GitHub para explorar todos os repositórios públicos, projetos em Java, Python, React, SQL e games!',
+        github: 'https://github.com/SauloOliveira358',
+        githubLabel: 'Abrir GitHub de Saulo (@SauloOliveira358)',
+      },
+    ],
+  },
+  moon: {
+    id: 'moon',
+    name: 'Lua',
+    subtitle: 'Suporte / Infra e Ferramentas',
+    emoji: '🌙',
+    badgeColor: 'border-sky-400/40 bg-sky-500/10 text-sky-300',
+    botMessage: 'Explorando a superfície lunar! 🌙 A Lua orbita os planetas para dar suporte. Este é o ambiente de Infraestrutura e DevOps: Git, AWS, Linux e Terminais. Quer dar uma olhada nas ferramentas que mantêm tudo rodando nos bastidores?',
+    options: [
+      {
+        id: 'stack_infra',
+        label: 'Ver Stack de Infraestrutura',
+        reply: 'Infraestrutura completa: 1) Controle de versão com Git & GitHub; 2) Servidores Linux (Debian/Ubuntu, comandos shell); 3) Nuvem AWS e Docker; 4) Redes de computadores, TCP/IP e cabeamento estruturado com experiência prática em hardware industrial.',
+        github: 'https://github.com/SauloOliveira358',
+        githubLabel: 'Ver Repositórios & Configurações',
+      },
+    ],
+  },
+};
+
+export default function FloatingWhatsApp({
+  onOpenResume,
+  isCleanMode = false,
+  planetTrigger = null,
+  onClosePlanet = null,
+}) {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
     {
       id: 1,
       sender: 'bot',
-      text: 'Olá! Sou o assistente virtual do Saulo. Pergunte qualquer coisa sobre as experiências dele, projetos do GitHub, faculdade ou vagas de emprego!',
+      text: 'Olá! Sou o assistente virtual do Saulo. Pergunte qualquer coisa sobre as experiências dele, projetos do GitHub, faculdade ou clique nos planetas para uma jornada cósmica!',
       time: 'Agora',
     },
   ]);
@@ -16,17 +162,58 @@ export default function FloatingWhatsApp({ onOpenResume }) {
   const [isTyping, setIsTyping] = useState(false);
   const [interactionCount, setInteractionCount] = useState(0);
   const messagesEndRef = useRef(null);
+  const lastHandledTriggerRef = useRef(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isTyping]);
 
+  // Handle incoming planet click triggers
+  useEffect(() => {
+    if (!planetTrigger || !planetTrigger.id) return;
+
+    // Previne repetição do mesmo clique
+    if (
+      lastHandledTriggerRef.current &&
+      lastHandledTriggerRef.current.id === planetTrigger.id &&
+      lastHandledTriggerRef.current.timestamp === planetTrigger.timestamp
+    ) {
+      return;
+    }
+    lastHandledTriggerRef.current = planetTrigger;
+
+    const dialog = PLANET_DIALOGS[planetTrigger.id];
+    if (!dialog) return;
+
+    setIsOpen(true);
+    setMessages((prev) => {
+      // Se a última mensagem já for a introdução desse mesmo planeta, não adiciona novamente
+      const last = prev[prev.length - 1];
+      if (last && last.isPlanetIntro && last.planet?.id === dialog.id) {
+        return prev;
+      }
+      return [
+        ...prev,
+        {
+          id: Date.now(),
+          sender: 'bot',
+          isPlanetIntro: true,
+          planet: dialog,
+          text: dialog.botMessage,
+          options: dialog.options,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        },
+      ];
+    });
+  }, [planetTrigger]);
+
   const quickQuestions = [
     { label: '💼 Experiência & Dia a dia', query: 'experiência' },
     { label: '🚀 Emprego & Contratação', query: 'emprego' },
     { label: '📂 Projetos Reais no GitHub', query: 'projetos' },
-    { label: '🎓 Faculdade & Período', query: 'faculdade' },
     { label: '⚡ Stack & Tecnologias', query: 'stack' },
+    { label: '🎓 Faculdade & Formação', query: 'faculdade' },
+    { label: '📄 Currículo Profissional', query: 'currículo' },
     { label: '📱 WhatsApp Direto', query: 'whatsapp' },
   ];
 
@@ -42,6 +229,56 @@ export default function FloatingWhatsApp({ onOpenResume }) {
 
   const getInvite = (index) => {
     return whatsappInvites[index % whatsappInvites.length];
+  };
+
+  const handleOptionClick = (option, planet) => {
+    const userMsg = {
+      id: Date.now(),
+      sender: 'user',
+      text: option.label,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    };
+
+    setMessages((prev) => [...prev, userMsg]);
+
+    if (option.isClose) {
+      setIsTyping(true);
+      setTimeout(() => {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: Date.now() + 1,
+            sender: 'bot',
+            text: '🚀 Retornando à exploração da galáxia! Clique em outro planeta quando quiser inspecioná-lo.',
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          },
+        ]);
+        setIsTyping(false);
+        setTimeout(() => {
+          setIsOpen(false);
+          if (onClosePlanet) onClosePlanet();
+        }, 700);
+      }, 350);
+      return;
+    }
+
+    setIsTyping(true);
+    setTimeout(() => {
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now() + 1,
+          sender: 'bot',
+          isProjectResponse: true,
+          text: option.reply,
+          github: option.github,
+          githubSecondary: option.githubSecondary,
+          githubLabel: option.githubLabel,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        },
+      ]);
+      setIsTyping(false);
+    }, 400);
   };
 
   const handleSendMessage = (textToSend) => {
@@ -228,6 +465,11 @@ export default function FloatingWhatsApp({ onOpenResume }) {
     window.open('https://wa.me/5537999165471?text=Ol%C3%A1%20Saulo,%20estava%20conversando%20com%20o%20assistente%20no%20seu%20portf%C3%B3lio%20e%20gostaria%20de%20falar%20com%20voc%C3%AA!', '_blank');
   };
 
+  // Se estiver em modo limpo e o bot estiver fechado, NÃO renderiza nada na tela (fica 100% limpo)!
+  if (isCleanMode && !isOpen) {
+    return null;
+  }
+
   return (
     <div className="fixed bottom-6 right-6 z-40 flex flex-col items-end">
       {/* Interactive Chat Window with Smooth Transitions */}
@@ -258,16 +500,22 @@ export default function FloatingWhatsApp({ onOpenResume }) {
               </div>
             </div>
 
-            <button
-              onClick={() => setIsOpen(false)}
-              className="rounded-lg p-1 text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
-            >
-              <X className="h-4 w-4" />
-            </button>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => {
+                  setIsOpen(false);
+                  if (onClosePlanet) onClosePlanet();
+                }}
+                className="rounded-lg p-1 text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
+                title="Fechar ou minimizar o chat"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
           </div>
 
           {/* Messages Flow Area */}
-          <div className="h-72 overflow-y-auto p-4 space-y-3 bg-[#080d1a]/50 text-xs">
+          <div className="h-80 overflow-y-auto p-4 space-y-3 bg-[#080d1a]/50 text-xs">
             {messages.map((msg) => (
               <div
                 key={msg.id}
@@ -279,13 +527,83 @@ export default function FloatingWhatsApp({ onOpenResume }) {
                   </div>
                 )}
                 <div
-                  className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 leading-relaxed ${
+                  className={`max-w-[88%] rounded-2xl px-3.5 py-2.5 leading-relaxed ${
                     msg.sender === 'user'
                       ? 'bg-emerald-500 text-slate-950 font-semibold rounded-tr-none'
                       : 'bg-slate-800/90 text-slate-200 border border-slate-700/60 rounded-tl-none'
                   }`}
                 >
+                  {/* Planet Header Badge if intro */}
+                  {msg.isPlanetIntro && msg.planet && (
+                    <div className="mb-2">
+                      <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[10px] font-mono font-bold tracking-wide ${msg.planet.badgeColor}`}>
+                        <span>{msg.planet.emoji}</span>
+                        <span>{msg.planet.name.toUpperCase()}</span>
+                        <span className="opacity-60">•</span>
+                        <span>{msg.planet.subtitle}</span>
+                      </span>
+                    </div>
+                  )}
+
                   <p className="whitespace-pre-wrap">{msg.text}</p>
+
+                  {/* Interactive Response Buttons for Planets */}
+                  {msg.options && (
+                    <div className="mt-3 space-y-1.5 pt-2 border-t border-slate-700/60">
+                      <p className="text-[10px] uppercase font-mono tracking-wider text-emerald-400/90 mb-1">
+                        Opções de resposta:
+                      </p>
+                      <div className="flex flex-col gap-1.5">
+                        {msg.options.map((opt, oIdx) => (
+                          <button
+                            key={oIdx}
+                            onClick={() => handleOptionClick(opt, msg.planet)}
+                            className={`w-full text-left rounded-xl px-3 py-2 text-xs font-medium transition-all flex items-center justify-between gap-2 border shadow-sm ${
+                              opt.isClose
+                                ? 'bg-slate-800/60 hover:bg-slate-800 text-slate-400 hover:text-white border-slate-700/50'
+                                : 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 hover:text-emerald-200 border-emerald-500/30 hover:border-emerald-500/60'
+                            }`}
+                          >
+                            <span>{opt.label}</span>
+                            {opt.isClose ? (
+                              <X className="h-3 w-3 shrink-0 opacity-60" />
+                            ) : (
+                              <ArrowRight className="h-3.5 w-3.5 shrink-0 text-emerald-400" />
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Direct GitHub Link Card */}
+                  {msg.github && (
+                    <div className="mt-3 pt-2.5 border-t border-slate-700/60 space-y-1.5">
+                      <a
+                        href={msg.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={() => fireEpicConfetti()}
+                        className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 px-3.5 py-2 text-xs font-bold text-slate-950 transition-all hover:scale-[1.02] shadow-lg shadow-emerald-500/20"
+                      >
+                        <FolderGit2 className="h-4 w-4" />
+                        <span>{msg.githubLabel || 'Ver Repositório no GitHub'}</span>
+                        <ExternalLink className="h-3.5 w-3.5" />
+                      </a>
+                      {msg.githubSecondary && (
+                        <a
+                          href={msg.githubSecondary}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={() => fireEpicConfetti()}
+                          className="block text-center text-[10px] font-mono text-emerald-400 hover:underline"
+                        >
+                          🔗 Ver também repositório secundário
+                        </a>
+                      )}
+                    </div>
+                  )}
+
                   <span
                     className={`block text-[9px] mt-1.5 ${
                       msg.sender === 'user' ? 'text-slate-900/70 text-right font-medium' : 'text-slate-500'
@@ -333,7 +651,7 @@ export default function FloatingWhatsApp({ onOpenResume }) {
                 value={inputVal}
                 onChange={(e) => setInputVal(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                placeholder="Pergunte sobre vagas, projetos, requisitos..."
+                placeholder="Pergunte ou clique nos botões acima..."
                 className="flex-1 rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-xs text-white placeholder-slate-400 outline-none focus:border-emerald-500 transition-colors"
               />
               <button
@@ -359,22 +677,24 @@ export default function FloatingWhatsApp({ onOpenResume }) {
         </div>
       </div>
 
-      {/* Floating Trigger Button with Ping Effect */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="group relative flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500 text-slate-950 shadow-2xl shadow-emerald-500/40 hover:scale-110 hover:bg-emerald-400 transition-all duration-300 focus:outline-none"
-        aria-label="Abrir assistente e WhatsApp"
-      >
-        {/* Unread indicator */}
-        <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow">
-          1
-        </span>
+      {/* Floating Trigger Button (Apenas visível quando NÃO estiver no modo limpo com o chat fechado) */}
+      {!isCleanMode && (
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="group relative flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500 text-slate-950 shadow-2xl shadow-emerald-500/40 hover:scale-110 hover:bg-emerald-400 transition-all duration-300 focus:outline-none"
+          aria-label="Abrir assistente e WhatsApp"
+        >
+          {/* Unread indicator */}
+          <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow">
+            1
+          </span>
 
-        {/* Ambient Ring */}
-        <span className="absolute inset-0 rounded-full border-2 border-emerald-400 opacity-60 animate-ping pointer-events-none" />
+          {/* Ambient Ring */}
+          <span className="absolute inset-0 rounded-full border-2 border-emerald-400 opacity-60 animate-ping pointer-events-none" />
 
-        {isOpen ? <X className="h-6 w-6" /> : <MessageCircle className="h-7 w-7 fill-current" />}
-      </button>
+          {isOpen ? <X className="h-6 w-6" /> : <MessageCircle className="h-7 w-7 fill-current" />}
+        </button>
+      )}
     </div>
   );
 }

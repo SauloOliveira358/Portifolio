@@ -24,6 +24,8 @@ export default function InteractiveBackground({
   onCompleteSuction,
   onStartRestore,
   onCompleteRestore,
+  onPlanetClick,
+  dismissTrigger = 0,
 }) {
   const containerRef = useRef(null);
   const [hudText, setHudText] = useState('Em órbita distante');
@@ -37,6 +39,13 @@ export default function InteractiveBackground({
   const triggerEarthRef = useRef(null);
   const triggerSuctionRef = useRef(null);
   const triggerRestoreRef = useRef(null);
+  const dismissPlanetsRef = useRef(null);
+
+  useEffect(() => {
+    if (dismissTrigger > 0 && dismissPlanetsRef.current) {
+      dismissPlanetsRef.current();
+    }
+  }, [dismissTrigger]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -902,6 +911,27 @@ export default function InteractiveBackground({
 
     triggerRestoreRef.current = triggerRestore;
 
+    // Afasta todos os planetas que estejam próximos de volta para suas órbitas quando o usuário fecha o bot
+    const dismissActivePlanets = () => {
+      for (const p of activePlanets) {
+        if (p.state === 'CLOSE' || p.state === 'APPROACHING') {
+          p.state = 'DEPARTING';
+          p.timer = 0;
+          p.startPos.copy(p.group.position);
+          setHudText(`Afastando ${p.name} de volta à sua órbita...`);
+        }
+      }
+      if (earthState.current === 'CLOSE' || earthState.current === 'APPROACHING') {
+        earthState.current = 'DEPARTING';
+        earthState.timer = 0;
+        earthState.startPos.copy(earthGroup.position);
+        setHudText('Afastando Terra de volta à sua órbita...');
+      }
+    };
+    dismissPlanetsRef.current = dismissActivePlanets;
+
+    let lastPlanetClickTime = 0;
+
     // 11. POINTER INTERACTION: SEGURAR O SCROLL DO MOUSE (MMB / CLIQUE DA RODINHA) PARA GIRAR O ESPAÇO!
     let isHoldingScrollButton = false;
     let activeGrabbedTarget = null;
@@ -1009,7 +1039,12 @@ export default function InteractiveBackground({
         if (earthState.current === 'ORBIT') {
           const earthScreen = getScreenCoords(earthGroup);
           if (!earthScreen.isBehind && Math.hypot(clientX - earthScreen.x, clientY - earthScreen.y) <= 60) {
-            startEarthApproach();
+            const now = Date.now();
+            if (now - lastPlanetClickTime > 1000) {
+              lastPlanetClickTime = now;
+              startEarthApproach();
+              if (onPlanetClick) onPlanetClick('earth');
+            }
             return;
           }
         }
@@ -1019,28 +1054,33 @@ export default function InteractiveBackground({
           if (p.state === 'ORBIT') {
             const screen = getScreenCoords(p.group);
             if (!screen.isBehind && Math.hypot(clientX - screen.x, clientY - screen.y) <= 60) {
-              scene.attach(p.group);
+              const now = Date.now();
+              if (now - lastPlanetClickTime > 1000) {
+                lastPlanetClickTime = now;
+                scene.attach(p.group);
 
-              const avoidList = [];
-              if (earthState.current === 'APPROACHING' || earthState.current === 'CLOSE') {
-                avoidList.push(earthGroup.position);
-              }
-              if (blackHoleState.phase === 'APPROACHING' || blackHoleState.phase === 'CLOSE') {
-                avoidList.push(blackHoleGroup.position);
-              }
-              for (const other of activePlanets) {
-                if (other !== p && (other.state === 'APPROACHING' || other.state === 'CLOSE')) {
-                  avoidList.push(other.group.position);
+                const avoidList = [];
+                if (earthState.current === 'APPROACHING' || earthState.current === 'CLOSE') {
+                  avoidList.push(earthGroup.position);
                 }
+                if (blackHoleState.phase === 'APPROACHING' || blackHoleState.phase === 'CLOSE') {
+                  avoidList.push(blackHoleGroup.position);
+                }
+                for (const other of activePlanets) {
+                  if (other !== p && (other.state === 'APPROACHING' || other.state === 'CLOSE')) {
+                    avoidList.push(other.group.position);
+                  }
+                }
+
+                p.state = 'APPROACHING';
+                p.timer = 0;
+                p.startPos.copy(p.group.position);
+                p.targetPos.copy(findSafeScreenWorldPosition(avoidList, p.radius));
+
+                setHudText(`${p.emoji} ${p.name} em aproximação orbital...`);
+                setHudActive(true);
+                if (onPlanetClick) onPlanetClick(p.id);
               }
-
-              p.state = 'APPROACHING';
-              p.timer = 0;
-              p.startPos.copy(p.group.position);
-              p.targetPos.copy(findSafeScreenWorldPosition(avoidList, p.radius));
-
-              setHudText(`${p.emoji} ${p.name} em aproximação orbital...`);
-              setHudActive(true);
               return;
             }
           }
@@ -1659,7 +1699,10 @@ export default function InteractiveBackground({
       <div className="fixed bottom-6 left-6 z-30 flex flex-wrap items-center gap-2">
         {/* 1. Earth Orbit Button */}
         <button
-          onClick={() => triggerEarthRef.current && triggerEarthRef.current()}
+          onClick={() => {
+            if (triggerEarthRef.current) triggerEarthRef.current();
+            if (onPlanetClick) onPlanetClick('earth');
+          }}
           className="group flex items-center gap-2 rounded-xl border border-slate-800/80 bg-slate-900/85 px-3.5 py-2 text-xs font-mono text-slate-300 backdrop-blur-md hover:border-emerald-500/50 hover:text-white transition-all shadow-2xl"
           title="Clique na Terra para aproximá-la ou segure o Scroll do mouse (clique da rodinha) para girar o céu e procurar os planetas!"
         >

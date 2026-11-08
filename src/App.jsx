@@ -16,6 +16,8 @@ import { Terminal as TerminalIcon, Sparkles } from 'lucide-react';
 export default function App() {
   const [resumeOpen, setResumeOpen] = useState(false);
   const [cleanModeState, setCleanModeState] = useState('NORMAL'); // 'NORMAL', 'SUCKING', 'CLEAN', 'RESTORING'
+  const [selectedPlanet, setSelectedPlanet] = useState(null);
+  const [dismissPlanetTrigger, setDismissPlanetTrigger] = useState(0);
 
   // Helper leve para animação individual de cada componente para o buraco negro
   const getFlyClass = (zone) => {
@@ -42,6 +44,8 @@ export default function App() {
           window.scrollTo({ top: 0, behavior: 'instant' });
           setCleanModeState('NORMAL');
         }}
+        onPlanetClick={(planetId) => setSelectedPlanet({ id: planetId, timestamp: Date.now() })}
+        dismissTrigger={dismissPlanetTrigger}
       />
 
       {/* Main Website Content Wrapper - Desaparece 100% no Modo Limpo para liberar a tela inteira */}
@@ -117,13 +121,21 @@ export default function App() {
           <div className={getFlyClass('footer')}>
             <Footer />
           </div>
-
-          {/* Floating 1-Click WhatsApp Messenger & Assistant Bot */}
-          <div className={getFlyClass('whatsapp')}>
-            <FloatingWhatsApp onOpenResume={() => setResumeOpen(true)} />
-          </div>
         </div>
       )}
+
+      {/* Floating 1-Click WhatsApp Messenger & Assistant Bot */}
+      <div className={`relative z-40 ${cleanModeState === 'SUCKING' ? getFlyClass('whatsapp') : cleanModeState === 'RESTORING' ? getFlyClass('whatsapp') : ''}`}>
+        <FloatingWhatsApp
+          onOpenResume={() => setResumeOpen(true)}
+          isCleanMode={cleanModeState === 'CLEAN'}
+          planetTrigger={selectedPlanet}
+          onClosePlanet={() => {
+            setSelectedPlanet(null);
+            setDismissPlanetTrigger(Date.now());
+          }}
+        />
+      </div>
 
       {/* Complete Professional Resume Modal */}
       <ResumeModal isOpen={resumeOpen} onClose={() => setResumeOpen(false)} />
