@@ -17,13 +17,13 @@ export default function App() {
   const [resumeOpen, setResumeOpen] = useState(false);
   const [cleanModeState, setCleanModeState] = useState('NORMAL'); // 'NORMAL', 'SUCKING', 'CLEAN', 'RESTORING'
 
-  // Helper to get staggered animation classes per section depth
-  const getStaggerClass = (tier) => {
+  // Helper leve para animação individual de cada componente para o buraco negro
+  const getFlyClass = (zone) => {
     if (cleanModeState === 'SUCKING') {
-      return `animate-suck-stagger-${tier}`;
+      return `animate-suck-${zone}`;
     }
     if (cleanModeState === 'RESTORING') {
-      return `animate-restore-stagger-${tier}`;
+      return `animate-restore-${zone}`;
     }
     return '';
   };
@@ -34,84 +34,92 @@ export default function App() {
       <InteractiveBackground
         onStartSuction={() => setCleanModeState('SUCKING')}
         onCompleteSuction={() => setCleanModeState('CLEAN')}
-        onStartRestore={() => setCleanModeState('RESTORING')}
-        onCompleteRestore={() => setCleanModeState('NORMAL')}
+        onStartRestore={() => {
+          window.scrollTo({ top: 0, behavior: 'instant' });
+          setCleanModeState('RESTORING');
+        }}
+        onCompleteRestore={() => {
+          window.scrollTo({ top: 0, behavior: 'instant' });
+          setCleanModeState('NORMAL');
+        }}
       />
 
       {/* Main Website Content Wrapper - Desaparece 100% no Modo Limpo para liberar a tela inteira */}
       {cleanModeState !== 'CLEAN' && (
         <div className={`relative z-10 ${cleanModeState === 'SUCKING' ? 'pointer-events-none' : ''}`}>
-          {/* Floating Header (Tier 3 - Sucked last, restored first) */}
-          <div className={getStaggerClass(3)}>
+          {/* Floating Header */}
+          <div className={getFlyClass('nav')}>
             <Navbar onOpenResume={() => setResumeOpen(true)} />
           </div>
 
           {/* Main Content Sections */}
           <main className="relative z-10">
-            {/* 1. Hero Section (Tier 3) */}
-            <div className={getStaggerClass(3)}>
+            {/* 1. Hero Section */}
+            <div className={getFlyClass('hero')}>
               <HeroSection onOpenResume={() => setResumeOpen(true)} />
             </div>
 
-            {/* 2. Bento Grid Section (Tier 2) */}
-            <div className={getStaggerClass(2)}>
+            {/* 2. Bento Grid Section */}
+            <div className={getFlyClass('bento')}>
               <BentoGrid onOpenResume={() => setResumeOpen(true)} />
             </div>
 
-            {/* 3. Interactive Terminal Playground (Tier 2) */}
-            <section id="terminal" className={`py-16 px-4 sm:px-6 relative ${getStaggerClass(2)}`}>
-              <div className="mx-auto max-w-5xl">
-                <div className="text-center max-w-2xl mx-auto mb-10">
-                  <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-mono text-emerald-400 border border-emerald-500/20 mb-3">
-                    <TerminalIcon className="h-3.5 w-3.5" />
-                    <span>TERMINAL CLI INTERATIVO</span>
+            {/* 3. Interactive Terminal Playground */}
+            <div className={getFlyClass('terminal')}>
+              <section id="terminal" className="py-16 px-4 sm:px-6 relative">
+                <div className="mx-auto max-w-5xl">
+                  <div className="text-center max-w-2xl mx-auto mb-10">
+                    <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-mono text-emerald-400 border border-emerald-500/20 mb-3">
+                      <TerminalIcon className="h-3.5 w-3.5" />
+                      <span>TERMINAL CLI INTERATIVO</span>
+                    </div>
+                    <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+                      Experimente o Console de Desenvolvedor
+                    </h2>
+                    <p className="mt-2 text-sm sm:text-base text-slate-400">
+                      Execute comandos em tempo real, consulte o schema SQL simulado, explore as habilidades ou lance confetes.
+                    </p>
                   </div>
-                  <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-                    Experimente o Console de Desenvolvedor
-                  </h2>
-                  <p className="mt-2 text-sm sm:text-base text-slate-400">
-                    Execute comandos em tempo real, consulte o schema SQL simulado, explore as habilidades ou lance confetes.
-                  </p>
+
+                  <TerminalPlayground
+                    onOpenResume={() => setResumeOpen(true)}
+                    onOpenContact={() => {
+                      const el = document.getElementById('contato');
+                      el?.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                  />
                 </div>
+              </section>
+            </div>
 
-                <TerminalPlayground
-                  onOpenResume={() => setResumeOpen(true)}
-                  onOpenContact={() => {
-                    const el = document.getElementById('contato');
-                    el?.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                />
-              </div>
-            </section>
-
-            {/* 4. Projects Showcase (Tier 1) */}
-            <div className={getStaggerClass(1)}>
+            {/* 4. Projects Showcase */}
+            <div className={getFlyClass('projects')}>
               <ProjectsSection />
             </div>
 
-            {/* 5. Career & Education Timeline (Tier 1) */}
-            <div className={getStaggerClass(1)}>
+            {/* 5. Career & Education Timeline */}
+            <div className={getFlyClass('experience')}>
               <ExperienceTimeline onOpenResume={() => setResumeOpen(true)} />
             </div>
 
-            {/* 6. Technical Skills Matrix (Tier 0 - Sucked early) */}
-            <div className={getStaggerClass(0)}>
+            {/* 6. Technical Skills Matrix */}
+            <div className={getFlyClass('skills')}>
               <SkillsMatrix />
             </div>
 
-            {/* 7. Contact Section (Tier 0) */}
-            <div className={getStaggerClass(0)}>
+            {/* 7. Contact Section */}
+            <div className={getFlyClass('contact')}>
               <ContactSection />
             </div>
           </main>
 
-          {/* Footer (Tier 0) */}
-          <div className={getStaggerClass(0)}>
+          {/* Footer */}
+          <div className={getFlyClass('footer')}>
             <Footer />
           </div>
 
-          {/* Floating 1-Click WhatsApp Messenger & Assistant Bot (Tier 0) */}
-          <div className={getStaggerClass(0)}>
+          {/* Floating 1-Click WhatsApp Messenger & Assistant Bot */}
+          <div className={getFlyClass('whatsapp')}>
             <FloatingWhatsApp onOpenResume={() => setResumeOpen(true)} />
           </div>
         </div>

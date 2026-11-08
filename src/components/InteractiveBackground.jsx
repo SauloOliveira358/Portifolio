@@ -834,36 +834,41 @@ export default function InteractiveBackground({
       setBlackHoleActiveUI(true);
       blackHoleGroup.visible = true;
 
-      // Position black hole in scene right ACIMA da lixeira (screen x: ~120px, y: height - 130px)
+      // Position black hole in scene right ACIMA da lixeira (screen x: ~140px, y: height - 160px)
       scene.attach(blackHoleGroup);
-      const spawnPos = getScreenToWorldZ0(120, height - 130);
+      const spawnPos = getScreenToWorldZ0(140, height - 160);
       blackHoleGroup.position.copy(spawnPos);
       blackHoleGroup.scale.setScalar(0.04);
 
       blackHoleState.phase = 'SPAWNING_SUCTION';
       blackHoleState.timer = 0;
-      setHudText('🕳️ Buraco Negro ativado! Sugando os componentes para o ralo...');
+      setHudText('🕳️ Buraco Negro se aproximando e crescendo no horizonte...');
       setHudActive(true);
 
       // Trava o scroll do body e reseta para o topo
       document.body.style.overflow = 'hidden';
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
-      if (onStartSuction) onStartSuction();
-
-      // Suction rápido e decisivo (~0.65s) para liberar a tela inteira de vez
+      // 1. DÁ TEMPO DO BURACO NEGRO CHEGAR E FICAR MAIOR NO LADO ESQUERDO (~1.1s)
       setTimeout(() => {
-        if (onCompleteSuction) onCompleteSuction();
+        // 2. AGORA QUE ELE JÁ ESTÁ GRANDE NO LADO ESQUERDO, SIM COMEÇA A SUGAR OS COMPONENTES!
+        setHudText('🕳️ Singularidade aberta! Sugando os componentes para o ralo...');
+        if (onStartSuction) onStartSuction();
 
-        // Anexa o Buraco Negro ao cosmosGroup para girar junto com o céu!
-        blackHoleGroup.position.set(Math.cos(blackHoleState.angle) * 55, 3.5, Math.sin(blackHoleState.angle) * 55 - 45);
-        blackHoleGroup.scale.setScalar(0.22);
-        cosmosGroup.attach(blackHoleGroup);
+        // 3. Após o tempo da animação dos componentes (~1.4s), limpa a tela e coloca o buraco negro em órbita
+        setTimeout(() => {
+          if (onCompleteSuction) onCompleteSuction();
 
-        blackHoleState.phase = 'ORBIT';
-        blackHoleState.timer = 0;
-        setHudText('🕳️ Espaço 100% livre! Segure o Scroll do mouse (clique da rodinha) para girar o cosmos e clique nos planetas!');
-      }, 650);
+          // Anexa o Buraco Negro ao cosmosGroup para girar junto com o céu!
+          blackHoleGroup.position.set(Math.cos(blackHoleState.angle) * 55, 3.5, Math.sin(blackHoleState.angle) * 55 - 45);
+          blackHoleGroup.scale.setScalar(0.22);
+          cosmosGroup.attach(blackHoleGroup);
+
+          blackHoleState.phase = 'ORBIT';
+          blackHoleState.timer = 0;
+          setHudText('🕳️ Espaço 100% livre! Segure o Scroll do mouse (clique da rodinha) para girar o cosmos e clique nos planetas!');
+        }, 1400);
+      }, 1100);
     };
 
     triggerSuctionRef.current = triggerSuction;
@@ -874,6 +879,9 @@ export default function InteractiveBackground({
       blackHoleState.phase = 'COLLAPSING';
       blackHoleState.timer = 0;
       setHudText('✨ Singularidade colapsada! Cuspindo os componentes de volta...');
+
+      // Volta instantaneamente para o topo ao restaurar o site
+      window.scrollTo({ top: 0, behavior: 'instant' });
 
       if (onStartRestore) onStartRestore();
 
@@ -887,8 +895,9 @@ export default function InteractiveBackground({
         setHudActive(false);
         setHudText('Em órbita distante');
         document.body.style.overflow = '';
+        window.scrollTo({ top: 0, behavior: 'instant' });
         if (onCompleteRestore) onCompleteRestore();
-      }, 850);
+      }, 1250);
     };
 
     triggerRestoreRef.current = triggerRestore;
@@ -1443,11 +1452,12 @@ export default function InteractiveBackground({
 
         switch (blackHoleState.phase) {
           case 'SPAWNING_SUCTION':
-            // Surge logo acima da lixeira, devagar, e pouco maior que ela (escala ~0.35)!
+            // Surge no lado esquerdo acima da lixeira e cresce até ficar grande e imponente (~0.50)!
             blackHoleState.timer += dt;
-            const suckProgress = Math.min(1, blackHoleState.timer / 1.8);
-            const easeSuck = suckProgress < 0.5 ? 4 * suckProgress * suckProgress * suckProgress : 1 - Math.pow(-2 * suckProgress + 2, 3) / 2;
-            blackHoleState.currentScale = THREE.MathUtils.lerp(0.04, 0.38, easeSuck);
+            const spawnProgress = Math.min(1, blackHoleState.timer / 1.05);
+            // Ease out cubic para uma chegada suave e impactante
+            const easeSpawn = 1 - Math.pow(1 - spawnProgress, 3);
+            blackHoleState.currentScale = THREE.MathUtils.lerp(0.04, 0.50, easeSpawn);
             blackHoleGroup.scale.setScalar(blackHoleState.currentScale * blackHoleState.pulseScale);
             break;
 
