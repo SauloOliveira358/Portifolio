@@ -11,6 +11,7 @@ import ContactSection from './components/ContactSection';
 import Footer from './components/Footer';
 import FloatingWhatsApp from './components/FloatingWhatsApp';
 import ResumeModal from './components/ResumeModal';
+import CometCursor from './components/CometCursor';
 import { Terminal as TerminalIcon, Sparkles } from 'lucide-react';
 
 export default function App() {
@@ -139,6 +140,9 @@ export default function App() {
 
       {/* Complete Professional Resume Modal */}
       <ResumeModal isOpen={resumeOpen} onClose={() => setResumeOpen(false)} />
+
+      {/* Cosmic Comet Cursor Trail */}
+      <CometCursor />
     </div>
   );
 }
