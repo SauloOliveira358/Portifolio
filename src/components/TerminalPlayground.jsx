@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Terminal, Play, Sparkles, Check, Copy } from 'lucide-react';
-import { fireEpicConfetti } from '../utils/confetti';
+import { fireEpicConfetti, fireSupernova } from '../utils/confetti';
 
 export default function TerminalPlayground({ onOpenResume, onOpenContact }) {
   const [history, setHistory] = useState([
@@ -69,7 +69,8 @@ export default function TerminalPlayground({ onOpenResume, onOpenContact }) {
   • whatsapp    - Iniciar conversa direta no WhatsApp (+55 37 99916-5471)
   • cv          - Ver currículo profissional completo com foto
   • clear       - Limpar o terminal
-  • confetti    - Celebrar e disparar confetes no site inteiro! 🎉`,
+  • supernova   - Disparar uma pequena supernova cósmica no sistema! 💥
+  • confetti    - Celebrar com explosão estelar (alias de supernova)`,
         });
         break;
 
@@ -161,11 +162,12 @@ Repositórios oficiais:
         if (onOpenResume) onOpenResume();
         break;
 
+      case 'supernova':
       case 'confetti':
-        fireEpicConfetti();
+        fireSupernova();
         newItems.push({
           type: 'output',
-          text: '🎉 Sucesso! Efeito épico de confetes disparado pelo site inteiro!',
+          text: '💥 ALERTA CÓSMICO! Pequena supernova detonada no sistema! Observe o SauloBot recalibrar os sensores...',
         });
         break;
 
@@ -199,8 +201,8 @@ Repositórios oficiais:
   return (
     <div
       ref={terminalRef}
-      className={`relative overflow-hidden rounded-2xl border bg-[#0b0f19] shadow-2xl backdrop-blur-xl transition-all duration-500 ${
-        isHoloActive ? 'holo-card-glow border-cyan-400/50' : 'border-slate-800'
+      className={`relative overflow-hidden rounded-2xl border bg-[#0b0f19] shadow-2xl backdrop-blur-xl transition-all duration-300 border-slate-800 hover:border-cyan-400/80 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08),0_12px_32px_-8px_rgba(0,0,0,0.7)] hover:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.2),0_20px_50px_-10px_rgba(0,0,0,0.8),0_0_30px_rgba(6,182,212,0.25)] hover:-translate-y-1 ${
+        isHoloActive ? 'holo-card-glow border-cyan-400/70' : ''
       }`}
     >
       {/* Feixe de escaneamento holográfico ao descer a tela */}
@@ -247,7 +249,7 @@ Repositórios oficiais:
             <button
               key={cmd}
               onClick={() => runCommand(cmd)}
-              className="rounded bg-slate-800/80 px-2 py-0.5 font-mono text-[11px] text-emerald-400 hover:bg-slate-700 hover:text-emerald-300 transition-colors"
+              className="rounded-lg bg-slate-800/90 px-2.5 py-1 font-mono text-[11px] text-emerald-400 border border-slate-700/60 hover:border-emerald-400 hover:text-emerald-300 hover:shadow-[0_0_12px_rgba(16,185,129,0.3)] hover:-translate-y-0.5 transition-all duration-200"
             >
               ${cmd}
             </button>
@@ -293,7 +295,7 @@ Repositórios oficiais:
         />
         <button
           onClick={() => runCommand()}
-          className="flex items-center gap-1 rounded-md bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-400 hover:bg-emerald-500/20 transition-colors"
+          className="flex items-center gap-1.5 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 px-3 py-1.5 text-xs font-bold text-emerald-300 border border-emerald-500/40 hover:border-emerald-300 hover:shadow-[0_0_14px_rgba(16,185,129,0.3)] hover:-translate-y-0.5 transition-all duration-200"
         >
           <Play className="h-3 w-3 fill-current" />
           <span className="hidden sm:inline">Executar</span>

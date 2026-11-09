@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import SpotlightCard from './SpotlightCard';
 import { Mail, MessageCircle, Phone, Linkedin, Github, Copy, Check, MapPin, Sparkles, ArrowRight, ExternalLink } from 'lucide-react';
-import { fireEpicConfetti } from '../utils/confetti';
+import { fireEpicConfetti, fireSupernova } from '../utils/confetti';
 
 export default function ContactSection() {
   const [copiedEmail, setCopiedEmail] = useState(false);
@@ -77,17 +77,17 @@ export default function ContactSection() {
                 href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={() => fireEpicConfetti()}
-                className="flex-1 text-center rounded-xl bg-emerald-500 hover:bg-emerald-400 px-4 py-3 text-xs font-bold text-slate-950 transition-all hover:scale-[1.02] shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2"
+                onClick={(e) => fireSupernova({ origin: { x: e.clientX / window.innerWidth, y: e.clientY / window.innerHeight } })}
+                className="flex-1 text-center rounded-xl bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-400 hover:from-emerald-400 hover:to-teal-300 px-4 py-3 text-xs font-extrabold text-slate-950 transition-all hover:scale-[1.02] hover:-translate-y-0.5 shadow-lg shadow-emerald-500/25 hover:shadow-[0_0_20px_rgba(16,185,129,0.5)] border-2 border-emerald-200/90 hover:border-white flex items-center justify-center gap-2"
               >
-                <MessageCircle className="h-4 w-4 fill-current" />
+                <MessageCircle className="h-4 w-4 fill-slate-950" />
                 <span>Conversar no WhatsApp</span>
                 <ArrowRight className="h-3.5 w-3.5" />
               </a>
 
               <button
                 onClick={() => copyToClipboard(phone, 'phone')}
-                className="rounded-xl border border-slate-700 bg-slate-800 px-3.5 py-3 text-slate-300 hover:text-white hover:bg-slate-700 transition-colors flex items-center justify-center"
+                className="rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-700/80 px-3.5 py-3 text-slate-300 hover:text-white hover:border-emerald-400 hover:shadow-[0_0_12px_rgba(16,185,129,0.3)] hover:-translate-y-0.5 transition-all flex items-center justify-center"
                 title="Copiar número de telefone"
               >
                 {copiedPhone ? <Check className="h-4 w-4 text-emerald-400" /> : <Copy className="h-4 w-4" />}
@@ -120,7 +120,7 @@ export default function ContactSection() {
             <div className="mt-6 flex gap-2 pt-4 border-t border-slate-800/80">
               <a
                 href={`mailto:${email}`}
-                className="flex-1 text-center rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 px-4 py-3 text-xs font-semibold text-white transition-colors flex items-center justify-center gap-2"
+                className="flex-1 text-center rounded-xl bg-slate-800/90 hover:bg-slate-700/90 border border-slate-700 hover:border-sky-400 px-4 py-3 text-xs font-semibold text-white hover:text-sky-300 hover:shadow-[0_0_15px_rgba(56,189,248,0.3)] hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2"
               >
                 <Mail className="h-4 w-4 text-sky-400" />
                 <span>Enviar E-mail Agora</span>
@@ -128,7 +128,7 @@ export default function ContactSection() {
 
               <button
                 onClick={() => copyToClipboard(email, 'email')}
-                className="rounded-xl border border-slate-700 bg-slate-800 px-3.5 py-3 text-xs font-medium text-slate-300 hover:text-white transition-colors flex items-center gap-1.5"
+                className="rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-700/80 px-3.5 py-3 text-xs font-medium text-slate-300 hover:text-white hover:border-sky-400 hover:shadow-[0_0_12px_rgba(56,189,248,0.3)] hover:-translate-y-0.5 transition-all flex items-center gap-1.5"
                 title="Copiar endereço de e-mail"
               >
                 {copiedEmail ? (
@@ -170,7 +170,7 @@ export default function ContactSection() {
               href="https://www.linkedin.com/in/saulo-oliveira-348a30356"
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-5 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-700 p-2.5 text-xs font-semibold text-white transition-colors flex items-center justify-center gap-1.5"
+              className="mt-5 rounded-xl border border-slate-700/90 bg-slate-800/90 hover:bg-slate-700/90 hover:border-sky-400 hover:shadow-[0_0_15px_rgba(56,189,248,0.3)] hover:-translate-y-0.5 p-2.5 text-xs font-semibold text-white transition-all flex items-center justify-center gap-1.5"
             >
               <Linkedin className="h-4 w-4 text-[#38bdf8]" />
               <span>Conectar no LinkedIn</span>
@@ -202,7 +202,7 @@ export default function ContactSection() {
               href="https://github.com/SauloOliveira358?tab=repositories"
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-5 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-700 p-2.5 text-xs font-semibold text-white transition-colors flex items-center justify-center gap-1.5"
+              className="mt-5 rounded-xl border border-slate-700/90 bg-slate-800/90 hover:bg-slate-700/90 hover:border-purple-400 hover:shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:-translate-y-0.5 p-2.5 text-xs font-semibold text-white transition-all flex items-center justify-center gap-1.5"
             >
               <Github className="h-4 w-4 text-purple-400" />
               <span>Ver Todos os Repositórios</span>
@@ -213,7 +213,7 @@ export default function ContactSection() {
         </div>
 
         {/* Location & Availability Banner */}
-        <div className="mt-8 rounded-2xl border border-slate-800 bg-slate-900/60 p-5 backdrop-blur-md flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+        <div className="mt-8 rounded-2xl border border-slate-800 hover:border-cyan-400/70 hover:shadow-[0_0_20px_rgba(56,189,248,0.25)] hover:-translate-y-0.5 bg-slate-900/60 p-5 backdrop-blur-md flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left transition-all duration-300">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shrink-0">
               <MapPin className="h-5 w-5" />

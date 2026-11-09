@@ -97,8 +97,79 @@
   will-change: transform, opacity;
 }
 
+@keyframes laserSweep {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(320%);
+    opacity: 0;
+  }
+}
+
+.animate-laser-sweep {
+  animation: laserSweep 0.95s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity;
+}
+
 .holo-card-glow {
   box-shadow: 0 0 25px -4px rgba(6, 182, 212, 0.28), inset 0 0 15px -2px rgba(6, 182, 212, 0.12);
+}
+
+/* ========================================================
+   SUBTLE 3D HOLOGRAPHIC & HOVER BORDER HIGHLIGHT ENGINE
+   ======================================================== */
+
+/* Universal border highlight on hover for all buttons & interactive controls */
+button,
+a[role="button"] {
+  will-change: transform, border-color, box-shadow;
+}
+
+button:hover:not(:disabled),
+a[role="button"]:hover {
+  box-shadow: 0 0 16px -2px rgba(56, 189, 248, 0.35),
+              0 6px 16px -4px rgba(0, 0, 0, 0.5),
+              inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* Destaque sutil ao passar o mouse nas pequenas caixinhas / tags / badges de tecnologia */
+span[class*="border-slate-700"]:hover {
+  border-color: rgba(52, 211, 153, 0.7) !important;
+  color: #6ee7b7 !important;
+  box-shadow: 0 0 12px -2px rgba(52, 211, 153, 0.35) !important;
+  transform: translateY(-1.5px);
+}
+
+/* Suavização de perspectiva global para componentes 3D holográficos */
+.holo-perspective {
+  perspective: 1000px;
+  transform-style: preserve-3d;
+}
+
+/* Efeito Holograma Sutil nos Componentes ("bem pouco", sutil e refinado) */
+.holo-3d-subtle {
+  transform-style: preserve-3d;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.3s ease,
+              box-shadow 0.3s ease;
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.08),
+              0 10px 30px -10px rgba(0, 0, 0, 0.5);
+}
+
+.holo-3d-subtle:hover {
+  border-color: rgba(56, 189, 248, 0.65) !important;
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.18),
+              0 0 25px -2px rgba(56, 189, 248, 0.3),
+              0 18px 40px -10px rgba(0, 0, 0, 0.7);
+  transform: translateY(-3px) perspective(1000px) translateZ(6px);
 }
 
 /* Animação Ultraleve e Fluida (60 FPS, sem filtros pesados): Cada componente é puxado individualmente para o Buraco Negro */
@@ -283,5 +354,65 @@
 }
 .animate-restore-whatsapp {
   animation: returnWhatsApp 0.50s 0.72s cubic-bezier(0, 0, 0.2, 1) forwards;
+  will-change: transform, opacity;
+}
+
+/* ==========================================================================
+   SUPERNOVA COSMIC SHOCKWAVE & PHOTON FLASH
+   ========================================================================== */
+@keyframes supernovaShockwaveExpand {
+  0% {
+    transform: translate(-50%, -50%) scale(0.04);
+    opacity: 1;
+    border-width: 4px;
+  }
+  45% {
+    opacity: 0.9;
+    border-width: 3px;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0;
+    border-width: 1px;
+  }
+}
+
+@keyframes supernovaCoreFlash {
+  0% {
+    opacity: 0.9;
+    transform: translate(-50%, -50%) scale(0.3);
+  }
+  30% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.6);
+  }
+}
+
+.supernova-shockwave {
+  position: fixed;
+  border-radius: 9999px;
+  pointer-events: none;
+  z-index: 99998;
+  animation: supernovaShockwaveExpand 0.75s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
+  box-shadow: 
+    0 0 40px rgba(56, 189, 248, 0.8),
+    0 0 80px rgba(16, 185, 129, 0.6),
+    inset 0 0 35px rgba(255, 255, 255, 0.9);
+  border: 3px solid rgba(255, 255, 255, 0.95);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.25) 0%, rgba(56, 189, 248, 0.15) 35%, transparent 70%);
+  will-change: transform, opacity;
+}
+
+.supernova-flash {
+  position: fixed;
+  border-radius: 9999px;
+  pointer-events: none;
+  z-index: 99997;
+  animation: supernovaCoreFlash 0.45s ease-out forwards;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.95) 0%, rgba(56, 189, 248, 0.7) 35%, rgba(16, 185, 129, 0.3) 60%, transparent 80%);
   will-change: transform, opacity;
 }

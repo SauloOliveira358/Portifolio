@@ -140,7 +140,7 @@ export default function SkillsMatrix() {
             {softSkills.map((item, index) => (
               <div
                 key={index}
-                className="flex items-center gap-2.5 rounded-xl bg-slate-800/40 p-3 border border-slate-700/40 text-xs sm:text-sm text-slate-300"
+                className="flex items-center gap-2.5 rounded-xl bg-slate-800/40 hover:bg-slate-800/70 p-3 border border-slate-700/40 hover:border-emerald-400/70 text-xs sm:text-sm text-slate-300 hover:text-white hover:shadow-[0_0_12px_rgba(16,185,129,0.2)] hover:-translate-y-0.5 transition-all duration-200 cursor-default"
               >
                 <div className="h-2 w-2 rounded-full bg-emerald-400 shrink-0" />
                 <span>{item}</span>

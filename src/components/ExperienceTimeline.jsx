@@ -161,7 +161,7 @@ export default function ExperienceTimeline({ onOpenResume }) {
                   {exp.skills.map((skill, sIdx) => (
                     <span
                       key={sIdx}
-                      className="rounded bg-slate-800/80 px-2.5 py-1 font-mono text-[11px] text-slate-300 border border-slate-700/60"
+                      className="rounded-lg bg-slate-800/80 hover:bg-slate-800 px-2.5 py-1 font-mono text-[11px] text-slate-300 hover:text-emerald-300 border border-slate-700/60 hover:border-emerald-400/80 hover:shadow-[0_0_12px_rgba(16,185,129,0.25)] hover:-translate-y-0.5 transition-all duration-200 cursor-default"
                     >
                       {skill}
                     </span>

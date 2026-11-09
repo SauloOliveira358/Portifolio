@@ -1736,7 +1736,7 @@ export default function InteractiveBackground({
           /* 1. LIXEIRA (Único elemento no canto inferior esquerdo no modo normal) */
           <button
             onClick={() => triggerSuctionRef.current && triggerSuctionRef.current()}
-            className="group flex items-center gap-2 rounded-xl border border-rose-500/40 bg-slate-900/85 px-3.5 py-2 text-xs font-mono text-rose-300 backdrop-blur-md hover:border-rose-400 hover:bg-rose-950/50 hover:text-white transition-all shadow-2xl"
+            className="group flex items-center gap-2 rounded-xl border border-rose-500/40 bg-slate-900/85 px-3.5 py-2 text-xs font-mono text-rose-300 backdrop-blur-md hover:border-rose-400 hover:bg-rose-950/50 hover:text-white hover:shadow-[0_0_18px_rgba(244,63,94,0.4)] hover:-translate-y-0.5 transition-all shadow-2xl"
             title="Limpar Site: Buraco Negro surge no lado esquerdo e suga os componentes!"
           >
             <Trash2 className="h-3.5 w-3.5 text-rose-400 group-hover:scale-110 group-hover:rotate-12 transition-transform" />
@@ -1746,7 +1746,7 @@ export default function InteractiveBackground({
           /* 2. BOTÃO PARA VOLTAR (Aparece quando o site estiver limpo) */
           <button
             onClick={() => triggerRestoreRef.current && triggerRestoreRef.current()}
-            className="group flex items-center gap-2 rounded-xl border border-emerald-500/60 bg-slate-900/95 px-4 py-2 text-xs font-mono text-emerald-300 backdrop-blur-md hover:border-emerald-400 hover:bg-emerald-950/80 hover:text-white transition-all shadow-2xl shadow-emerald-500/25 animate-pulse"
+            className="group flex items-center gap-2 rounded-xl border border-emerald-500/60 bg-slate-900/95 px-4 py-2 text-xs font-mono text-emerald-300 backdrop-blur-md hover:border-emerald-300 hover:bg-emerald-950/80 hover:text-white hover:shadow-[0_0_22px_rgba(16,185,129,0.5)] hover:-translate-y-0.5 transition-all shadow-2xl shadow-emerald-500/25 animate-pulse"
             title="Voltar ao Site: Restaura todos os componentes do portfólio"
           >
             <RotateCcw className="h-3.5 w-3.5 text-emerald-400 group-hover:-rotate-90 transition-transform" />

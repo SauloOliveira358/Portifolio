@@ -35,7 +35,7 @@ export default function Footer() {
             href="https://github.com/SauloOliveira358"
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-xl border border-slate-800 bg-slate-900 p-2.5 text-slate-400 hover:text-white hover:border-slate-700 transition-colors"
+            className="rounded-xl border border-slate-800 bg-slate-900 p-2.5 text-slate-400 hover:text-white hover:border-cyan-400 hover:shadow-[0_0_14px_rgba(56,189,248,0.3)] hover:-translate-y-0.5 transition-all duration-200"
             aria-label="GitHub"
           >
             <Github className="h-4 w-4" />
@@ -45,7 +45,7 @@ export default function Footer() {
             href="https://www.linkedin.com/in/saulo-oliveira-348a30356"
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-xl border border-slate-800 bg-slate-900 p-2.5 text-slate-400 hover:text-[#38bdf8] hover:border-sky-500/30 transition-colors"
+            className="rounded-xl border border-slate-800 bg-slate-900 p-2.5 text-slate-400 hover:text-[#38bdf8] hover:border-sky-400 hover:shadow-[0_0_14px_rgba(56,189,248,0.3)] hover:-translate-y-0.5 transition-all duration-200"
             aria-label="LinkedIn"
           >
             <Linkedin className="h-4 w-4" />
@@ -55,7 +55,7 @@ export default function Footer() {
             href="https://wa.me/5537999165471"
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-xl border border-slate-800 bg-slate-900 p-2.5 text-slate-400 hover:text-emerald-400 hover:border-emerald-500/30 transition-colors"
+            className="rounded-xl border border-slate-800 bg-slate-900 p-2.5 text-slate-400 hover:text-emerald-400 hover:border-emerald-400 hover:shadow-[0_0_14px_rgba(16,185,129,0.3)] hover:-translate-y-0.5 transition-all duration-200"
             aria-label="WhatsApp"
           >
             <MessageCircle className="h-4 w-4" />
@@ -63,7 +63,7 @@ export default function Footer() {
 
           <a
             href="mailto:saulooliveiram358@gmail.com"
-            className="rounded-xl border border-slate-800 bg-slate-900 p-2.5 text-slate-400 hover:text-white hover:border-slate-700 transition-colors"
+            className="rounded-xl border border-slate-800 bg-slate-900 p-2.5 text-slate-400 hover:text-white hover:border-cyan-400 hover:shadow-[0_0_14px_rgba(56,189,248,0.3)] hover:-translate-y-0.5 transition-all duration-200"
             aria-label="Email"
           >
             <Mail className="h-4 w-4" />
@@ -72,7 +72,7 @@ export default function Footer() {
           {/* Scroll to Top */}
           <button
             onClick={scrollToTop}
-            className="rounded-xl border border-slate-800 bg-slate-900 p-2.5 text-slate-400 hover:text-emerald-400 hover:border-emerald-500/30 transition-colors ml-2"
+            className="rounded-xl border border-slate-800 bg-slate-900 p-2.5 text-slate-400 hover:text-emerald-300 hover:border-emerald-400 hover:shadow-[0_0_16px_rgba(16,185,129,0.35)] hover:-translate-y-0.5 transition-all duration-200 ml-2"
             title="Voltar ao Topo"
             aria-label="Voltar ao Topo"
           >

@@ -28,14 +28,14 @@ export default function Navbar({ onOpenResume }) {
       <div
         className={`mx-auto max-w-7xl rounded-2xl transition-all duration-300 ${
           scrolled
-            ? 'glass-panel bg-[#090d16]/90 border border-slate-800/80 shadow-2xl py-2 px-4 sm:px-6'
+            ? 'glass-panel bg-[#090d16]/90 border border-slate-800/80 hover:border-cyan-400/50 shadow-2xl hover:shadow-[0_0_25px_rgba(56,189,248,0.2)] py-2 px-4 sm:px-6'
             : 'bg-transparent py-3 px-2 sm:px-4'
         }`}
       >
         <div className="flex items-center justify-between">
           {/* Brand Logo with Status Indicator */}
           <a href="#" className="flex items-center gap-3 group">
-            <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-400/20 via-slate-800 to-slate-900 border border-emerald-500/30 group-hover:border-emerald-400 transition-colors">
+            <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-400/20 via-slate-800 to-slate-900 border border-emerald-500/30 group-hover:border-emerald-400 group-hover:shadow-[0_0_16px_rgba(16,185,129,0.4)] transition-all">
               <span className="font-mono font-extrabold text-sm text-emerald-400">SO</span>
               <span className="absolute -top-1 -right-1 flex h-3 w-3">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
@@ -51,12 +51,12 @@ export default function Navbar({ onOpenResume }) {
           </a>
 
           {/* Desktop Nav Links */}
-          <nav className="hidden lg:flex items-center gap-1 bg-slate-900/60 border border-slate-800/60 rounded-full px-4 py-1.5 backdrop-blur-md">
+          <nav className="hidden lg:flex items-center gap-1 bg-slate-900/60 border border-slate-800/60 hover:border-cyan-500/40 rounded-full px-4 py-1.5 backdrop-blur-md transition-all">
             {navLinks.map((link) => (
               <a
                 key={link.name}
                 href={link.href}
-                className="px-3 py-1 text-xs font-medium text-slate-300 hover:text-emerald-400 transition-colors rounded-full hover:bg-slate-800/50"
+                className="px-3 py-1 text-xs font-medium text-slate-300 hover:text-emerald-400 transition-all rounded-full hover:bg-slate-800/70 border border-transparent hover:border-emerald-500/30"
               >
                 {link.name}
               </a>
@@ -67,7 +67,7 @@ export default function Navbar({ onOpenResume }) {
           <div className="hidden sm:flex items-center gap-2">
             <button
               onClick={onOpenResume}
-              className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800/80 px-3 py-1.5 text-xs font-medium text-slate-200 hover:border-emerald-500/50 hover:text-white transition-all"
+              className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800/80 px-3 py-1.5 text-xs font-medium text-slate-200 hover:border-emerald-400 hover:shadow-[0_0_14px_rgba(16,185,129,0.3)] hover:-translate-y-0.5 hover:text-white transition-all"
             >
               <FileText className="h-3.5 w-3.5 text-emerald-400" />
               <span>Ver CV</span>
@@ -78,7 +78,7 @@ export default function Navbar({ onOpenResume }) {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="GitHub de Saulo Oliveira"
-              className="rounded-lg border border-slate-800 bg-slate-900/80 p-2 text-slate-400 hover:text-white hover:border-slate-700 transition-colors"
+              className="rounded-lg border border-slate-800 bg-slate-900/80 p-2 text-slate-400 hover:text-white hover:border-cyan-400 hover:shadow-[0_0_14px_rgba(56,189,248,0.3)] hover:-translate-y-0.5 transition-all"
             >
               <Github className="h-4 w-4" />
             </a>
@@ -88,7 +88,7 @@ export default function Navbar({ onOpenResume }) {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="LinkedIn de Saulo Oliveira"
-              className="rounded-lg border border-slate-800 bg-slate-900/80 p-2 text-slate-400 hover:text-[#38bdf8] hover:border-sky-500/30 transition-colors"
+              className="rounded-lg border border-slate-800 bg-slate-900/80 p-2 text-slate-400 hover:text-[#38bdf8] hover:border-sky-400 hover:shadow-[0_0_14px_rgba(56,189,248,0.3)] hover:-translate-y-0.5 transition-all"
             >
               <Linkedin className="h-4 w-4" />
             </a>
@@ -97,9 +97,9 @@ export default function Navbar({ onOpenResume }) {
               href="https://wa.me/5537999165471?text=Ol%C3%A1%20Saulo,%20vi%20seu%20portf%C3%B3lio%20e%20gostaria%20de%20conversar!"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 px-3.5 py-1.5 text-xs font-bold text-slate-950 transition-colors shadow-lg shadow-emerald-500/20"
+              className="flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 px-3.5 py-1.5 text-xs font-extrabold text-slate-950 transition-all border border-emerald-300/80 hover:border-white shadow-lg shadow-emerald-500/20 hover:shadow-[0_0_16px_rgba(16,185,129,0.5)] hover:-translate-y-0.5"
             >
-              <MessageCircle className="h-3.5 w-3.5 fill-current" />
+              <MessageCircle className="h-3.5 w-3.5 fill-slate-950" />
               <span>WhatsApp</span>
             </a>
           </div>

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageCircle, X, Send, Bot, ExternalLink, ArrowRight, FolderGit2, Sparkles, Minus } from 'lucide-react';
-import { fireEpicConfetti } from '../utils/confetti';
+import { fireEpicConfetti, fireSupernova } from '../utils/confetti';
 
 export const PLANET_DIALOGS = {
   jupiter: {
@@ -25,11 +25,6 @@ export const PLANET_DIALOGS = {
         github: 'https://github.com/SauloOliveira358/projeto-comercial',
         githubSecondary: 'https://github.com/SauloOliveira358/projeto_vendas',
         githubLabel: 'Ver Backend de Vendas BI no GitHub',
-      },
-      {
-        id: 'close_jupiter',
-        label: 'Voltar à Galáxia',
-        isClose: true,
       },
     ],
   },
@@ -56,11 +51,6 @@ export const PLANET_DIALOGS = {
         githubSecondary: 'https://github.com/SauloOliveira358/Show-do-Android',
         githubLabel: 'Ver Projetos de Jogos & UI no GitHub',
       },
-      {
-        id: 'close_saturn',
-        label: 'Continuar voo',
-        isClose: true,
-      },
     ],
   },
   mars: {
@@ -85,11 +75,6 @@ export const PLANET_DIALOGS = {
         reply: 'Modelagem relacional com tabelas de usuários, prestadores de serviços, categorias, agendamentos com validação temporal e chaves estrangeiras com índices otimizados.',
         github: 'https://github.com/SauloOliveira358/projeto-ela',
         githubLabel: 'Ver Database do BelaBusca no GitHub',
-      },
-      {
-        id: 'close_mars',
-        label: 'Explorar outro planeta',
-        isClose: true,
       },
     ],
   },
@@ -127,17 +112,17 @@ export const PLANET_DIALOGS = {
   moon: {
     id: 'moon',
     name: 'Lua',
-    subtitle: 'Suporte / Infra e Ferramentas',
+    subtitle: 'Base / Cloud & Versionamento',
     emoji: '🌙',
-    badgeColor: 'border-sky-400/40 bg-sky-500/10 text-sky-300',
-    botMessage: 'Explorando a superfície lunar! 🌙 A Lua orbita os planetas para dar suporte. Este é o ambiente de Infraestrutura e DevOps: Git, AWS, Linux e Terminais. Quer dar uma olhada nas ferramentas que mantêm tudo rodando nos bastidores?',
+    badgeColor: 'border-cyan-400/40 bg-cyan-500/10 text-cyan-300',
+    botMessage: "Pouso lunar autorizado! 🌙 Ué, a Lua saiu da órbita da Terra? Ah, lembrei! Ela está em uma branch separada no Git e o Saulo ainda não fez o merge para a 'main'. Sorte que ela funciona perfeitamente sozinha como nossa base de Ferramentas, Cloud e Versionamento. É aqui que ficam os terminais e a infraestrutura que ele usa. Quer inspecionar o código-fonte dessa base?",
     options: [
       {
-        id: 'stack_infra',
-        label: 'Ver Stack de Infraestrutura',
-        reply: 'Infraestrutura completa: 1) Controle de versão com Git & GitHub; 2) Servidores Linux (Debian/Ubuntu, comandos shell); 3) Nuvem AWS e Docker; 4) Redes de computadores, TCP/IP e cabeamento estruturado com experiência prática em hardware industrial.',
+        id: 'inspect_base_source',
+        label: 'Inspecionar Código-Fonte no GitHub',
+        reply: 'Base lunar conectada com sucesso! O Saulo mantém controle de versão rigoroso com Git e GitHub, organização profissional em branches, commits semânticos, servidores Linux (Debian/Ubuntu), Docker e automações.',
         github: 'https://github.com/SauloOliveira358',
-        githubLabel: 'Ver Repositórios & Configurações',
+        githubLabel: 'Acessar Código-Fonte no GitHub (@SauloOliveira358)',
       },
     ],
   },
@@ -163,11 +148,6 @@ export const PLANET_DIALOGS = {
         github: 'https://github.com/SauloOliveira358',
         githubLabel: 'Ver Repositórios & Arquitetura no GitHub',
       },
-      {
-        id: 'close_blackhole',
-        label: 'Voltar ao Cosmos',
-        isClose: true,
-      },
     ],
   },
 };
@@ -192,10 +172,50 @@ export default function FloatingWhatsApp({
   const [interactionCount, setInteractionCount] = useState(0);
   const messagesEndRef = useRef(null);
   const lastHandledTriggerRef = useRef(null);
+  const lastSupernovaTimeRef = useRef(0);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isTyping]);
+
+  // Handle Supernova cosmic explosion events
+  useEffect(() => {
+    const handleSupernova = () => {
+      const now = Date.now();
+      // Previne repetição rápida ao disparar várias supernovas seguidas
+      if (now - lastSupernovaTimeRef.current < 2500) {
+        return;
+      }
+      lastSupernovaTimeRef.current = now;
+
+      setIsOpen(true);
+      setIsTyping(true);
+
+      const cosmicMessages = [
+        '💥 Bip, bip! Alerta cósmico! 🌟 Você causou uma pequena explosão supernova no sistema! Ondas de choque gravitacionais foram detectadas, mas os servidores aguentaram a explosão perfeitamente!',
+        '🌟 UAU! Radiação estelar detectada! 💥 Você causou uma pequena explosão supernova no cosmos do portfólio! Nossos escudos térmicos absorveram a energia e todos os módulos continuam 100% operacionais.',
+        '🌌 Alerta estelar no núcleo! 💥 Você provocou uma pequena supernova no sistema! Fique tranquilo: as APIs, bancos de dados e interfaces aguentaram o impacto com sucesso!',
+      ];
+      const randomMsg = cosmicMessages[Math.floor(Math.random() * cosmicMessages.length)];
+
+      setTimeout(() => {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: Date.now(),
+            sender: 'bot',
+            isSupernova: true,
+            text: randomMsg,
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          },
+        ]);
+        setIsTyping(false);
+      }, 500);
+    };
+
+    window.addEventListener('supernova_explosion', handleSupernova);
+    return () => window.removeEventListener('supernova_explosion', handleSupernova);
+  }, []);
 
   // Handle incoming planet click triggers
   useEffect(() => {
@@ -500,7 +520,7 @@ export default function FloatingWhatsApp({
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-40 flex flex-col items-end">
+    <div className="fixed bottom-14 sm:bottom-16 md:bottom-20 right-5 sm:right-7 z-40 flex flex-col items-end">
       {/* Interactive Chat Window with Smooth Transitions */}
       <div
         className={`transition-all duration-300 ease-out origin-bottom-right ${
@@ -509,7 +529,7 @@ export default function FloatingWhatsApp({
             : 'opacity-0 scale-90 translate-y-4 pointer-events-none absolute'
         }`}
       >
-        <div className="mb-3 w-80 sm:w-96 rounded-2xl border border-slate-700 bg-slate-900 shadow-2xl overflow-hidden backdrop-blur-xl">
+        <div className="mb-3 w-80 sm:w-96 max-h-[min(580px,calc(100vh-8rem))] rounded-2xl border border-slate-700/80 bg-slate-900/95 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85),0_0_25px_rgba(16,185,129,0.2)] overflow-hidden backdrop-blur-xl flex flex-col">
           
           {/* Header */}
           <div className="flex items-center justify-between border-b border-slate-800 bg-slate-950/80 px-4 py-3">
@@ -559,9 +579,23 @@ export default function FloatingWhatsApp({
                   className={`max-w-[88%] rounded-2xl px-3.5 py-2.5 leading-relaxed ${
                     msg.sender === 'user'
                       ? 'bg-emerald-500 text-slate-950 font-semibold rounded-tr-none'
+                      : msg.isSupernova
+                      ? 'bg-gradient-to-br from-slate-900 via-amber-950/25 to-slate-900 text-slate-100 border-2 border-amber-400/80 shadow-[0_0_20px_rgba(251,191,36,0.35)] rounded-tl-none'
                       : 'bg-slate-800/90 text-slate-200 border border-slate-700/60 rounded-tl-none'
                   }`}
                 >
+                  {/* Supernova Alert Header Badge */}
+                  {msg.isSupernova && (
+                    <div className="mb-2">
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-400/60 bg-gradient-to-r from-amber-500/20 via-rose-500/20 to-purple-500/20 px-2.5 py-0.5 text-[10px] font-mono font-bold tracking-wide text-amber-300 shadow-[0_0_12px_rgba(251,191,36,0.25)]">
+                        <span>💥</span>
+                        <span>ALERTA DE SUPERNOVA</span>
+                        <span className="opacity-60">•</span>
+                        <span>EVENTO CÓSMICO</span>
+                      </span>
+                    </div>
+                  )}
+
                   {/* Planet Header Badge if intro */}
                   {msg.isPlanetIntro && msg.planet && (
                     <div className="mb-2">
@@ -583,22 +617,14 @@ export default function FloatingWhatsApp({
                         Opções de resposta:
                       </p>
                       <div className="flex flex-col gap-1.5">
-                        {msg.options.map((opt, oIdx) => (
+                        {msg.options.filter((opt) => !opt.isClose).map((opt, oIdx) => (
                           <button
                             key={oIdx}
                             onClick={() => handleOptionClick(opt, msg.planet)}
-                            className={`w-full text-left rounded-xl px-3 py-2 text-xs font-medium transition-all flex items-center justify-between gap-2 border shadow-sm ${
-                              opt.isClose
-                                ? 'bg-slate-800/60 hover:bg-slate-800 text-slate-400 hover:text-white border-slate-700/50'
-                                : 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 hover:text-emerald-200 border-emerald-500/30 hover:border-emerald-500/60'
-                            }`}
+                            className="w-full text-left rounded-xl px-3 py-2 text-xs font-medium transition-all flex items-center justify-between gap-2 border shadow-sm bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 hover:text-emerald-200 border-emerald-500/30 hover:border-emerald-500/60 hover:-translate-y-0.5 hover:shadow-[0_0_12px_rgba(16,185,129,0.25)]"
                           >
                             <span>{opt.label}</span>
-                            {opt.isClose ? (
-                              <X className="h-3 w-3 shrink-0 opacity-60" />
-                            ) : (
-                              <ArrowRight className="h-3.5 w-3.5 shrink-0 text-emerald-400" />
-                            )}
+                            <ArrowRight className="h-3.5 w-3.5 shrink-0 text-emerald-400" />
                           </button>
                         ))}
                       </div>
@@ -665,7 +691,7 @@ export default function FloatingWhatsApp({
               <button
                 key={idx}
                 onClick={() => handleSendMessage(q.query)}
-                className="whitespace-nowrap rounded-lg bg-slate-800/70 hover:bg-slate-800 px-2.5 py-1 text-[10px] text-slate-300 border border-slate-700/50 hover:text-emerald-300 transition-colors shrink-0"
+                className="whitespace-nowrap rounded-lg bg-slate-800/80 hover:bg-slate-800 px-2.5 py-1 text-[10px] text-slate-300 border border-slate-700/60 hover:border-cyan-400/80 hover:text-cyan-300 hover:shadow-[0_0_12px_rgba(56,189,248,0.3)] hover:-translate-y-0.5 transition-all duration-200 shrink-0"
               >
                 {q.label}
               </button>
@@ -681,11 +707,11 @@ export default function FloatingWhatsApp({
                 onChange={(e) => setInputVal(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
                 placeholder="Pergunte ou clique nos botões acima..."
-                className="flex-1 rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-xs text-white placeholder-slate-400 outline-none focus:border-emerald-500 transition-colors"
+                className="flex-1 rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-xs text-white placeholder-slate-400 outline-none focus:border-emerald-400 focus:shadow-[0_0_15px_rgba(16,185,129,0.25)] transition-all"
               />
               <button
                 onClick={() => handleSendMessage()}
-                className="rounded-xl bg-emerald-500 hover:bg-emerald-400 p-2 text-slate-950 transition-colors"
+                className="rounded-xl bg-emerald-500 hover:bg-emerald-400 border border-emerald-300/50 hover:border-white p-2 text-slate-950 hover:shadow-[0_0_14px_rgba(16,185,129,0.4)] transition-all"
                 title="Enviar pergunta"
               >
                 <Send className="h-4 w-4" />
@@ -695,7 +721,7 @@ export default function FloatingWhatsApp({
             {/* Direct WhatsApp Callout */}
             <button
               onClick={openWhatsAppDirect}
-              className="w-full rounded-xl bg-gradient-to-r from-emerald-500/10 via-emerald-500/20 to-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 py-2 text-[11px] font-bold text-emerald-400 flex items-center justify-center gap-1.5 transition-colors"
+              className="w-full rounded-xl bg-gradient-to-r from-emerald-500/15 via-emerald-500/25 to-emerald-500/15 hover:bg-emerald-500/30 border border-emerald-500/40 hover:border-emerald-400 py-2 text-[11px] font-bold text-emerald-300 hover:text-white flex items-center justify-center gap-1.5 transition-all hover:shadow-[0_0_15px_rgba(16,185,129,0.3)] hover:-translate-y-0.5"
             >
               <MessageCircle className="h-3.5 w-3.5 fill-current" />
               <span>Chamar Saulo no WhatsApp ((37) 99916-5471)</span>
@@ -706,22 +732,22 @@ export default function FloatingWhatsApp({
         </div>
       </div>
 
-      {/* Floating Trigger Button (Apenas visível quando NÃO estiver no modo limpo com o chat fechado) */}
+      {/* Floating Trigger Button (Posicionado mais pra cima com visual 3D Holográfico) */}
       {!isCleanMode && (
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="group relative flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500 text-slate-950 shadow-2xl shadow-emerald-500/40 hover:scale-110 hover:bg-emerald-400 transition-all duration-300 focus:outline-none"
+          className="group relative flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-tr from-emerald-500 via-teal-400 to-emerald-400 text-slate-950 shadow-[0_10px_30px_rgba(16,185,129,0.5),0_0_20px_rgba(56,189,248,0.4)] hover:shadow-[0_14px_35px_rgba(16,185,129,0.7),0_0_25px_rgba(56,189,248,0.6)] hover:scale-110 hover:-translate-y-1 transition-all duration-300 focus:outline-none border-2 border-emerald-200/90 hover:border-white"
           aria-label="Abrir assistente e WhatsApp"
         >
           {/* Unread indicator */}
-          <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow">
+          <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow border border-white/50">
             1
           </span>
 
           {/* Ambient Ring */}
-          <span className="absolute inset-0 rounded-full border-2 border-emerald-400 opacity-60 animate-ping pointer-events-none" />
+          <span className="absolute inset-0 rounded-full border-2 border-emerald-300 opacity-70 animate-ping pointer-events-none" />
 
-          {isOpen ? <X className="h-6 w-6" /> : <MessageCircle className="h-7 w-7 fill-current" />}
+          {isOpen ? <X className="h-6 w-6 text-slate-950 font-bold" /> : <MessageCircle className="h-7 w-7 fill-slate-950 text-slate-950" />}
         </button>
       )}
     </div>

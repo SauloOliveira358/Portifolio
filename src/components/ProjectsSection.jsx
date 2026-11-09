@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import SpotlightCard from './SpotlightCard';
-import { ExternalLink, Github, FolderGit2, Gamepad2, Database, Code2, LineChart, ShieldAlert, HeartPulse, Wallet, Search } from 'lucide-react';
-import { fireEpicConfetti } from '../utils/confetti';
+import { ExternalLink, Github, FolderGit2, Gamepad2, Database, Code2, LineChart, ShieldAlert, HeartPulse, Wallet, Search, MessageCircle } from 'lucide-react';
+import { fireEpicConfetti, fireSupernova } from '../utils/confetti';
 
 export default function ProjectsSection() {
   const [activeCategory, setActiveCategory] = useState('all');
@@ -189,10 +189,10 @@ export default function ProjectsSection() {
             <button
               key={cat.id}
               onClick={() => setActiveCategory(cat.id)}
-              className={`rounded-full px-4 py-2 text-xs font-medium transition-all ${
+              className={`rounded-full px-4 py-2 text-xs font-medium transition-all duration-300 ${
                 activeCategory === cat.id
-                  ? 'bg-emerald-500 text-slate-950 font-bold shadow-lg shadow-emerald-500/20 scale-105'
-                  : 'bg-slate-900/80 text-slate-400 hover:text-white border border-slate-800 hover:border-slate-700'
+                  ? 'bg-emerald-500 text-slate-950 font-bold shadow-lg shadow-emerald-500/30 scale-105 border-2 border-emerald-300'
+                  : 'bg-slate-900/80 text-slate-400 hover:text-white border border-slate-800 hover:border-cyan-400/80 hover:shadow-[0_0_15px_rgba(56,189,248,0.25)] hover:-translate-y-0.5'
               }`}
             >
               {cat.label}
@@ -208,17 +208,17 @@ export default function ProjectsSection() {
               <SpotlightCard
                 key={project.id}
                 delay={(idx % 3) * 120}
-                className="flex flex-col justify-between group hover:border-slate-700"
+                className="flex flex-col justify-between group"
                 spotlightColor={project.spotlight}
               >
                 <div>
                   {/* Card Top Pill */}
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
-                      <div className="p-2 rounded-lg bg-slate-800 border border-slate-700 text-emerald-400">
+                      <div className="p-2 rounded-lg bg-slate-800/90 border border-slate-700/80 text-emerald-400 group-hover:border-emerald-400/60 transition-colors">
                         <Icon className="h-4 w-4" />
                       </div>
-                      <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+                      <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-cyan-300 border border-slate-700/60 hover:border-cyan-400/70 hover:shadow-[0_0_10px_rgba(56,189,248,0.25)] hover:-translate-y-0.5 transition-all duration-200 cursor-default">
                         {project.tag}
                       </span>
                     </div>
@@ -247,38 +247,43 @@ export default function ProjectsSection() {
                   </ul>
                 </div>
 
-                {/* Bottom Tech & Links */}
+                {/* Bottom Tech & Highly Visible Buttons */}
                 <div className="mt-6 pt-4 border-t border-slate-800/80">
                   <div className="flex flex-wrap gap-1.5 mb-4">
                     {project.tech.map((t) => (
                       <span
                         key={t}
-                        className="rounded bg-slate-800/80 px-2 py-0.5 font-mono text-[10px] text-slate-300 border border-slate-700/50"
+                        className="rounded-lg bg-slate-800/80 hover:bg-slate-800 px-2.5 py-1 font-mono text-[10px] text-slate-300 hover:text-emerald-300 border border-slate-700/60 hover:border-emerald-400/80 hover:shadow-[0_0_12px_rgba(16,185,129,0.3)] hover:-translate-y-0.5 transition-all duration-200 cursor-default"
                       >
                         {t}
                       </span>
                     ))}
                   </div>
 
-                  <div className="flex items-center justify-between pt-2">
+                  {/* HIGH VISIBILITY ACTION BUTTONS (GITHUB & CONVERSAR) */}
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-2">
                     <a
                       href={project.github}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 text-xs font-semibold text-emerald-400 hover:text-emerald-300 transition-colors group-hover:translate-x-0.5"
+                      onClick={(e) => fireSupernova({ origin: { x: e.clientX / window.innerWidth, y: e.clientY / window.innerHeight } })}
+                      className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-400 hover:from-emerald-400 hover:to-teal-300 px-4 py-2.5 text-xs font-extrabold text-slate-950 shadow-[0_4px_16px_rgba(16,185,129,0.35)] hover:shadow-[0_6px_22px_rgba(16,185,129,0.55),0_0_15px_rgba(56,189,248,0.4)] hover:scale-[1.03] hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-300 border-2 border-emerald-200/90 hover:border-white group/btn"
+                      title={`Acessar código fonte de ${project.title} no GitHub`}
                     >
-                      <Github className="h-4 w-4" />
-                      <span>Ver Código no GitHub</span>
+                      <Github className="h-4 w-4 shrink-0 fill-slate-950 group-hover/btn:rotate-12 transition-transform" />
+                      <span className="tracking-wide">Ver no GitHub</span>
+                      <ExternalLink className="h-3.5 w-3.5 shrink-0 opacity-80" />
                     </a>
 
                     <a
                       href={`https://wa.me/5537999165471?text=Ol%C3%A1%20Saulo,%20gostei%20muito%20do%20projeto%20${encodeURIComponent(project.title)}!`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-1 text-[11px] text-slate-400 hover:text-white transition-colors"
+                      className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-slate-800/90 hover:bg-slate-700/90 text-slate-200 hover:text-emerald-300 px-3.5 py-2.5 text-xs font-semibold border border-slate-700/80 hover:border-emerald-400/80 hover:shadow-[0_0_14px_rgba(16,185,129,0.3)] hover:-translate-y-0.5 transition-all duration-300 shadow-sm"
+                      title="Conversar sobre este projeto"
                     >
+                      <MessageCircle className="h-3.5 w-3.5 text-emerald-400" />
                       <span>Conversar</span>
-                      <ExternalLink className="h-3 w-3" />
                     </a>
                   </div>
                 </div>
@@ -288,7 +293,7 @@ export default function ProjectsSection() {
         </div>
 
         {/* GitHub Repos CTA Banner */}
-        <div className="mt-14 rounded-2xl border border-slate-800 bg-gradient-to-r from-slate-900 via-slate-900/90 to-slate-900 p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+        <div className="mt-14 rounded-2xl border border-slate-800 hover:border-cyan-400/60 bg-gradient-to-r from-slate-900 via-slate-900/90 to-slate-900 p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left transition-all duration-300 hover:shadow-[0_16px_36px_-10px_rgba(0,0,0,0.7),0_0_24px_rgba(56,189,248,0.2)] hover:-translate-y-1">
           <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-800 border border-slate-700 text-emerald-400 shrink-0">
               <FolderGit2 className="h-6 w-6" />
@@ -307,10 +312,10 @@ export default function ProjectsSection() {
             href="https://github.com/SauloOliveira358?tab=repositories"
             target="_blank"
             rel="noopener noreferrer"
-            onClick={() => fireEpicConfetti()}
-            className="rounded-xl bg-emerald-500 hover:bg-emerald-400 px-5 py-2.5 text-xs font-bold text-slate-950 transition-all hover:scale-105 shrink-0 shadow-lg shadow-emerald-500/20 flex items-center gap-2"
+            onClick={(e) => fireSupernova({ origin: { x: e.clientX / window.innerWidth, y: e.clientY / window.innerHeight } })}
+            className="rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 px-5 py-2.5 text-xs font-extrabold text-slate-950 transition-all hover:scale-105 hover:-translate-y-0.5 shrink-0 shadow-lg shadow-emerald-500/25 hover:shadow-[0_0_20px_rgba(16,185,129,0.5)] border-2 border-emerald-200/80 hover:border-white flex items-center gap-2"
           >
-            <Github className="h-4 w-4" />
+            <Github className="h-4 w-4 fill-slate-950" />
             <span>Acessar @SauloOliveira358</span>
           </a>
         </div>

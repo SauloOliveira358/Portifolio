@@ -258,7 +258,7 @@ export default function ResumeModal({ isOpen, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 md:p-6 bg-black/80 backdrop-blur-md animate-fade-in">
-      <div className="relative w-full max-w-4xl max-h-[92vh] overflow-y-auto rounded-2xl border border-slate-700 bg-slate-900 shadow-2xl">
+      <div className="relative w-full max-w-4xl max-h-[92vh] overflow-y-auto rounded-2xl border border-slate-700 hover:border-cyan-400/60 bg-slate-900 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85),0_0_30px_rgba(56,189,248,0.2)] transition-all">
         
         {/* Modal Top Actions */}
         <div className="sticky top-0 z-20 flex items-center justify-between border-b border-slate-800 bg-slate-900/95 px-6 py-3.5 backdrop-blur-md">
@@ -272,7 +272,7 @@ export default function ResumeModal({ isOpen, onClose }) {
           <div className="flex items-center gap-2">
             <button
               onClick={handlePrintClean}
-              className="flex items-center gap-1.5 rounded-lg border border-emerald-500/40 bg-emerald-500/20 px-3.5 py-1.5 text-xs font-bold text-emerald-300 hover:bg-emerald-500 hover:text-slate-950 transition-all shadow-md shadow-emerald-500/20"
+              className="flex items-center gap-1.5 rounded-lg border border-emerald-500/40 bg-emerald-500/20 px-3.5 py-1.5 text-xs font-bold text-emerald-300 hover:bg-emerald-500 hover:text-slate-950 hover:border-emerald-300 hover:shadow-[0_0_15px_rgba(16,185,129,0.4)] hover:-translate-y-0.5 transition-all shadow-md shadow-emerald-500/20"
               title="Abre tela de impressão calibrada em 1 página com todos os links clicáveis no PDF gerado"
             >
               <Printer className="h-3.5 w-3.5" />
@@ -280,7 +280,7 @@ export default function ResumeModal({ isOpen, onClose }) {
             </button>
             <button
               onClick={onClose}
-              className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
+              className="rounded-lg border border-transparent hover:border-slate-700 p-1.5 text-slate-400 hover:bg-slate-800 hover:text-white hover:-translate-y-0.5 transition-all"
             >
               <X className="h-5 w-5" />
             </button>

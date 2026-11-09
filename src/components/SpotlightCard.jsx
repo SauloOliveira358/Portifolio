@@ -14,13 +14,15 @@ export default function SpotlightCard({
   children,
   className = '',
   spotlightColor = 'rgba(16, 185, 129, 0.18)',
-  borderColor = 'rgba(16, 185, 129, 0.4)',
+  borderColor = 'rgba(56, 189, 248, 0.65)',
   delay = 0,
   ...props
 }) {
   const divRef = useRef(null);
   const [position, setPosition] = useState({ x: -100, y: -100 });
   const [opacity, setOpacity] = useState(0);
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
+  const [isHovered, setIsHovered] = useState(false);
 
   // Estados da transição holográfica ao rolar a página
   const [isRevealed, setIsRevealed] = useState(false);
@@ -66,13 +68,31 @@ export default function SpotlightCard({
   const handleMouseMove = (e) => {
     if (!divRef.current) return;
     const rect = divRef.current.getBoundingClientRect();
-    setPosition({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    setPosition({ x, y });
     setOpacity(1);
+    setIsHovered(true);
+
+    // Efeito Holograma 3D suave ("bem pouco", sutil e refinado: max ~3.2 graus)
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const tiltX = ((y - centerY) / centerY) * -3.2;
+    const tiltY = ((x - centerX) / centerX) * 3.2;
+    setTilt({ x: tiltX, y: tiltY });
   };
 
   const handleMouseLeave = () => {
     setOpacity(0);
+    setIsHovered(false);
+    setTilt({ x: 0, y: 0 });
   };
+
+  const transformStyle = isRevealed
+    ? isHovered
+      ? `perspective(1000px) rotateX(${tilt.x.toFixed(2)}deg) rotateY(${tilt.y.toFixed(2)}deg) translateY(-4px) translateZ(8px)`
+      : 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px) translateZ(0px)'
+    : 'perspective(1000px) rotateX(8deg) translateY(32px) scale(0.96)';
 
   return (
     <div
@@ -80,15 +100,17 @@ export default function SpotlightCard({
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       style={{
-        transitionDelay: `${delay}ms`,
-        transitionDuration: '750ms',
-        transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)',
+        transitionDelay: isHovered ? '0ms' : `${delay}ms`,
+        transform: transformStyle,
+        transformStyle: 'preserve-3d',
+        transition: isHovered
+          ? 'transform 0.12s ease-out, border-color 0.25s ease, box-shadow 0.25s ease'
+          : 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s ease',
+        ...props.style,
       }}
-      className={`relative overflow-hidden rounded-2xl border bg-slate-900/60 p-6 backdrop-blur-xl transition-all duration-300 hover:border-slate-700 transform-gpu ${
-        isRevealed
-          ? 'opacity-100 translate-y-0 scale-100 blur-0 [transform:perspective(1000px)_rotateX(0deg)] border-slate-800/80 shadow-xl'
-          : 'opacity-0 translate-y-8 scale-[0.96] blur-[2px] [transform:perspective(1000px)_rotateX(8deg)] border-cyan-500/30 pointer-events-none'
-      } ${isHoloBeamActive ? 'holo-card-glow border-cyan-400/50' : ''} ${className}`}
+      className={`relative overflow-hidden rounded-2xl border bg-slate-900/70 p-6 backdrop-blur-xl transform-gpu border-slate-800/80 hover:border-cyan-400/80 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08),0_10px_30px_-10px_rgba(0,0,0,0.5)] hover:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.2),0_18px_40px_-10px_rgba(0,0,0,0.7),0_0_25px_rgba(56,189,248,0.25)] ${
+        isRevealed ? 'opacity-100 scale-100 blur-0' : 'opacity-0 scale-[0.96] blur-[2px] pointer-events-none'
+      } ${isHoloBeamActive ? 'holo-card-glow border-cyan-400/70' : ''} ${className}`}
       {...props}
     >
       {/* 1. FEIXE DE ESCANEAMENTO HOLOGRÁFICO (VARREDURA AO APARECER) */}
@@ -127,19 +149,27 @@ export default function SpotlightCard({
         aria-hidden="true"
       />
 
-      {/* 5. BORDER SPOTLIGHT EFFECT */}
+      {/* 5. BORDER SPOTLIGHT & HIGHLIGHT EFFECT */}
       <div
         className="pointer-events-none absolute inset-0 rounded-2xl transition-opacity duration-300"
         style={{
-          opacity,
-          border: `1px solid ${borderColor}`,
-          maskImage: `radial-gradient(220px circle at ${position.x}px ${position.y}px, black, transparent 70%)`,
-          WebkitMaskImage: `radial-gradient(220px circle at ${position.x}px ${position.y}px, black, transparent 70%)`,
+          opacity: isHovered ? 1 : 0,
+          border: `1.5px solid ${borderColor}`,
+          maskImage: `radial-gradient(280px circle at ${position.x}px ${position.y}px, black, transparent 75%)`,
+          WebkitMaskImage: `radial-gradient(280px circle at ${position.x}px ${position.y}px, black, transparent 75%)`,
         }}
         aria-hidden="true"
       />
 
-      {/* 6. CONTEÚDO DO CARD */}
+      {/* 6. FAINT HOLOGRAPHIC AMBIENT IRIDESCENCE ON HOVER */}
+      <div
+        className={`pointer-events-none absolute inset-0 z-10 bg-gradient-to-tr from-cyan-500/[0.04] via-emerald-500/[0.04] to-transparent transition-opacity duration-500 ${
+          isHovered ? 'opacity-100' : 'opacity-0'
+        }`}
+        aria-hidden="true"
+      />
+
+      {/* 7. CONTEÚDO DO CARD */}
       <div className="relative z-10">{children}</div>
     </div>
   );

@@ -48,16 +48,16 @@ export default function BentoGrid({ onOpenResume }) {
               </p>
 
               <div className="mt-5 flex flex-wrap gap-2 text-xs font-mono">
-                <span className="rounded bg-slate-800/90 px-2.5 py-1 text-slate-300 border border-slate-700/60">
+                <span className="rounded-lg bg-slate-800/90 hover:bg-slate-800 px-2.5 py-1 text-slate-300 hover:text-emerald-300 border border-slate-700/60 hover:border-emerald-400/80 hover:shadow-[0_0_12px_rgba(16,185,129,0.25)] hover:-translate-y-0.5 transition-all duration-200 cursor-default">
                   Levantamento de Requisitos
                 </span>
-                <span className="rounded bg-slate-800/90 px-2.5 py-1 text-slate-300 border border-slate-700/60">
+                <span className="rounded-lg bg-slate-800/90 hover:bg-slate-800 px-2.5 py-1 text-slate-300 hover:text-emerald-300 border border-slate-700/60 hover:border-emerald-400/80 hover:shadow-[0_0_12px_rgba(16,185,129,0.25)] hover:-translate-y-0.5 transition-all duration-200 cursor-default">
                   Modelagem de Processos
                 </span>
-                <span className="rounded bg-slate-800/90 px-2.5 py-1 text-slate-300 border border-slate-700/60">
+                <span className="rounded-lg bg-slate-800/90 hover:bg-slate-800 px-2.5 py-1 text-slate-300 hover:text-emerald-300 border border-slate-700/60 hover:border-emerald-400/80 hover:shadow-[0_0_12px_rgba(16,185,129,0.25)] hover:-translate-y-0.5 transition-all duration-200 cursor-default">
                   Treinamentos Operacionais
                 </span>
-                <span className="rounded bg-slate-800/90 px-2.5 py-1 text-slate-300 border border-slate-700/60">
+                <span className="rounded-lg bg-slate-800/90 hover:bg-slate-800 px-2.5 py-1 text-slate-300 hover:text-emerald-300 border border-slate-700/60 hover:border-emerald-400/80 hover:shadow-[0_0_12px_rgba(16,185,129,0.25)] hover:-translate-y-0.5 transition-all duration-200 cursor-default">
                   Suporte Crítico
                 </span>
               </div>
@@ -100,12 +100,18 @@ export default function BentoGrid({ onOpenResume }) {
               </p>
 
               <div className="mt-5 grid grid-cols-2 gap-2 text-xs">
-                <div className="rounded-lg bg-slate-800/50 p-2.5 border border-slate-700/40">
-                  <div className="text-white font-semibold">8º Período</div>
+                <div className="rounded-lg bg-slate-800/60 p-2.5 border border-slate-700/60 hover:border-sky-400 hover:shadow-[0_0_16px_rgba(56,189,248,0.35)] hover:-translate-y-0.5 transition-all duration-200">
+                  <div className="text-white font-semibold flex items-center gap-1">
+                    <span className="h-1.5 w-1.5 rounded-full bg-sky-400" />
+                    <span>8º Período</span>
+                  </div>
                   <div className="text-slate-400 text-[11px]">Formatura: Dez/2026</div>
                 </div>
-                <div className="rounded-lg bg-slate-800/50 p-2.5 border border-slate-700/40">
-                  <div className="text-white font-semibold">Divinópolis - MG</div>
+                <div className="rounded-lg bg-slate-800/60 p-2.5 border border-slate-700/60 hover:border-emerald-400 hover:shadow-[0_0_16px_rgba(16,185,129,0.35)] hover:-translate-y-0.5 transition-all duration-200">
+                  <div className="text-white font-semibold flex items-center gap-1">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                    <span>Divinópolis - MG</span>
+                  </div>
                   <div className="text-slate-400 text-[11px]">Polo tecnológico</div>
                 </div>
               </div>
@@ -207,16 +213,16 @@ export default function BentoGrid({ onOpenResume }) {
               </p>
 
               <div className="mt-5 flex flex-wrap gap-2 text-xs font-mono">
-                <span className="rounded bg-slate-800/90 px-2.5 py-1 text-slate-300 border border-slate-700/60">
+                <span className="rounded-lg bg-slate-800/90 hover:bg-slate-800 px-2.5 py-1 text-slate-300 hover:text-amber-300 border border-slate-700/60 hover:border-amber-400/80 hover:shadow-[0_0_12px_rgba(245,158,11,0.25)] hover:-translate-y-0.5 transition-all duration-200 cursor-default">
                   Redes & Roteamento
                 </span>
-                <span className="rounded bg-slate-800/90 px-2.5 py-1 text-slate-300 border border-slate-700/60">
+                <span className="rounded-lg bg-slate-800/90 hover:bg-slate-800 px-2.5 py-1 text-slate-300 hover:text-amber-300 border border-slate-700/60 hover:border-amber-400/80 hover:shadow-[0_0_12px_rgba(245,158,11,0.25)] hover:-translate-y-0.5 transition-all duration-200 cursor-default">
                   Infraestrutura de TI
                 </span>
-                <span className="rounded bg-slate-800/90 px-2.5 py-1 text-slate-300 border border-slate-700/60">
+                <span className="rounded-lg bg-slate-800/90 hover:bg-slate-800 px-2.5 py-1 text-slate-300 hover:text-amber-300 border border-slate-700/60 hover:border-amber-400/80 hover:shadow-[0_0_12px_rgba(245,158,11,0.25)] hover:-translate-y-0.5 transition-all duration-200 cursor-default">
                   Hardware & Manutenção
                 </span>
-                <span className="rounded bg-slate-800/90 px-2.5 py-1 text-slate-300 border border-slate-700/60">
+                <span className="rounded-lg bg-slate-800/90 hover:bg-slate-800 px-2.5 py-1 text-slate-300 hover:text-amber-300 border border-slate-700/60 hover:border-amber-400/80 hover:shadow-[0_0_12px_rgba(245,158,11,0.25)] hover:-translate-y-0.5 transition-all duration-200 cursor-default">
                   Segurança Operacional
                 </span>
               </div>
