@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import DecryptedText from './DecryptedText';
-import { Terminal, Github, Linkedin, MessageCircle, FileText, Menu, X, ArrowUpRight } from 'lucide-react';
+import { Github, Linkedin, MessageCircle, FileText, Menu, X, ArrowUpRight } from 'lucide-react';
 
 export default function Navbar({ onOpenResume }) {
   const [scrolled, setScrolled] = useState(false);
@@ -16,7 +16,6 @@ export default function Navbar({ onOpenResume }) {
 
   const navLinks = [
     { name: 'Visão Geral', href: '#sobre' },
-    { name: 'Terminal', href: '#terminal' },
     { name: 'Projetos', href: '#projetos' },
     { name: 'Experiência', href: '#experiencia' },
     { name: 'Competências', href: '#habilidades' },

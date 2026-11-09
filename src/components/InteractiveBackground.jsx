@@ -686,6 +686,232 @@ export default function InteractiveBackground({
     );
     earthGroup.scale.setScalar(earthState.currentScale);
 
+    // ==========================================
+    // 9.5 DOCTOR WHO TARDIS (Easter Egg Cósmico)
+    // ==========================================
+    // - A cada 30 segundos passa cruzando o cosmos veloz como um cometa
+    // - Permanece na tela por exatamente 2 segundos e depois desaparece
+    // - Tamanho idêntico ao de um planeta quando distante (pequena e autêntica)
+    // - Sem interação de clique (sem ação na TARDIS, puro espetáculo visual)
+    const tardisGroup = new THREE.Group();
+    tardisGroup.visible = false;
+    scene.add(tardisGroup);
+
+    // Textura procedural ultra-detalhada da cabine policial TARDIS
+    const createTardisWallTexture = () => {
+      const c = document.createElement('canvas');
+      c.width = 512;
+      c.height = 512;
+      const ctx = c.getContext('2d');
+
+      // Fundo Azul TARDIS Autêntico
+      ctx.fillStyle = '#0b3966';
+      ctx.fillRect(0, 0, 512, 512);
+
+      // Friso Superior "POLICE PUBLIC CALL BOX"
+      ctx.fillStyle = '#051321';
+      ctx.fillRect(16, 20, 480, 56);
+      ctx.strokeStyle = '#e2e8f0';
+      ctx.lineWidth = 2.5;
+      ctx.strokeRect(18, 22, 476, 52);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 25px "Trebuchet MS", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('POLICE  PUBLIC  CALL  BOX', 256, 48);
+
+      // Linha Central Divisória das Portas
+      ctx.fillStyle = '#051829';
+      ctx.fillRect(252, 85, 8, 410);
+
+      // Função auxiliar para desenhar painéis das portas
+      const drawPanel = (x, y, w, h, isWindow, isNotice) => {
+        ctx.fillStyle = '#051829';
+        ctx.fillRect(x, y, w, h);
+
+        if (isWindow) {
+          // Vidros iluminados (6 vidraças com moldura de madeira)
+          ctx.fillStyle = '#d0edff';
+          ctx.fillRect(x + 5, y + 5, w - 10, h - 10);
+
+          ctx.fillStyle = '#072440';
+          // Divisória vertical
+          ctx.fillRect(x + w / 2 - 2, y + 5, 4, h - 10);
+          // Divisórias horizontais (3 linhas)
+          ctx.fillRect(x + 5, y + (h - 10) / 3 + 3, w - 10, 4);
+          ctx.fillRect(x + 5, y + (2 * (h - 10)) / 3 + 3, w - 10, 4);
+        } else if (isNotice) {
+          // Placa branca oficial da TARDIS "PULL TO OPEN"
+          ctx.fillStyle = '#f8fafc';
+          ctx.fillRect(x + 6, y + 6, w - 12, h - 12);
+          ctx.strokeStyle = '#051829';
+          ctx.lineWidth = 2;
+          ctx.strokeRect(x + 8, y + 8, w - 16, h - 16);
+
+          ctx.fillStyle = '#0f172a';
+          ctx.font = 'bold 9px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('PULL TO OPEN', x + w / 2, y + 22);
+
+          ctx.fillStyle = '#334155';
+          for (let ly = y + 32; ly < y + h - 12; ly += 6) {
+            ctx.fillRect(x + 12, ly, w - 24, 2);
+          }
+        } else {
+          // Painel azul chanfrado
+          ctx.fillStyle = '#0e467b';
+          ctx.fillRect(x + 4, y + 4, w - 8, h - 8);
+          ctx.strokeStyle = '#1d5a96';
+          ctx.lineWidth = 2;
+          ctx.strokeRect(x + 5, y + 5, w - 10, h - 10);
+        }
+      };
+
+      const panelW = 100;
+      const panelH = 90;
+      const yStarts = [95, 195, 295, 395];
+
+      // Painéis da Porta Esquerda
+      drawPanel(28, yStarts[0], panelW, panelH, true, false);
+      drawPanel(138, yStarts[0], panelW, panelH, true, false);
+      drawPanel(28, yStarts[1], panelW, panelH, false, true); // Placa de instrução
+      drawPanel(138, yStarts[1], panelW, panelH, false, false);
+      drawPanel(28, yStarts[2], panelW, panelH, false, false);
+      drawPanel(138, yStarts[2], panelW, panelH, false, false);
+      drawPanel(28, yStarts[3], panelW, panelH, false, false);
+      drawPanel(138, yStarts[3], panelW, panelH, false, false);
+
+      // Painéis da Porta Direita
+      drawPanel(274, yStarts[0], panelW, panelH, true, false);
+      drawPanel(384, yStarts[0], panelW, panelH, true, false);
+      drawPanel(274, yStarts[1], panelW, panelH, false, false);
+      drawPanel(384, yStarts[1], panelW, panelH, false, false);
+      drawPanel(274, yStarts[2], panelW, panelH, false, false);
+      drawPanel(384, yStarts[2], panelW, panelH, false, false);
+      drawPanel(274, yStarts[3], panelW, panelH, false, false);
+      drawPanel(384, yStarts[3], panelW, panelH, false, false);
+
+      const tex = new THREE.CanvasTexture(c);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      return tex;
+    };
+
+    const tardisWallTex = createTardisWallTexture();
+
+    const tardisBlueMat = new THREE.MeshStandardMaterial({
+      color: 0x093a68,
+      roughness: 0.5,
+      metalness: 0.1,
+    });
+    const tardisDarkMat = new THREE.MeshStandardMaterial({
+      color: 0x04192d,
+      roughness: 0.6,
+    });
+    const tardisWallMat = new THREE.MeshStandardMaterial({
+      map: tardisWallTex,
+      roughness: 0.45,
+    });
+
+    // Corpo da Caixa
+    const tardisBodyGeo = new THREE.BoxGeometry(1.0, 1.8, 1.0);
+    const tardisBodyMats = [
+      tardisWallMat, // direita
+      tardisWallMat, // esquerda
+      tardisBlueMat, // topo
+      tardisDarkMat, // base
+      tardisWallMat, // frente
+      tardisWallMat, // trás
+    ];
+    const tardisBody = new THREE.Mesh(tardisBodyGeo, tardisBodyMats);
+    tardisBody.position.y = 0.94;
+    tardisGroup.add(tardisBody);
+
+    // Rodapé / Base Escura
+    const plinthGeo = new THREE.BoxGeometry(1.16, 0.08, 1.16);
+    const plinthMesh = new THREE.Mesh(plinthGeo, tardisDarkMat);
+    plinthMesh.position.y = 0.04;
+    tardisGroup.add(plinthMesh);
+
+    // Pilares dos 4 Cantos
+    const pillarGeo = new THREE.BoxGeometry(0.1, 1.82, 0.1);
+    const pCoords = [
+      [-0.51, 0.94, -0.51],
+      [0.51, 0.94, -0.51],
+      [-0.51, 0.94, 0.51],
+      [0.51, 0.94, 0.51],
+    ];
+    pCoords.forEach(([px, py, pz]) => {
+      const pillar = new THREE.Mesh(pillarGeo, tardisDarkMat);
+      pillar.position.set(px, py, pz);
+      tardisGroup.add(pillar);
+    });
+
+    // Teto Piramidal em Degraus
+    const roofBaseGeo = new THREE.BoxGeometry(1.08, 0.07, 1.08);
+    const roofBase = new THREE.Mesh(roofBaseGeo, tardisBlueMat);
+    roofBase.position.y = 1.87;
+    tardisGroup.add(roofBase);
+
+    const roofMidGeo = new THREE.BoxGeometry(0.86, 0.07, 0.86);
+    const roofMid = new THREE.Mesh(roofMidGeo, tardisBlueMat);
+    roofMid.position.y = 1.93;
+    tardisGroup.add(roofMid);
+
+    // Lanterna do Teto (A lâmpada clássica de Doctor Who que pulsa)
+    const lampCupGeo = new THREE.CylinderGeometry(0.06, 0.06, 0.04, 16);
+    const lampCup = new THREE.Mesh(lampCupGeo, tardisDarkMat);
+    lampCup.position.y = 1.98;
+    tardisGroup.add(lampCup);
+
+    const lampBulbGeo = new THREE.SphereGeometry(0.05, 16, 16);
+    const lampBulbMat = new THREE.MeshBasicMaterial({
+      color: 0x99e6ff,
+      transparent: true,
+      opacity: 0.95,
+    });
+    const lampBulb = new THREE.Mesh(lampBulbGeo, lampBulbMat);
+    lampBulb.position.y = 2.03;
+    tardisGroup.add(lampBulb);
+
+    const tardisLight = new THREE.PointLight(0x38bdf8, 1.2, 5);
+    tardisLight.position.set(0, 2.05, 0);
+    tardisGroup.add(tardisLight);
+
+    // Escala da TARDIS: Fica exatamente do tamanho dos planetas quando estão longe (~0.32)
+    tardisGroup.scale.setScalar(0.32);
+
+    // Rastro Cósmico de Cometa da TARDIS
+    const tardisTrailCount = 22;
+    const tardisTrailPositions = new Float32Array(tardisTrailCount * 3);
+    const tardisTrailGeo = new THREE.BufferGeometry();
+    tardisTrailGeo.setAttribute('position', new THREE.BufferAttribute(tardisTrailPositions, 3));
+
+    const tardisTrailMat = new THREE.PointsMaterial({
+      size: 4.2,
+      map: starTexture,
+      transparent: true,
+      opacity: 0.85,
+      color: new THREE.Color(0x38bdf8),
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    const tardisTrail = new THREE.Points(tardisTrailGeo, tardisTrailMat);
+    tardisTrail.visible = false;
+    scene.add(tardisTrail);
+
+    // Estado da TARDIS: a cada 30 segundos passa por 4 segundos na tela como cometa
+    const tardisState = {
+      timer: 24.0, // Inicia em 24s para o usuário ver a primeira passagem aos 6s!
+      interval: 30.0,
+      flyDuration: 4.0,
+      isFlying: false,
+      flyTimer: 0,
+      startPos: new THREE.Vector3(),
+      endPos: new THREE.Vector3(),
+      history: [],
+    };
+
     // 10. SCREEN-TO-WORLD UNPROJECT & OBSTACLE DETECTION
     const isSolidComponent = (el) => {
       // Quando o site está limpo, NENHUM componente bloqueia!
@@ -1651,6 +1877,73 @@ export default function InteractiveBackground({
         }
       }
 
+      // ==========================================
+      // ATUALIZAÇÃO DA TARDIS (PASSAGEM CÓSMICA A CADA 30S)
+      // ==========================================
+      tardisState.timer += dt;
+      if (!tardisState.isFlying && tardisState.timer >= tardisState.interval) {
+        // Dispara a passagem de cometa da TARDIS
+        tardisState.isFlying = true;
+        tardisState.flyTimer = 0;
+        tardisState.timer = 0;
+        tardisGroup.visible = true;
+        tardisTrail.visible = true;
+        tardisState.history = [];
+
+        // Trajetória diagonal suave pelo campo de visão visível da câmera
+        const fromLeft = Math.random() > 0.5;
+        const startX = fromLeft ? -28 : 28;
+        const endX = fromLeft ? 28 : -28;
+        const startY = THREE.MathUtils.randFloat(7, 13);
+        const endY = THREE.MathUtils.randFloat(-11, -5);
+        const startZ = THREE.MathUtils.randFloat(-10, -5);
+        const endZ = THREE.MathUtils.randFloat(1, 5);
+
+        tardisState.startPos.set(startX, startY, startZ);
+        tardisState.endPos.set(endX, endY, endZ);
+        tardisGroup.position.copy(tardisState.startPos);
+        tardisGroup.rotation.set(0, 0, 0);
+      }
+
+      if (tardisState.isFlying) {
+        tardisState.flyTimer += dt;
+        const progress = Math.min(1.0, tardisState.flyTimer / tardisState.flyDuration);
+
+        // Movimento suave de 0 a 1 em exatamente 4 segundos
+        tardisGroup.position.lerpVectors(tardisState.startPos, tardisState.endPos, progress);
+
+        // Mantém a TARDIS 100% em pé (vertical), girando suavemente em torno do próprio eixo Y
+        tardisGroup.rotation.x = 0;
+        tardisGroup.rotation.z = 0;
+        tardisGroup.rotation.y += dt * 2.8;
+
+        // Pulso rápido da lanterna luminosa do teto
+        const pulse = 0.5 + 0.5 * Math.sin(tardisState.flyTimer * 28.0);
+        lampBulbMat.opacity = 0.4 + 0.6 * pulse;
+        tardisLight.intensity = 0.8 + 1.2 * pulse;
+
+        // Atualização dos pontos do rastro cósmico de cometa
+        tardisState.history.unshift(tardisGroup.position.clone());
+        if (tardisState.history.length > tardisTrailCount) {
+          tardisState.history.pop();
+        }
+
+        const posAttr = tardisTrailGeo.attributes.position;
+        for (let i = 0; i < tardisTrailCount; i++) {
+          const pt = tardisState.history[i] || tardisGroup.position;
+          posAttr.setXYZ(i, pt.x, pt.y, pt.z);
+        }
+        posAttr.needsUpdate = true;
+
+        if (progress >= 1.0) {
+          // Terminaram os 4 segundos -> TARDIS some da tela até os próximos 30s!
+          tardisState.isFlying = false;
+          tardisGroup.visible = false;
+          tardisTrail.visible = false;
+          tardisState.history = [];
+        }
+      }
+
       renderer.render(scene, camera);
       requestAnimationFrame(animate);
     };
@@ -1688,6 +1981,16 @@ export default function InteractiveBackground({
       atmosphereMat.dispose();
       gargantuaQuadGeo.dispose();
       gargantuaShaderMat.dispose();
+      tardisBodyGeo.dispose();
+      tardisWallTex.dispose();
+      plinthGeo.dispose();
+      pillarGeo.dispose();
+      roofBaseGeo.dispose();
+      roofMidGeo.dispose();
+      lampCupGeo.dispose();
+      lampBulbGeo.dispose();
+      tardisTrailGeo.dispose();
+      tardisTrailMat.dispose();
     };
   }, []);
 

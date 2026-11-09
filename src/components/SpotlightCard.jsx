@@ -4,7 +4,7 @@ import React, { useRef, useState, useEffect } from 'react';
  * SpotlightCard com Efeito Holograma e Transições de Aparecimento ao Rolar.
  * - Detecta quando o componente entra na tela durante o scroll.
  * - Efeito de Holograma Sci-Fi ao se materializar:
- *    • Feixe luminoso de escaneamento holográfico (scanline beam ciano).
+ *    • Feixe luminoso de escaneamento holográfico (laser beam ciano).
  *    • Grade de varredura holográfica temporária.
  *    • Cantoneiras táticas holográficas (HUD sci-fi).
  *    • Perspectiva 3D suave com foco e assentamento fluído.
@@ -49,15 +49,15 @@ export default function SpotlightCard({
           setTimeout(() => setIsHoloBeamActive(false), 950);
         } else {
           // Quando o elemento rolar para fora da parte inferior, reseta para reanimar ao descer
-          if (entry.boundingClientRect.top > window.innerHeight * 0.98) {
+          if (entry.boundingClientRect.top > window.innerHeight * 1.02) {
             setIsRevealed(false);
             setIsHoloBeamActive(false);
           }
         }
       },
       {
-        threshold: 0.15,
-        rootMargin: '0px 0px -40px 0px',
+        threshold: 0.06,
+        rootMargin: '0px 0px 20px 0px',
       }
     );
 
@@ -92,7 +92,7 @@ export default function SpotlightCard({
     ? isHovered
       ? `perspective(1000px) rotateX(${tilt.x.toFixed(2)}deg) rotateY(${tilt.y.toFixed(2)}deg) translateY(-4px) translateZ(8px)`
       : 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px) translateZ(0px)'
-    : 'perspective(1000px) rotateX(8deg) translateY(32px) scale(0.96)';
+    : 'perspective(1000px) rotateX(6deg) translateY(24px) scale(0.97)';
 
   return (
     <div
@@ -105,25 +105,27 @@ export default function SpotlightCard({
         transformStyle: 'preserve-3d',
         transition: isHovered
           ? 'transform 0.12s ease-out, border-color 0.25s ease, box-shadow 0.25s ease'
-          : 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s ease',
+          : 'transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s ease',
         ...props.style,
       }}
       className={`relative overflow-hidden rounded-2xl border bg-slate-900/70 p-6 backdrop-blur-xl transform-gpu border-slate-800/80 hover:border-cyan-400/80 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08),0_10px_30px_-10px_rgba(0,0,0,0.5)] hover:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.2),0_18px_40px_-10px_rgba(0,0,0,0.7),0_0_25px_rgba(56,189,248,0.25)] ${
-        isRevealed ? 'opacity-100 scale-100 blur-0' : 'opacity-0 scale-[0.96] blur-[2px] pointer-events-none'
-      } ${isHoloBeamActive ? 'holo-card-glow border-cyan-400/70' : ''} ${className}`}
+        isRevealed ? 'opacity-100 scale-100 blur-0' : 'opacity-0 scale-[0.97] blur-[2px] pointer-events-none'
+      } ${isHoloBeamActive ? 'border-cyan-400/90 shadow-[0_0_28px_rgba(6,182,212,0.35),inset_0_0_15px_rgba(6,182,212,0.12)]' : ''} ${className}`}
       {...props}
     >
-      {/* 1. FEIXE DE ESCANEAMENTO HOLOGRÁFICO (VARREDURA AO APARECER) */}
+      {/* 1. FEIXE LASER DE ESCANEAMENTO HOLOGRÁFICO (DE TOPO A FIM DO ELEMENTO) */}
       {isHoloBeamActive && (
-        <div
-          className="pointer-events-none absolute inset-x-0 h-28 bg-gradient-to-b from-transparent via-cyan-400/25 to-transparent animate-holo-scanline z-20"
-          aria-hidden="true"
-        />
+        <div className="pointer-events-none absolute inset-x-0 animate-hologram-beam z-30 overflow-hidden">
+          {/* Linha laser ciano nítida */}
+          <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-cyan-300 to-transparent shadow-[0_0_14px_rgba(34,211,238,0.95)]" />
+          {/* Feixe de luz volumétrico projetando o holograma */}
+          <div className="h-24 w-full bg-gradient-to-b from-cyan-400/20 via-cyan-500/5 to-transparent" />
+        </div>
       )}
 
       {/* 2. GRADE DE LINHAS DE VARREDURA HOLOGRÁFICA (DISSOLVE APÓS ESTABILIZAR) */}
       <div
-        className={`pointer-events-none absolute inset-0 z-10 bg-[linear-gradient(rgba(6,182,212,0.06)_1px,transparent_1px)] bg-[size:100%_4px] transition-opacity duration-700 ${
+        className={`pointer-events-none absolute inset-0 z-20 bg-[linear-gradient(rgba(6,182,212,0.09)_1px,transparent_1px)] bg-[size:100%_4px] transition-opacity duration-700 ${
           isHoloBeamActive ? 'opacity-100' : 'opacity-0'
         }`}
         aria-hidden="true"
@@ -131,12 +133,12 @@ export default function SpotlightCard({
 
       {/* 3. TACTICAL HUD CORNERS (CANTORES HOLOGRÁFICOS SCI-FI) */}
       {isHoloBeamActive && (
-        <>
-          <span className="absolute top-2 left-2 h-2.5 w-2.5 border-t-2 border-l-2 border-cyan-400/80 pointer-events-none z-20 transition-opacity duration-500" />
-          <span className="absolute top-2 right-2 h-2.5 w-2.5 border-t-2 border-r-2 border-cyan-400/80 pointer-events-none z-20 transition-opacity duration-500" />
-          <span className="absolute bottom-2 left-2 h-2.5 w-2.5 border-b-2 border-l-2 border-cyan-400/80 pointer-events-none z-20 transition-opacity duration-500" />
-          <span className="absolute bottom-2 right-2 h-2.5 w-2.5 border-b-2 border-r-2 border-cyan-400/80 pointer-events-none z-20 transition-opacity duration-500" />
-        </>
+        <div className="pointer-events-none transition-opacity duration-500">
+          <span className="absolute top-2 left-2 h-3 w-3 border-t-2 border-l-2 border-cyan-400 shadow-[0_0_8px_rgba(6,182,212,0.8)] z-30" />
+          <span className="absolute top-2 right-2 h-3 w-3 border-t-2 border-r-2 border-cyan-400 shadow-[0_0_8px_rgba(6,182,212,0.8)] z-30" />
+          <span className="absolute bottom-2 left-2 h-3 w-3 border-b-2 border-l-2 border-cyan-400 shadow-[0_0_8px_rgba(6,182,212,0.8)] z-30" />
+          <span className="absolute bottom-2 right-2 h-3 w-3 border-b-2 border-r-2 border-cyan-400 shadow-[0_0_8px_rgba(6,182,212,0.8)] z-30" />
+        </div>
       )}
 
       {/* 4. BACKGROUND SPOTLIGHT AO PASSAR O MOUSE */}

@@ -3,7 +3,6 @@ import InteractiveBackground from './components/InteractiveBackground';
 import Navbar from './components/Navbar';
 import HeroSection from './components/HeroSection';
 import BentoGrid from './components/BentoGrid';
-import TerminalPlayground from './components/TerminalPlayground';
 import ProjectsSection from './components/ProjectsSection';
 import ExperienceTimeline from './components/ExperienceTimeline';
 import SkillsMatrix from './components/SkillsMatrix';
@@ -13,7 +12,6 @@ import FloatingWhatsApp from './components/FloatingWhatsApp';
 import ResumeModal from './components/ResumeModal';
 import CometCursor from './components/CometCursor';
 import ScrollReveal from './components/ScrollReveal';
-import { Terminal as TerminalIcon, Sparkles } from 'lucide-react';
 
 export default function App() {
   const [resumeOpen, setResumeOpen] = useState(false);
@@ -74,37 +72,7 @@ export default function App() {
               </ScrollReveal>
             </div>
 
-            {/* 3. Interactive Terminal Playground */}
-            <div className={getFlyClass('terminal')}>
-              <ScrollReveal animation="tilt-3d" duration={1000}>
-                <section id="terminal" className="py-16 px-4 sm:px-6 relative">
-                  <div className="mx-auto max-w-5xl">
-                    <div className="text-center max-w-2xl mx-auto mb-10">
-                      <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-mono text-emerald-400 border border-emerald-500/20 mb-3">
-                        <TerminalIcon className="h-3.5 w-3.5" />
-                        <span>TERMINAL CLI INTERATIVO</span>
-                      </div>
-                      <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-                        Experimente o Console de Desenvolvedor
-                      </h2>
-                      <p className="mt-2 text-sm sm:text-base text-slate-400">
-                        Execute comandos em tempo real, consulte o schema SQL simulado, explore as habilidades ou lance confetes.
-                      </p>
-                    </div>
-
-                    <TerminalPlayground
-                      onOpenResume={() => setResumeOpen(true)}
-                      onOpenContact={() => {
-                        const el = document.getElementById('contato');
-                        el?.scrollIntoView({ behavior: 'smooth' });
-                      }}
-                    />
-                  </div>
-                </section>
-              </ScrollReveal>
-            </div>
-
-            {/* 4. Projects Showcase */}
+            {/* 3. Projects Showcase */}
             <div className={getFlyClass('projects')}>
               <ScrollReveal animation="slide-right" duration={950}>
                 <ProjectsSection />

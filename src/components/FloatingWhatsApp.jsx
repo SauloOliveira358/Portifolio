@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageCircle, X, Send, Bot, ExternalLink, ArrowRight, FolderGit2, Sparkles, Minus } from 'lucide-react';
-import { fireEpicConfetti, fireSupernova } from '../utils/confetti';
+import { MessageCircle, X, Send, ExternalLink, ArrowRight, FolderGit2 } from 'lucide-react';
+import { fireEpicConfetti } from '../utils/confetti';
+import { playR2D2Sound } from '../utils/r2d2Audio';
+import R2D2Head from './R2D2Head';
 
 export const PLANET_DIALOGS = {
   jupiter: {
@@ -9,7 +11,7 @@ export const PLANET_DIALOGS = {
     subtitle: 'O Núcleo / Backend',
     emoji: '🪐',
     badgeColor: 'border-amber-500/40 bg-amber-500/10 text-amber-300',
-    botMessage: 'Bip, bip! 🪐 Você escaneou Júpiter. A gravidade aqui é forte, assim como o Backend do Saulo. É neste núcleo que ele constrói APIs robustas e seguras usando Python (FastAPI) e Java (Spring Boot). Qual motor você quer inspecionar primeiro?',
+    botMessage: 'Bip, bip-bop! 🪐 Você escaneou Júpiter. A gravidade aqui é forte, assim como o Backend do Saulo. É neste núcleo que ele constrói APIs robustas e seguras usando Python (FastAPI) e Java (Spring Boot). Qual motor você quer inspecionar primeiro?',
     options: [
       {
         id: 'belabusca_api',
@@ -34,7 +36,7 @@ export const PLANET_DIALOGS = {
     subtitle: 'A Interface / Frontend',
     emoji: '🪐',
     badgeColor: 'border-yellow-500/40 bg-yellow-500/10 text-yellow-300',
-    botMessage: 'Sinal captado! 🪐 Bem-vindo aos anéis de Saturno. Esta é a camada visual (Frontend), onde a mágica da interação acontece. O Saulo utiliza Angular 19 e React para criar interfaces bonitas e fluidas para os usuários. Quer explorar as telas que ele construiu?',
+    botMessage: 'Bip-trill! 🪐 Sinal captado nos anéis de Saturno! Esta é a camada visual (Frontend), onde a mágica da interação acontece. O Saulo utiliza Angular 19 e React para criar interfaces bonitas e fluidas para os usuários. Quer explorar as telas que ele construiu?',
     options: [
       {
         id: 'medflow_ui',
@@ -59,7 +61,7 @@ export const PLANET_DIALOGS = {
     subtitle: 'Estrutura / Banco de Dados',
     emoji: '🔴',
     badgeColor: 'border-rose-500/40 bg-rose-500/10 text-rose-300',
-    botMessage: 'Pouso em Marte autorizado! 🔴 Terreno denso e focado em Dados. Aqui o Saulo constrói fundações sólidas com PostgreSQL, MySQL e Supabase. Ele é especialista em modelagem relacional. Quer escavar as estruturas de dados dos projetos?',
+    botMessage: 'Bop-whistle! Pouso em Marte autorizado! 🔴 Terreno denso e focado em Dados. Aqui o Saulo constrói fundações sólidas com PostgreSQL, MySQL e Supabase. Ele é especialista em modelagem relacional. Quer escavar as estruturas de dados dos projetos?',
     options: [
       {
         id: 'modelagem_projeto_vendas',
@@ -84,7 +86,7 @@ export const PLANET_DIALOGS = {
     subtitle: 'O Hub / Sistemas Completos',
     emoji: '🌍',
     badgeColor: 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300',
-    botMessage: 'Bem-vindo à Terra! 🌍 É aqui que o código vira solução para o mundo real. Neste planeta, você tem uma visão Full-Stack de sistemas completos que já estão gerando impacto. Qual ecossistema você quer abrir?',
+    botMessage: 'Bip-bip-trill! Bem-vindo à Terra! 🌍 É aqui que o código vira solução para o mundo real. Neste planeta, você tem uma visão Full-Stack de sistemas completos que já estão gerando impacto. Qual ecossistema você quer abrir?',
     options: [
       {
         id: 'overview_belabusca',
@@ -115,7 +117,7 @@ export const PLANET_DIALOGS = {
     subtitle: 'Base / Cloud & Versionamento',
     emoji: '🌙',
     badgeColor: 'border-cyan-400/40 bg-cyan-500/10 text-cyan-300',
-    botMessage: "Pouso lunar autorizado! 🌙 Ué, a Lua saiu da órbita da Terra? Ah, lembrei! Ela está em uma branch separada no Git e o Saulo ainda não fez o merge para a 'main'. Sorte que ela funciona perfeitamente sozinha como nossa base de Ferramentas, Cloud e Versionamento. É aqui que ficam os terminais e a infraestrutura que ele usa. Quer inspecionar o código-fonte dessa base?",
+    botMessage: "Bip-boop! Pouso lunar autorizado! 🌙 Ué, a Lua saiu da órbita da Terra? Ah, lembrei! Ela está em uma branch separada no Git e o Saulo ainda não fez o merge para a 'main'. Sorte que ela funciona perfeitamente sozinha como nossa base de Ferramentas, Cloud e Versionamento. É aqui que ficam os terminais e a infraestrutura que ele usa. Quer inspecionar o código-fonte dessa base?",
     options: [
       {
         id: 'inspect_base_source',
@@ -132,7 +134,7 @@ export const PLANET_DIALOGS = {
     subtitle: 'Resolução de Problemas / Inovação',
     emoji: '🕳️',
     badgeColor: 'border-violet-500/40 bg-violet-500/10 text-violet-300',
-    botMessage: 'Alerta de anomalia gravitacional! 🕳️ Você atingiu o Horizonte de Eventos. A pressão aqui é extrema. Este é o setor de Pesquisa, Inovação e Solução de Problemas Complexos. É para cá que o Saulo puxa os desafios mais densos: arquitetura em nuvem (AWS), integrações difíceis e segurança avançada. Quer ver como ele resolve problemas dos quais a maioria dos devs tenta fugir?',
+    botMessage: 'WHEEE-BEEP! 🕳️ Alerta de anomalia gravitacional! Você atingiu o Horizonte de Eventos. A pressão aqui é extrema. Este é o setor de Pesquisa, Inovação e Solução de Problemas Complexos. É para cá que o Saulo puxa os desafios mais densos: arquitetura em nuvem (AWS), integrações difíceis e segurança avançada. Quer ver como ele resolve problemas dos quais a maioria dos devs tenta fugir?',
     options: [
       {
         id: 'concorrencia_critica',
@@ -159,20 +161,36 @@ export default function FloatingWhatsApp({
   onClosePlanet = null,
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [speechBubble, setSpeechBubble] = useState(null);
   const [messages, setMessages] = useState([
     {
       id: 1,
       sender: 'bot',
-      text: 'Olá! Sou o assistente virtual do Saulo. Pergunte qualquer coisa sobre as experiências dele, projetos do GitHub, faculdade ou clique nos planetas para uma jornada cósmica!',
+      text: 'Bip, bop, trill! 🤖 Sou o R2-D2, assistente astromecânico do Saulo. Pergunte qualquer coisa sobre as experiências dele, projetos do GitHub, faculdade ou clique nos planetas para uma jornada cósmica!',
       time: 'Agora',
     },
   ]);
   const [inputVal, setInputVal] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [interactionCount, setInteractionCount] = useState(0);
+
   const messagesEndRef = useRef(null);
   const lastHandledTriggerRef = useRef(null);
   const lastSupernovaTimeRef = useRef(0);
+  const speakingTimeoutRef = useRef(null);
+
+  // Helper para acionar a fala/bipes do R2-D2 ("faz o R2-D2 mexer e emitir som")
+  const triggerR2D2Speech = (duration = 5500, soundType = 'random') => {
+    setIsSpeaking(true);
+    playR2D2Sound(soundType);
+    if (speakingTimeoutRef.current) {
+      clearTimeout(speakingTimeoutRef.current);
+    }
+    speakingTimeoutRef.current = setTimeout(() => {
+      setIsSpeaking(false);
+    }, duration);
+  };
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -182,46 +200,53 @@ export default function FloatingWhatsApp({
   useEffect(() => {
     const handleSupernova = () => {
       const now = Date.now();
-      // Previne repetição rápida ao disparar várias supernovas seguidas
       if (now - lastSupernovaTimeRef.current < 2500) {
         return;
       }
       lastSupernovaTimeRef.current = now;
 
-      setIsOpen(true);
-      setIsTyping(true);
-
       const cosmicMessages = [
-        '💥 Bip, bip! Alerta cósmico! 🌟 Você causou uma pequena explosão supernova no sistema! Ondas de choque gravitacionais foram detectadas, mas os servidores aguentaram a explosão perfeitamente!',
-        '🌟 UAU! Radiação estelar detectada! 💥 Você causou uma pequena explosão supernova no cosmos do portfólio! Nossos escudos térmicos absorveram a energia e todos os módulos continuam 100% operacionais.',
-        '🌌 Alerta estelar no núcleo! 💥 Você provocou uma pequena supernova no sistema! Fique tranquilo: as APIs, bancos de dados e interfaces aguentaram o impacto com sucesso!',
+        '💥 BEEP-BOP-WHEEE! 🌟 Alerta cósmico! Você causou uma pequena explosão supernova no sistema! Ondas de choque gravitacionais foram detectadas, mas os escudos do R2-D2 aguentaram a explosão perfeitamente!',
+        '🌟 UAU! Radiação estelar detectada! 💥 Bip-trill! Você causou uma pequena explosão supernova no cosmos do portfólio! Nossos escudos térmicos absorveram a energia e todos os módulos continuam 100% operacionais.',
+        '🌌 Alerta estelar no núcleo! 💥 Bop-bip! Você provocou uma pequena supernova no sistema! Fique tranquilo: as APIs, bancos de dados e interfaces aguentaram o impacto com sucesso!',
       ];
       const randomMsg = cosmicMessages[Math.floor(Math.random() * cosmicMessages.length)];
 
-      setTimeout(() => {
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: Date.now(),
-            sender: 'bot',
-            isSupernova: true,
-            text: randomMsg,
-            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          },
-        ]);
-        setIsTyping(false);
-      }, 500);
+      // Quando explode supernova: NÃO abre o chat grande, faz o R2-D2 falar com o balão!
+      if (!isOpen) {
+        setSpeechBubble({
+          id: 'supernova',
+          isSupernova: true,
+          text: randomMsg,
+          options: null,
+          github: null,
+        });
+        triggerR2D2Speech(6000, 'alert');
+      } else {
+        playR2D2Sound('alert');
+      }
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now(),
+          sender: 'bot',
+          isSupernova: true,
+          text: randomMsg,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        },
+      ]);
     };
 
     window.addEventListener('supernova_explosion', handleSupernova);
     return () => window.removeEventListener('supernova_explosion', handleSupernova);
-  }, []);
+  }, [isOpen]);
 
   // Handle incoming planet click triggers
+  // REGRA DO USUÁRIO: "quando clicar no planeta não abrir o chat seja como ele falasse saísse dele a teg e faz a cabeça mexer só se clicar nele que abrir o chat"
   useEffect(() => {
     if (!planetTrigger || !planetTrigger.id) return;
 
-    // Previne repetição do mesmo clique
     if (
       lastHandledTriggerRef.current &&
       lastHandledTriggerRef.current.id === planetTrigger.id &&
@@ -234,9 +259,23 @@ export default function FloatingWhatsApp({
     const dialog = PLANET_DIALOGS[planetTrigger.id];
     if (!dialog) return;
 
-    setIsOpen(true);
+    // Se o chat já estiver aberto, adiciona na janela. Se estiver fechado, NÃO abre o chat:
+    // abre o balão ("tag") que sai do R2-D2 e anima ele mexendo!
+    if (!isOpen) {
+      setSpeechBubble({
+        id: dialog.id,
+        planet: dialog,
+        text: dialog.botMessage,
+        options: dialog.options,
+        github: null,
+        githubSecondary: null,
+        githubLabel: null,
+        isSupernova: false,
+      });
+      triggerR2D2Speech(6000);
+    }
+
     setMessages((prev) => {
-      // Se a última mensagem já for a introdução desse mesmo planeta, não adiciona novamente
       const last = prev[prev.length - 1];
       if (last && last.isPlanetIntro && last.planet?.id === dialog.id) {
         return prev;
@@ -254,7 +293,7 @@ export default function FloatingWhatsApp({
         },
       ];
     });
-  }, [planetTrigger]);
+  }, [planetTrigger, isOpen]);
 
   const quickQuestions = [
     { label: '💼 Experiência & Dia a dia', query: 'experiência' },
@@ -280,6 +319,58 @@ export default function FloatingWhatsApp({
     return whatsappInvites[index % whatsappInvites.length];
   };
 
+  // Resposta dentro do balão de fala ("teg") do R2-D2
+  const handleBubbleOptionClick = (option, planet) => {
+    const userMsg = {
+      id: Date.now(),
+      sender: 'user',
+      text: option.label,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    };
+
+    setMessages((prev) => [...prev, userMsg]);
+
+    if (option.isClose) {
+      triggerR2D2Speech(2500);
+      setSpeechBubble((prev) => ({
+        ...prev,
+        text: '🚀 Bip-bop! Retornando à exploração da galáxia! Clique em outro planeta quando quiser inspecioná-lo.',
+        options: null,
+      }));
+      setTimeout(() => {
+        setSpeechBubble(null);
+        setIsSpeaking(false);
+        if (onClosePlanet) onClosePlanet();
+      }, 1600);
+      return;
+    }
+
+    triggerR2D2Speech(5500);
+    setSpeechBubble((prev) => ({
+      ...prev,
+      text: option.reply,
+      github: option.github,
+      githubSecondary: option.githubSecondary,
+      githubLabel: option.githubLabel,
+      options: null,
+    }));
+
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: Date.now() + 1,
+        sender: 'bot',
+        isProjectResponse: true,
+        text: option.reply,
+        github: option.github,
+        githubSecondary: option.githubSecondary,
+        githubLabel: option.githubLabel,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      },
+    ]);
+  };
+
+  // Resposta dentro do chat completo
   const handleOptionClick = (option, planet) => {
     const userMsg = {
       id: Date.now(),
@@ -298,7 +389,7 @@ export default function FloatingWhatsApp({
           {
             id: Date.now() + 1,
             sender: 'bot',
-            text: '🚀 Retornando à exploração da galáxia! Clique em outro planeta quando quiser inspecioná-lo.',
+            text: '🚀 Bip-trill! Retornando à exploração da galáxia! Clique em outro planeta quando quiser inspecioná-lo.',
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           },
         ]);
@@ -313,6 +404,7 @@ export default function FloatingWhatsApp({
 
     setIsTyping(true);
     setTimeout(() => {
+      playR2D2Sound('chirp');
       setMessages((prev) => [
         ...prev,
         {
@@ -483,19 +575,20 @@ export default function FloatingWhatsApp({
         lower.includes('boa tarde') || lower.includes('boa noite') || lower.includes('opa') ||
         lower.includes('salve') || lower.includes('tudo bem') || lower.includes('blz')
       ) {
-        mainText = `Olá! Tudo ótimo por aqui! Estou à disposição para tirar qualquer dúvida sobre a carreira do Saulo, os projetos reais do GitHub dele, a formação no 8º período ou oportunidades de vagas. ${invite}`;
+        mainText = `Bip-bop! Olá! Tudo ótimo por aqui! Sou o R2-D2, assistente astromecânico do Saulo. Estou à disposição para tirar qualquer dúvida sobre a carreira dele, os projetos reais do GitHub, a formação no 8º período ou oportunidades de vagas. ${invite}`;
       }
 
       // 16. Fallbacks dinâmicos inteligentes
       else {
         const fallbacks = [
-          `Entendido perfeitamente! Para falar mais a fundo sobre "${query}" ou agendar uma conversa, você pode mandar uma mensagem rápida no WhatsApp do Saulo pelo (37) 99916-5471.`,
-          `Excelente ponto! O Saulo tem facilidade em discutir esse assunto e alinhar expectativas técnicas. Que tal dar um toque no WhatsApp dele no (37) 99916-5471?`,
-          `Muito bom você ter perguntado isso! O Saulo costuma responder os contatos do portfólio no WhatsApp em questão de minutos. O número direto é (37) 99916-5471!`,
+          `Bip-bop! Entendido perfeitamente! Para falar mais a fundo sobre "${query}" ou agendar uma conversa, você pode mandar uma mensagem rápida no WhatsApp do Saulo pelo (37) 99916-5471.`,
+          `Bip-trill! Excelente ponto! O Saulo tem facilidade em discutir esse assunto e alinhar expectativas técnicas. Que tal dar um toque no WhatsApp dele no (37) 99916-5471?`,
+          `Bop-whistle! Muito bom você ter perguntado isso! O Saulo costuma responder os contatos do portfólio no WhatsApp em questão de minutos. O número direto é (37) 99916-5471!`,
         ];
         mainText = fallbacks[currentCount % fallbacks.length];
       }
 
+      playR2D2Sound('chatter');
       setMessages((prev) => [
         ...prev,
         {
@@ -514,38 +607,38 @@ export default function FloatingWhatsApp({
     window.open('https://wa.me/5537999165471?text=Ol%C3%A1%20Saulo,%20estava%20conversando%20com%20o%20assistente%20no%20seu%20portf%C3%B3lio%20e%20gostaria%20de%20falar%20com%20voc%C3%AA!', '_blank');
   };
 
-  // Se estiver em modo limpo e o bot estiver fechado, NÃO renderiza nada na tela (fica 100% limpo)!
-  if (isCleanMode && !isOpen) {
+  // Se estiver em modo limpo e o bot estiver fechado e sem tag de fala, NÃO renderiza nada na tela (fica 100% limpo)!
+  if (isCleanMode && !isOpen && !speechBubble) {
     return null;
   }
 
   return (
-    <div className="fixed bottom-14 sm:bottom-16 md:bottom-20 right-5 sm:right-7 z-40 flex flex-col items-end">
-      {/* Interactive Chat Window with Smooth Transitions */}
+    <div className="fixed bottom-10 sm:bottom-12 md:bottom-16 right-4 sm:right-7 z-40 flex flex-col items-end pointer-events-none">
+      
+      {/* 1. JANELA DE CHAT COMPLETA (SÓ ABRE SE O USUÁRIO CLICAR DIRETAMENTE NO R2-D2) */}
       <div
-        className={`transition-all duration-300 ease-out origin-bottom-right ${
+        className={`transition-all duration-300 ease-out origin-bottom-right pointer-events-auto ${
           isOpen
-            ? 'opacity-100 scale-100 translate-y-0 pointer-events-auto'
+            ? 'opacity-100 scale-100 translate-y-0'
             : 'opacity-0 scale-90 translate-y-4 pointer-events-none absolute'
         }`}
       >
-        <div className="mb-3 w-80 sm:w-96 max-h-[min(580px,calc(100vh-8rem))] rounded-2xl border border-slate-700/80 bg-slate-900/95 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85),0_0_25px_rgba(16,185,129,0.2)] overflow-hidden backdrop-blur-xl flex flex-col">
+        <div className="mb-3 w-80 sm:w-96 max-h-[min(580px,calc(100vh-8rem))] rounded-2xl border border-slate-700/80 bg-slate-900/95 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85),0_0_25px_rgba(56,189,248,0.25)] overflow-hidden backdrop-blur-xl flex flex-col">
           
-          {/* Header */}
+          {/* Header do Chat com o R2-D2 */}
           <div className="flex items-center justify-between border-b border-slate-800 bg-slate-950/80 px-4 py-3">
-            <div className="flex items-center gap-2.5">
-              <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500/30 to-sky-500/20 text-emerald-400 border border-emerald-500/30">
-                <Bot className="h-5 w-5" />
-                <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-500 border-2 border-slate-950" />
+            <div className="flex items-center gap-3">
+              <div className="relative flex h-10 w-9 items-center justify-center">
+                <R2D2Head size="sm" isSpeaking={isTyping} className="w-9 h-10" />
               </div>
               <div>
                 <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
-                  SauloBot
-                  <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-emerald-500/10 text-emerald-400">
+                  R2-D2 • SauloBot
+                  <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
                     Online
                   </span>
                 </h4>
-                <p className="text-[10px] text-slate-400">Assistente Virtual Inteligente</p>
+                <p className="text-[10px] text-slate-400">Droide Astromecânico Inteligente</p>
               </div>
             </div>
 
@@ -555,7 +648,7 @@ export default function FloatingWhatsApp({
                   setIsOpen(false);
                   if (onClosePlanet) onClosePlanet();
                 }}
-                className="rounded-lg p-1 text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
+                className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
                 title="Fechar ou minimizar o chat"
               >
                 <X className="h-4 w-4" />
@@ -571,8 +664,8 @@ export default function FloatingWhatsApp({
                 className={`flex gap-2 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 {msg.sender === 'bot' && (
-                  <div className="h-6 w-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5 border border-emerald-500/30">
-                    <Bot className="h-3.5 w-3.5" />
+                  <div className="w-6 h-7 shrink-0 mt-0.5">
+                    <R2D2Head size="sm" isSpeaking={false} className="w-6 h-7" />
                   </div>
                 )}
                 <div
@@ -613,7 +706,7 @@ export default function FloatingWhatsApp({
                   {/* Interactive Response Buttons for Planets */}
                   {msg.options && (
                     <div className="mt-3 space-y-1.5 pt-2 border-t border-slate-700/60">
-                      <p className="text-[10px] uppercase font-mono tracking-wider text-emerald-400/90 mb-1">
+                      <p className="text-[10px] uppercase font-mono tracking-wider text-cyan-400/90 mb-1">
                         Opções de resposta:
                       </p>
                       <div className="flex flex-col gap-1.5">
@@ -621,10 +714,10 @@ export default function FloatingWhatsApp({
                           <button
                             key={oIdx}
                             onClick={() => handleOptionClick(opt, msg.planet)}
-                            className="w-full text-left rounded-xl px-3 py-2 text-xs font-medium transition-all flex items-center justify-between gap-2 border shadow-sm bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 hover:text-emerald-200 border-emerald-500/30 hover:border-emerald-500/60 hover:-translate-y-0.5 hover:shadow-[0_0_12px_rgba(16,185,129,0.25)]"
+                            className="w-full text-left rounded-xl px-3 py-2 text-xs font-medium transition-all flex items-center justify-between gap-2 border shadow-sm bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 hover:text-cyan-200 border-cyan-500/30 hover:border-cyan-500/60 hover:-translate-y-0.5 hover:shadow-[0_0_12px_rgba(6,182,212,0.25)]"
                           >
                             <span>{opt.label}</span>
-                            <ArrowRight className="h-3.5 w-3.5 shrink-0 text-emerald-400" />
+                            <ArrowRight className="h-3.5 w-3.5 shrink-0 text-cyan-400" />
                           </button>
                         ))}
                       </div>
@@ -639,7 +732,7 @@ export default function FloatingWhatsApp({
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={() => fireEpicConfetti()}
-                        className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 px-3.5 py-2 text-xs font-bold text-slate-950 transition-all hover:scale-[1.02] shadow-lg shadow-emerald-500/20"
+                        className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 px-3.5 py-2 text-xs font-bold text-slate-950 transition-all hover:scale-[1.02] shadow-lg shadow-cyan-500/20"
                       >
                         <FolderGit2 className="h-4 w-4" />
                         <span>{msg.githubLabel || 'Ver Repositório no GitHub'}</span>
@@ -651,7 +744,7 @@ export default function FloatingWhatsApp({
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={() => fireEpicConfetti()}
-                          className="block text-center text-[10px] font-mono text-emerald-400 hover:underline"
+                          className="block text-center text-[10px] font-mono text-cyan-400 hover:underline"
                         >
                           🔗 Ver também repositório secundário
                         </a>
@@ -672,13 +765,13 @@ export default function FloatingWhatsApp({
 
             {isTyping && (
               <div className="flex gap-2 items-center text-slate-400 text-xs">
-                <div className="h-6 w-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/30">
-                  <Bot className="h-3.5 w-3.5" />
+                <div className="w-6 h-7 shrink-0">
+                  <R2D2Head size="sm" isSpeaking={true} className="w-6 h-7" />
                 </div>
                 <div className="rounded-2xl rounded-tl-none bg-slate-800/90 px-3 py-2 border border-slate-700/60 flex items-center gap-1">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-bounce" />
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-bounce [animation-delay:0.2s]" />
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-bounce [animation-delay:0.4s]" />
+                  <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-bounce" />
+                  <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-bounce [animation-delay:0.2s]" />
+                  <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-bounce [animation-delay:0.4s]" />
                 </div>
               </div>
             )}
@@ -706,12 +799,12 @@ export default function FloatingWhatsApp({
                 value={inputVal}
                 onChange={(e) => setInputVal(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                placeholder="Pergunte ou clique nos botões acima..."
-                className="flex-1 rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-xs text-white placeholder-slate-400 outline-none focus:border-emerald-400 focus:shadow-[0_0_15px_rgba(16,185,129,0.25)] transition-all"
+                placeholder="Pergunte ao R2-D2 ou clique nos botões acima..."
+                className="flex-1 rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-xs text-white placeholder-slate-400 outline-none focus:border-cyan-400 focus:shadow-[0_0_15px_rgba(6,182,212,0.25)] transition-all"
               />
               <button
                 onClick={() => handleSendMessage()}
-                className="rounded-xl bg-emerald-500 hover:bg-emerald-400 border border-emerald-300/50 hover:border-white p-2 text-slate-950 hover:shadow-[0_0_14px_rgba(16,185,129,0.4)] transition-all"
+                className="rounded-xl bg-cyan-500 hover:bg-cyan-400 border border-cyan-300/50 hover:border-white p-2 text-slate-950 hover:shadow-[0_0_14px_rgba(6,182,212,0.4)] transition-all"
                 title="Enviar pergunta"
               >
                 <Send className="h-4 w-4" />
@@ -721,7 +814,7 @@ export default function FloatingWhatsApp({
             {/* Direct WhatsApp Callout */}
             <button
               onClick={openWhatsAppDirect}
-              className="w-full rounded-xl bg-gradient-to-r from-emerald-500/15 via-emerald-500/25 to-emerald-500/15 hover:bg-emerald-500/30 border border-emerald-500/40 hover:border-emerald-400 py-2 text-[11px] font-bold text-emerald-300 hover:text-white flex items-center justify-center gap-1.5 transition-all hover:shadow-[0_0_15px_rgba(16,185,129,0.3)] hover:-translate-y-0.5"
+              className="w-full rounded-xl bg-gradient-to-r from-cyan-500/15 via-cyan-500/25 to-cyan-500/15 hover:bg-cyan-500/30 border border-cyan-500/40 hover:border-cyan-400 py-2 text-[11px] font-bold text-cyan-300 hover:text-white flex items-center justify-center gap-1.5 transition-all hover:shadow-[0_0_15px_rgba(6,182,212,0.3)] hover:-translate-y-0.5"
             >
               <MessageCircle className="h-3.5 w-3.5 fill-current" />
               <span>Chamar Saulo no WhatsApp ((37) 99916-5471)</span>
@@ -732,23 +825,176 @@ export default function FloatingWhatsApp({
         </div>
       </div>
 
-      {/* Floating Trigger Button (Posicionado mais pra cima com visual 3D Holográfico) */}
-      {!isCleanMode && (
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="group relative flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-tr from-emerald-500 via-teal-400 to-emerald-400 text-slate-950 shadow-[0_10px_30px_rgba(16,185,129,0.5),0_0_20px_rgba(56,189,248,0.4)] hover:shadow-[0_14px_35px_rgba(16,185,129,0.7),0_0_25px_rgba(56,189,248,0.6)] hover:scale-110 hover:-translate-y-1 transition-all duration-300 focus:outline-none border-2 border-emerald-200/90 hover:border-white"
-          aria-label="Abrir assistente e WhatsApp"
-        >
-          {/* Unread indicator */}
-          <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow border border-white/50">
-            1
-          </span>
+      {/* 2. BALÃO DE FALA ("TEG") QUE SAI DO R2-D2 AO CLICAR EM UM PLANETA */}
+      {speechBubble && !isOpen && (
+        <div className="mb-2 w-80 sm:w-96 max-w-[calc(100vw-2rem)] rounded-2xl border border-slate-700/80 bg-slate-900/95 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85),0_0_30px_rgba(56,189,248,0.25)] p-4 backdrop-blur-xl relative animate-bender-bubble-pop pointer-events-auto">
+          {/* Triângulo / Ponteiro do Balão de Fala apontando para a cabeça do R2-D2 */}
+          <div className="absolute -bottom-2 right-9 sm:right-11 w-4 h-4 bg-slate-900 border-r border-b border-slate-700/80 rotate-45 transform" />
 
-          {/* Ambient Ring */}
-          <span className="absolute inset-0 rounded-full border-2 border-emerald-300 opacity-70 animate-ping pointer-events-none" />
+          {/* Header do Balão com Tag do Planeta e Indicador de Voz */}
+          <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-800">
+            <div className="flex items-center gap-2">
+              {speechBubble.isSupernova ? (
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-400/60 bg-gradient-to-r from-amber-500/20 via-rose-500/20 to-purple-500/20 px-2.5 py-0.5 text-[10px] font-mono font-bold tracking-wide text-amber-300 shadow-[0_0_12px_rgba(251,191,36,0.25)]">
+                  <span>💥</span>
+                  <span>SUPERNOVA</span>
+                </span>
+              ) : speechBubble.planet ? (
+                <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[10px] font-mono font-bold tracking-wide ${speechBubble.planet.badgeColor}`}>
+                  <span>{speechBubble.planet.emoji}</span>
+                  <span>{speechBubble.planet.name.toUpperCase()}</span>
+                  <span className="opacity-60">•</span>
+                  <span>{speechBubble.planet.subtitle}</span>
+                </span>
+              ) : (
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+                  R2-D2
+                </span>
+              )}
+            </div>
 
-          {isOpen ? <X className="h-6 w-6 text-slate-950 font-bold" /> : <MessageCircle className="h-7 w-7 fill-slate-950 text-slate-950" />}
-        </button>
+            <div className="flex items-center gap-2">
+              {isSpeaking && (
+                <span className="flex items-center gap-1 text-[10px] font-mono text-cyan-400">
+                  <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-ping" />
+                  Bipando...
+                </span>
+              )}
+              <button
+                onClick={() => {
+                  setSpeechBubble(null);
+                  setIsSpeaking(false);
+                  if (onClosePlanet) onClosePlanet();
+                }}
+                className="rounded-lg p-1 text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
+                title="Fechar balão"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Mensagem dita pelo R2-D2 */}
+          <p className="text-xs text-slate-200 leading-relaxed whitespace-pre-wrap">
+            {speechBubble.text}
+          </p>
+
+          {/* Opções Interativas no Balão */}
+          {speechBubble.options && (
+            <div className="mt-3 space-y-1.5 pt-2 border-t border-slate-800/80">
+              <p className="text-[10px] uppercase font-mono tracking-wider text-cyan-400/90 mb-1">
+                Opções de exploração:
+              </p>
+              <div className="flex flex-col gap-1.5">
+                {speechBubble.options.filter((opt) => !opt.isClose).map((opt, oIdx) => (
+                  <button
+                    key={oIdx}
+                    onClick={() => handleBubbleOptionClick(opt, speechBubble.planet)}
+                    className="w-full text-left rounded-xl px-3 py-2 text-xs font-medium transition-all flex items-center justify-between gap-2 border shadow-sm bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 hover:text-cyan-200 border-cyan-500/30 hover:border-cyan-500/60 hover:-translate-y-0.5 hover:shadow-[0_0_12px_rgba(6,182,212,0.25)]"
+                  >
+                    <span>{opt.label}</span>
+                    <ArrowRight className="h-3.5 w-3.5 shrink-0 text-cyan-400" />
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Card / Botão de Link direto para o GitHub */}
+          {speechBubble.github && (
+            <div className="mt-3 pt-2.5 border-t border-slate-800/80 space-y-1.5">
+              <a
+                href={speechBubble.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => fireEpicConfetti()}
+                className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 px-3.5 py-2 text-xs font-bold text-slate-950 transition-all hover:scale-[1.02] shadow-lg shadow-cyan-500/20"
+              >
+                <FolderGit2 className="h-4 w-4" />
+                <span>{speechBubble.githubLabel || 'Ver Repositório no GitHub'}</span>
+                <ExternalLink className="h-3.5 w-3.5" />
+              </a>
+              {speechBubble.githubSecondary && (
+                <a
+                  href={speechBubble.githubSecondary}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => fireEpicConfetti()}
+                  className="block text-center text-[10px] font-mono text-cyan-400 hover:underline"
+                >
+                  🔗 Ver repositório secundário
+                </a>
+              )}
+            </div>
+          )}
+
+          {/* Rodapé do Balão: Atalho para abrir o Chat Completo */}
+          <div className="mt-3 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[10px]">
+            <button
+              onClick={() => {
+                setIsOpen(true);
+                setSpeechBubble(null);
+              }}
+              className="inline-flex items-center gap-1 text-cyan-400 hover:text-cyan-300 font-bold hover:underline"
+            >
+              <MessageCircle className="h-3.5 w-3.5" />
+              <span>Abrir Chat Completo</span>
+            </button>
+            <span className="text-slate-500 font-mono text-[9px]">
+              Ou clique no R2-D2 abaixo
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* 3. CABEÇA / CORPO DO R2-D2 OLHANDO DE FRENTE NO LUGAR DO BOT E DA NOTIFICAÇÃO */}
+      {(!isCleanMode || speechBubble || isOpen) && (
+        <div className="pointer-events-auto flex flex-col items-center">
+          {/* Alertinha para avisar que o R2-D2 é clicável para abrir o chat */}
+          {!isOpen && !speechBubble && (
+            <button
+              type="button"
+              onClick={() => {
+                playR2D2Sound('chirp');
+                setIsOpen(true);
+              }}
+              className="mb-2 group select-none flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/95 border border-cyan-400/60 shadow-[0_0_20px_rgba(6,182,212,0.45)] backdrop-blur-md animate-bounce hover:scale-105 active:scale-95 transition-all text-xs font-semibold text-cyan-300 hover:text-cyan-200 cursor-pointer"
+              title="Clique para conversar com o assistente R2-D2"
+            >
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500 shadow-[0_0_6px_rgba(6,182,212,0.9)]" />
+              </span>
+              <span className="tracking-wide">Clique em mim!</span>
+              <span className="text-[12px] group-hover:scale-125 transition-transform">💬</span>
+            </button>
+          )}
+
+          <div className="relative">
+            <R2D2Head
+              isSpeaking={isSpeaking}
+              isChatOpen={isOpen}
+              onClick={() => {
+                playR2D2Sound('chirp');
+                const nextState = !isOpen;
+                setIsOpen(nextState);
+                if (nextState) {
+                  setSpeechBubble(null);
+                }
+              }}
+            />
+
+            {/* Ícone de alerta pulsante no topo do R2-D2 */}
+            {!isOpen && !speechBubble && (
+              <span
+                className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-cyan-500 text-slate-950 font-black text-[9px] border-2 border-slate-900 shadow-[0_0_10px_rgba(6,182,212,0.9)] animate-pulse pointer-events-none"
+                title="Assistente Clicável"
+              >
+                💬
+              </span>
+            )}
+          </div>
+        </div>
       )}
     </div>
   );
