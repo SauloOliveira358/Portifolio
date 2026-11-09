@@ -48,7 +48,7 @@ export const PLANET_DIALOGS = {
       {
         id: 'jogo_senha_ui',
         label: 'Ver UI do Jogo da Senha',
-        reply: 'O Jogo da Senha e os projetos de games do Saulo (como Indiana Jones 2D e Birdzin) utilizam Canvas a 60 FPS, gerenciamento de estado reativo, sons dinâmicos e design retrô moderno.',
+        reply: 'O Jogo da Senha e os projetos de games do Saulo (como Indiana Jones 2D e ET: Fuga dos Céus) utilizam Canvas a 60 FPS, gerenciamento de estado reativo, sons dinâmicos e design retrô moderno.',
         github: 'https://github.com/SauloOliveira358/idianajhones',
         githubSecondary: 'https://github.com/SauloOliveira358/Show-do-Android',
         githubLabel: 'Ver Projetos de Jogos & UI no GitHub',
@@ -515,9 +515,9 @@ export default function FloatingWhatsApp({
       // 8. Indiana Jones / Games
       else if (
         lower.includes('indiana') || lower.includes('jones') || lower.includes('jogo') ||
-        lower.includes('game') || lower.includes('birdzin') || lower.includes('android')
+        lower.includes('game') || lower.includes('birdzin') || lower.includes('et') || lower.includes('fuga') || lower.includes('android')
       ) {
-        mainText = `Na parte de jogos e lógica pura, o Saulo desenvolveu o "Indiana Jones 2D" (jogo de plataforma retrô com física de colisões, alavancas mecânicas e puzzles em JavaScript puro), o "Birdzin" (arcade Canvas a 60 FPS) e o "Show do Android" (game de perguntas e respostas em Java). Dá para testar e ver os códigos no GitHub dele! ${invite}`;
+        mainText = `Na parte de jogos e lógica pura, o Saulo desenvolveu o "Indiana Jones 2D" (jogo de plataforma retrô com física de colisões, alavancas mecânicas e puzzles em JavaScript puro), o "ET: Fuga dos Céus" (arcade Canvas a 60 FPS) e o "Show do Android" (game de perguntas e respostas em Java). Dá para testar e ver os códigos no GitHub dele! ${invite}`;
       }
 
       // 9. Todos os Projetos / GitHub em geral

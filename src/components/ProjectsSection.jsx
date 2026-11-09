@@ -22,6 +22,9 @@ export default function ProjectsSection() {
       tag: 'Plataforma Web',
       badge: 'Destaque Principal',
       icon: Search,
+      logo: '/projects/bela-busca.png',
+      logoContainerStyle: 'h-10 px-2 rounded-xl bg-[#FBF8F3] border border-amber-200/70 shadow-sm',
+      logoImgStyle: 'h-8 w-auto max-w-[110px] object-contain',
       description:
         'Plataforma moderna de intermediação e busca de serviços profissionais especializados. Desenvolvida para conectar prestadores e clientes com facilidade de agendamento e transparência.',
       tech: ['React', 'JavaScript', 'Node.js / API', 'Tailwind CSS', 'Arquitetura Web'],
@@ -40,6 +43,8 @@ export default function ProjectsSection() {
       tag: 'Saúde & Concorrência',
       badge: 'Arquitetura Robusta',
       icon: HeartPulse,
+      logo: '/projects/medflow.png',
+      logoContainerStyle: 'h-10 px-2.5 rounded-xl bg-[#0A120F] border border-emerald-500/40 shadow-emerald-500/10',
       description:
         'Sistema hospitalar e clínico completo. Frontend React conectado ao backend Spring Boot com PostgreSQL / Supabase, com controle estrito de concorrência e proteção contra Race Condition (Double Booking) em agendas médicas.',
       tech: ['React', 'Spring Boot (Java)', 'PostgreSQL / Supabase', 'Controle de Concorrência', 'Docker'],
@@ -58,6 +63,8 @@ export default function ProjectsSection() {
       tag: 'BI & Analytics',
       badge: 'Python & KPIs',
       icon: LineChart,
+      logo: '/projects/dash-comercial.png',
+      logoContainerStyle: 'h-10 px-2.5 rounded-xl bg-[#0f172a] border border-blue-500/40 shadow-blue-500/10',
       description:
         'Aplicação web completa para análise de indicadores comerciais da simulação Rede Aurora. Desenvolvida com Flask, PostgreSQL e Chart.js para consulta e visualização de vendas, faturamento e ticket médio.',
       tech: ['Python (Flask)', 'PostgreSQL', 'Chart.js', 'Análise de Vendas', 'KPIs'],
@@ -94,6 +101,8 @@ export default function ProjectsSection() {
       tag: 'Gestão Financeira',
       badge: 'Controle de Gastos',
       icon: Wallet,
+      logo: '/projects/salpay.png',
+      logoContainerStyle: 'h-10 px-2.5 rounded-xl bg-white border border-sky-300/60 shadow-sky-500/10',
       description:
         'Sistema completo de controle financeiro pessoal e operacional (Salpay). Gerenciamento detalhado de receitas, despesas categorizadas, balanço mensal e fluxo de caixa com backend em Java.',
       tech: ['Java', 'POO', 'Spring Boot / JDBC', 'Frontend Interativo', 'Gestão Financeira'],
@@ -112,6 +121,8 @@ export default function ProjectsSection() {
       tag: 'Game Dev',
       badge: 'Física & Interatividade',
       icon: Gamepad2,
+      logo: '/projects/indiana.png',
+      logoContainerStyle: 'h-10 px-2.5 rounded-xl bg-[#040A0D] border border-amber-500/40 shadow-amber-500/10',
       description:
         'Jogo retrô de plataforma 2D interativo com trilha sonora dinâmica, alavancas mecânicas, plataformas móveis, armadilhas de lava/água, coletáveis e física fluida desenvolvido em JavaScript puro.',
       tech: ['JavaScript Puro', 'HTML5 Canvas/DOM', 'CSS3 Animations', 'Web Audio API', 'Física 2D'],
@@ -143,11 +154,14 @@ export default function ProjectsSection() {
     },
     {
       id: 8,
-      title: 'Birdzin (Arcade Game)',
+      title: 'ET: Fuga dos Céus',
       category: 'games',
       tag: 'JavaScript Game',
       badge: 'Arcade',
       icon: Gamepad2,
+      logo: '/projects/birdzin.jpg',
+      logoContainerStyle: 'h-8 rounded-lg overflow-hidden border-0 shadow-none bg-transparent',
+      logoImgStyle: 'h-8 w-auto max-w-[125px] object-cover rounded-lg border-0',
       description:
         'Jogo arcade veloz e responsivo no navegador, simulando gravidade, impulsão física e detecção contínua de barreiras e pontuação dinâmica.',
       tech: ['JavaScript', 'HTML5', 'CSS3', 'Game Loop'],
@@ -213,16 +227,31 @@ export default function ProjectsSection() {
               >
                 <div>
                   {/* Card Top Pill */}
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                      <div className="p-2 rounded-lg bg-slate-800/90 border border-slate-700/80 text-emerald-400 group-hover:border-emerald-400/60 transition-colors">
-                        <Icon className="h-4 w-4" />
-                      </div>
-                      <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-cyan-300 border border-slate-700/60 hover:border-cyan-400/70 hover:shadow-[0_0_10px_rgba(56,189,248,0.25)] hover:-translate-y-0.5 transition-all duration-200 cursor-default">
+                  <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      {project.logo ? (
+                        <div
+                          className={`flex items-center justify-center shrink-0 overflow-hidden transition-transform duration-300 group-hover:scale-105 ${
+                            project.logoContainerStyle || 'h-10 px-2.5 rounded-xl bg-slate-900 border border-slate-700 shadow-sm'
+                          }`}
+                          title={`Logo: ${project.title}`}
+                        >
+                          <img
+                            src={project.logo}
+                            alt={`Logo ${project.title}`}
+                            className={project.logoImgStyle || 'h-7 w-auto max-w-[110px] object-contain rounded'}
+                          />
+                        </div>
+                      ) : (
+                        <div className="p-2 rounded-lg bg-slate-800/90 border border-slate-700/80 text-emerald-400 group-hover:border-emerald-400/60 transition-colors">
+                          <Icon className="h-4 w-4" />
+                        </div>
+                      )}
+                      <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-cyan-300 border border-slate-700/60 hover:border-cyan-400/70 hover:shadow-[0_0_10px_rgba(56,189,248,0.25)] hover:-translate-y-0.5 transition-all duration-200 cursor-default truncate">
                         {project.tag}
                       </span>
                     </div>
-                    <span className="text-[10px] font-mono text-emerald-400 font-semibold uppercase tracking-wider">
+                    <span className="text-[10px] font-mono text-emerald-400 font-semibold uppercase tracking-wider shrink-0">
                       {project.badge}
                     </span>
                   </div>
